@@ -1,0 +1,10 @@
+name: MegaWalls
+main: net.nuggetmc.mw.MegaWalls
+version: 1.0
+api-version: 1.16
+author: HorseNuggets
+commands:
+  megawalls:
+    description: The MegaWalls base command.
+    usage: /mw
+    aliases: [mw, class, kit]
