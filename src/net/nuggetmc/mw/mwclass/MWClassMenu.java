@@ -92,6 +92,8 @@ public class MWClassMenu implements CommandExecutor, Listener {
         MWClass mwclass = MWClassManager.fetch(ChatColor.stripColor(name));
         if (mwclass == null) return;
 
+        player.sendMessage("You have selected " + name + ChatColor.RESET + ".");
+
         mwclass.assign(player);
         player.closeInventory();
     }

@@ -1,6 +1,7 @@
 package net.nuggetmc.mw.mwclass.classes;
 
 import net.nuggetmc.mw.mwclass.MWClass;
+import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
@@ -73,6 +74,6 @@ public class MWHerobrine implements MWClass {
 
     @Override
     public void assign(Player player) {
-        player.sendMessage("ASSIGN");
+        MWClassManager.assign(player, this);
     }
 }
