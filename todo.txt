@@ -2,5 +2,3 @@ maybe make MWClass a normal class, not an interface, with other classes being ex
 ^ this is to allow for the assign method to have one default thing without having to rewrite the same code
 
 option to add more bullet points in display thing
-
-create a map of itemstack objects for the gui so that it doesn't have to be loaded every time

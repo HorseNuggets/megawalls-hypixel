@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,9 +30,13 @@ public class MWClassMenu implements CommandExecutor, Listener {
     private final String MENU_TITLE;
     private final String CLOSE_NAME;
 
+    private final Map<String, ItemStack> CACHE;
+
     public MWClassMenu(String title) {
         MENU_TITLE = title;
         CLOSE_NAME = ChatColor.RED + "Close";
+
+        CACHE = new HashMap<>();
     }
 
     @Override
@@ -50,10 +55,7 @@ public class MWClassMenu implements CommandExecutor, Listener {
         int n = 1;
 
         for (Map.Entry<String, MWClass> entry : MWClassManager.getClasses().entrySet()) {
-            String name = entry.getKey();
-            MWClass mwclass = entry.getValue();
-            ItemStack item = generateClassInfo(mwclass);
-
+            ItemStack item = generateClassInfo(entry.getValue());
             inv.setItem(n + 9 + 2 * ((n - 1) / 7), item);
 
             n++;
@@ -109,10 +111,16 @@ public class MWClassMenu implements CommandExecutor, Listener {
     }
 
     private ItemStack generateClassInfo(MWClass mwclass) {
+        String name = mwclass.getName();
+
+        if (CACHE.containsKey(name)) {
+            return CACHE.get(name);
+        }
+
         ItemStack item = new ItemStack(mwclass.getIcon());
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(ChatColor.YELLOW + mwclass.getName());
+        meta.setDisplayName(ChatColor.YELLOW + name);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 
         List<String> lore = new ArrayList<>();
@@ -165,6 +173,8 @@ public class MWClassMenu implements CommandExecutor, Listener {
 
         meta.setLore(lore);
         item.setItemMeta(meta);
+
+        CACHE.put(name, item);
 
         return item;
     }
