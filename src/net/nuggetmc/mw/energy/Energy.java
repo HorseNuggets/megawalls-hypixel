@@ -38,6 +38,7 @@ public class Energy implements Listener {
             player = (Player) event.getDamager();
         }
 
+        if (((Player) event.getEntity()).getNoDamageTicks() >= 12) return null;
         if (event.getDamage() == 0 || event.isCancelled()) return null;
 
         if (MWClassManager.isMW(player)) {

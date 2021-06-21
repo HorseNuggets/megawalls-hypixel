@@ -1,7 +1,9 @@
 package net.nuggetmc.mw.mwclass;
 
+import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.utils.ItemUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -18,6 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MWClassManager implements Listener {
+
+    private MegaWalls plugin;
+
+    public MWClassManager(MegaWalls instance) {
+        this.plugin = instance;
+    }
 
     private static Map<String, MWClass> classes = new HashMap<>();
     private static Map<Player, MWClass> active = new HashMap<>();
@@ -79,6 +87,12 @@ public class MWClassManager implements Listener {
 
         event.setDroppedExp(0);
         event.getDrops().removeIf(ItemUtils::isKitItem);
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (player != null && player.isDead()) {
+                player.spigot().respawn();
+            }
+        }, 12);
     }
 
     @EventHandler

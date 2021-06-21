@@ -5,6 +5,7 @@ import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassMenu;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.classes.MWHerobrine;
+import net.nuggetmc.mw.utils.MWHealth;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,9 +30,10 @@ public class MegaWalls extends JavaPlugin {
         getCommand("megawalls").setExecutor(menu);
 
         PluginManager manager = getServer().getPluginManager();
-        manager.registerEvents(menu, this);
-        manager.registerEvents(new MWClassManager(), this);
         manager.registerEvents(new Energy(), this);
+        manager.registerEvents(new MWClassManager(this), this);
+        manager.registerEvents(new MWHealth(this), this);
+        manager.registerEvents(menu, this);
 
         registerClasses();
 
