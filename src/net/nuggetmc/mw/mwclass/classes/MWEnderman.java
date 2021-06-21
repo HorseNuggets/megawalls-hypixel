@@ -175,6 +175,7 @@ public class MWEnderman implements MWClass {
             Energy.clear(player);
             player.teleport(target);
 
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + player.getName() + " speed 5 2");
             Location[] locs = new Location[]{loc, target.getLocation()};
 
             for (Location point : locs) {
@@ -261,7 +262,7 @@ public class MWEnderman implements MWClass {
 
         if (MWClassManager.get(player) != this) return;
 
-        int energy = Energy.get(player);
+        int energy = Energy.fetch(player);
 
         if (energy >= 80 && energy < 100) {
             if (!COOLDOWN_CACHE_2.contains(player)) {

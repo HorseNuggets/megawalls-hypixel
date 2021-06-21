@@ -43,7 +43,7 @@ public class MWKit {
         contents.add(new ItemStack(Material.COBBLESTONE, 64));
         contents.add(new ItemStack(Material.DIRT, 64));
         contents.addAll(potions);
-        contents.add(new ItemStack(Material.COOKED_BEEF, 64));
+        contents.add(new ItemStack(Material.COOKED_BEEF, 24));
         contents.add(tool);
         contents.add(toolAxe);
         contents.add(toolShovel);

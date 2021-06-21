@@ -20,9 +20,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import net.md_5.bungee.api.ChatColor;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MWHerobrine implements MWClass {
 
@@ -101,6 +99,8 @@ public class MWHerobrine implements MWClass {
 
         boolean pass = false;
 
+        Set<Player> cache = new HashSet<>();
+
         for (Player victim : Bukkit.getOnlinePlayers()) {
             if (player.getWorld() != victim.getWorld()) continue;
 
@@ -110,12 +110,17 @@ public class MWHerobrine implements MWClass {
                 world.strikeLightningEffect(loc);
                 pass = true;
 
-                MWHealth.trueDamage(victim, 4.5, player);
+                cache.add(victim);
             }
         }
 
         if (pass) {
             Energy.clear(player);
+
+            for (Player victim : cache) {
+                MWHealth.trueDamage(victim, 4.5, player);
+            }
+
             world.playSound(player.getLocation(), Sound.ENDERMAN_DEATH, 1, (float) 0.5);
             return;
         }

@@ -296,16 +296,18 @@ public class MWSpider implements MWClass {
             SKITTER_DATA.get(player).add();
         }
 
-        if (!INCREMENT.containsKey(player)) {
-            INCREMENT.put(player, 0);
-        } else {
-            INCREMENT.put(player, (INCREMENT.get(player) + 1) % 4);
-        }
+        if (event.getDamager() instanceof Player) {
+            if (!INCREMENT.containsKey(player)) {
+                INCREMENT.put(player, 0);
+            } else {
+                INCREMENT.put(player, (INCREMENT.get(player) + 1) % 4);
+            }
 
-        if (INCREMENT.get(player) == 0) {
-            Player victim = (Player) event.getEntity();
+            if (INCREMENT.get(player) == 0) {
+                Player victim = (Player) event.getEntity();
 
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + victim.getName() + " poison 5");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + victim.getName() + " poison 5");
+            }
         }
 
         Energy.add(player, 8);

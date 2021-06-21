@@ -20,3 +20,5 @@ add combat system, where you can't get a new class when in combat
 maybe in the future make a simple way to add cooldowns
 
 duplicate code for explosion cancelling in skeleton and creeper, eventually make a handler for both of them
+
+don't forget to make enderman drop diamond related things on death

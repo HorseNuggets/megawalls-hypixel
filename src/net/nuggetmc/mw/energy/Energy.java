@@ -1,6 +1,7 @@
 package net.nuggetmc.mw.energy;
 
 import net.nuggetmc.mw.MegaWalls;
+import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -25,15 +26,17 @@ public class Energy implements Listener {
 
     public void tick() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!MWClassManager.isMW(player)) continue;
+            MWClass mwclass = MWClassManager.get(player);
 
-            switch (MWClassManager.get(player).getName()) {
+            if (mwclass == null) continue;
+
+            switch (mwclass.getName()) {
                 default:
-                    return;
+                    break;
 
                 case "Spider":
                     Energy.add(player, 4);
-                    return;
+                    break;
             }
         }
     }
@@ -65,10 +68,6 @@ public class Energy implements Listener {
         }
 
         return null;
-    }
-
-    public static int get(Player player) {
-        return PLAYER_DATA.get(player);
     }
 
     @EventHandler
