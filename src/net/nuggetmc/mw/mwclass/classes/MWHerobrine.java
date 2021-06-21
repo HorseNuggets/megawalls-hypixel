@@ -1,14 +1,19 @@
 package net.nuggetmc.mw.mwclass.classes;
 
+import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
-import net.nuggetmc.mw.mwclass.items.MWItem;
-import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
+import net.nuggetmc.mw.mwclass.items.MWItem;
+import net.nuggetmc.mw.mwclass.items.MWKit;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -76,6 +81,17 @@ public class MWHerobrine implements MWClass {
     @Override
     public MWClassInfo getInfo() {
         return CLASS_INFO;
+    }
+
+    @EventHandler
+    public void hit(EntityDamageByEntityEvent event) {
+        if (!Energy.isValid(event)) {
+            return;
+        }
+
+        Player player = (Player) event.getDamager();
+
+        Energy.add(player, 25);
     }
 
     @Override

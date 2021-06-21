@@ -1,5 +1,6 @@
 package net.nuggetmc.mw.mwclass;
 
+import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.utils.ItemUtils;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -37,6 +38,10 @@ public class MWClassManager implements Listener {
         return null;
     }
 
+    public static boolean isMW(Player player) {
+        return active.containsKey(player);
+    }
+
     public static void assign(Player player, MWClass mwclass) {
         player.getInventory().clear();
         player.setMaxHealth(40);
@@ -62,11 +67,13 @@ public class MWClassManager implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        Energy.clear(player);
 
         if (active.containsKey(player)) {
             active.remove(player);
         }
 
+        event.setDroppedExp(0);
         event.getDrops().removeIf(ItemUtils::isKitItem);
     }
 
