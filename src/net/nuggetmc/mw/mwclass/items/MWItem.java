@@ -27,7 +27,7 @@ public class MWItem {
         }
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.YELLOW + mwclass.getName() + " Sword");
+        meta.setDisplayName(mwclass.getColor() + mwclass.getName() + " Sword");
 
         MWClassInfo info = mwclass.getInfo();
 
@@ -64,7 +64,7 @@ public class MWItem {
         }
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(ChatColor.YELLOW + mwclass.getName() + " Bow");
+        meta.setDisplayName(mwclass.getColor() + mwclass.getName() + " Bow");
 
         MWClassInfo info = mwclass.getInfo();
 
@@ -105,7 +105,7 @@ public class MWItem {
             name = "Shovel";
         }
 
-        meta.setDisplayName(ChatColor.YELLOW + mwclass.getName() + " " + name);
+        meta.setDisplayName(mwclass.getColor() + mwclass.getName() + " " + name);
 
         MWClassInfo info = mwclass.getInfo();
         List<String> lore = new ArrayList<>();
@@ -133,7 +133,7 @@ public class MWItem {
         ItemMeta meta = item.getItemMeta();
         String name = type.name().toLowerCase();
 
-        meta.setDisplayName(ChatColor.YELLOW + mwclass.getName() + " " + StringUtils.capitalize(name.substring(name.indexOf("_") + 1)));
+        meta.setDisplayName(mwclass.getColor() + mwclass.getName() + " " + StringUtils.capitalize(name.substring(name.indexOf("_") + 1)));
         meta.spigot().setUnbreakable(true);
 
         List<String> lore = new ArrayList<>();

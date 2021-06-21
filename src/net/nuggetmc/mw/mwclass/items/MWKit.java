@@ -2,19 +2,13 @@ package net.nuggetmc.mw.mwclass.items;
 
 import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.mwclass.MWClass;
-import net.nuggetmc.mw.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MWKit {
@@ -29,31 +23,42 @@ public class MWKit {
         return KIT_CACHE.get(mwclass);
     }
 
-    public static Map<Integer, ItemStack> generate(MWClass mwclass, ItemStack sword, ItemStack bow, ItemStack tool, int hPotCount, int hPotAmount, int sPotCount,
+    public static Map<Integer, ItemStack> generate(MWClass mwclass, ItemStack sword, ItemStack bow, ItemStack tool, ItemStack toolAxe, ItemStack toolShovel, List<ItemStack> potions,
                    ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
 
         Map<Integer, ItemStack> items = new HashMap<>();
 
-        // Eventually have the numbers increment up for more flexibility
+        String name = mwclass.getName();
+        ChatColor color = mwclass.getColor();
 
-        items.put(0, sword);
-        items.put(1, bow);
+        if (toolAxe == null) {
+            toolAxe = new ItemStack(Material.IRON_AXE);
+        }
 
-        items.put(2, new ItemStack(Material.WOOD, 64));
-        items.put(3, new ItemStack(Material.COBBLESTONE, 64));
-        items.put(4, new ItemStack(Material.DIRT, 64));
+        if (toolShovel == null) {
+            toolShovel = new ItemStack(Material.IRON_SPADE);
+        }
 
-        items.put(5, createHealPotions(hPotCount, hPotAmount));
-        items.put(6, createSpeedPotions(sPotCount));
+        List<ItemStack> contents = new ArrayList<>();
 
-        items.put(7, new ItemStack(Material.COOKED_BEEF, 64));
+        contents.add(sword);
+        contents.add(bow);
+        contents.add(new ItemStack(Material.WOOD, 64));
+        contents.add(new ItemStack(Material.COBBLESTONE, 64));
+        contents.add(new ItemStack(Material.DIRT, 64));
+        contents.addAll(potions);
+        contents.add(new ItemStack(Material.COOKED_BEEF, 64));
+        contents.add(tool);
+        contents.add(toolAxe);
+        contents.add(toolShovel);
+        contents.add(new ItemStack(Material.ARROW, 64));
 
-        items.put(8, tool);
+        int n = 0;
 
-        items.put(9, new ItemStack(Material.IRON_AXE));
-        items.put(10, new ItemStack(Material.IRON_SPADE));
-
-        items.put(11, new ItemStack(Material.ARROW, 64));
+        for (ItemStack item : contents) {
+            items.put(n, item);
+            n++;
+        }
 
         if (helmet == null) helmet = new ItemStack(Material.IRON_HELMET);
         if (chestplate == null) chestplate = new ItemStack(Material.IRON_CHESTPLATE);
@@ -74,35 +79,5 @@ public class MWKit {
         for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
             player.getInventory().setItem(entry.getKey(), entry.getValue());
         }
-    }
-
-    public static ItemStack createHealPotions(int count, int amount) {
-        Potion potion = new Potion(PotionType.INSTANT_HEAL);
-        ItemStack item = potion.toItemStack(count);
-        PotionMeta meta = (PotionMeta) item.getItemMeta();
-
-        meta.setDisplayName(ChatColor.YELLOW + "Herobrine Potion of Health");
-        meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-
-        ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ChatColor.GRAY + "Instant Health (" + ChatColor.RED + amount + "❤" + ChatColor.GRAY + ")");
-
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-
-        return ItemUtils.toMWItem(item);
-    }
-
-    public static ItemStack createSpeedPotions(int count) {
-        Potion potion = new Potion(PotionType.SPEED);
-        ItemStack item = potion.toItemStack(count);
-        PotionMeta meta = (PotionMeta) item.getItemMeta();
-
-        meta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, 15 * 20, 1), true);
-        meta.setDisplayName(ChatColor.YELLOW + "Herobrine Potion of Speed II");
-
-        item.setItemMeta(meta);
-
-        return ItemUtils.toMWItem(item);
     }
 }

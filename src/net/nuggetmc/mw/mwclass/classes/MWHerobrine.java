@@ -1,7 +1,5 @@
 package net.nuggetmc.mw.mwclass.classes;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
@@ -10,6 +8,7 @@ import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
 import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
+import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.ActionBar;
 import net.nuggetmc.mw.utils.MWHealth;
 import org.bukkit.*;
@@ -18,18 +17,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import net.md_5.bungee.api.ChatColor;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MWHerobrine implements MWClass {
 
     private final String NAME;
     private final Material ICON;
+    private final ChatColor COLOR;
     private final Playstyle[] PLAYSTYLES;
     private final Diamond[] DIAMONDS;
     private final MWClassInfo CLASS_INFO;
@@ -37,6 +36,7 @@ public class MWHerobrine implements MWClass {
     public MWHerobrine() {
         NAME = "Herobrine";
         ICON = Material.DIAMOND_SWORD;
+        COLOR = ChatColor.YELLOW;
 
         PLAYSTYLES = new Playstyle[]
         {
@@ -76,6 +76,11 @@ public class MWHerobrine implements MWClass {
     }
 
     @Override
+    public ChatColor getColor() {
+        return COLOR;
+    }
+
+    @Override
     public Playstyle[] getPlaystyles() {
         return PLAYSTYLES;
     }
@@ -90,6 +95,7 @@ public class MWHerobrine implements MWClass {
         return CLASS_INFO;
     }
 
+    @Override
     public void ability(Player player) {
         World world = player.getWorld();
 
@@ -177,7 +183,9 @@ public class MWHerobrine implements MWClass {
             ItemStack tool = MWItem.createTool(this, Material.DIAMOND_PICKAXE);
             ItemStack helmet = MWItem.createArmor(this, Material.IRON_HELMET, armorEnch);
 
-            items = MWKit.generate(this, sword, bow, tool, 2, 7, 2, helmet, null, null, null);
+            List<ItemStack> potions = MWPotions.createBasic(this, 2, 7, 2);
+
+            items = MWKit.generate(this, sword, bow, tool, null, null, potions, helmet, null, null, null);
         }
 
         MWKit.assignItems(player, items);

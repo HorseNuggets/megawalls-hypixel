@@ -1,14 +1,18 @@
 package net.nuggetmc.mw.utils;
 
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -60,6 +64,30 @@ public class MWHealth implements Listener {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             healthSetup(event.getPlayer());
         }, 4);
+    }
+
+    @EventHandler
+    public void potion(PlayerItemConsumeEvent event) {
+        ItemStack item = event.getItem();
+
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        if (nmsItem == null) return;
+
+        NBTTagCompound compound = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
+        int value = compound.getInt("mwHeal");
+
+        if (value == 0) return;
+
+        Player player = event.getPlayer();
+
+        int amount = value * 2 - 4;
+        double health = player.getHealth();
+
+        if (health < 40 - amount) {
+            player.setHealth(health + amount);
+        } else {
+            player.setHealth(40);
+        }
     }
 
     public static void trueDamage(Player player, double amount) {

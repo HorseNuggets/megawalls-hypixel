@@ -9,6 +9,17 @@ public class DisplayUtils {
 
     // Automatically bullets and indents
     public static List<String> fit(String string) {
+        if (string.contains("\n")) {
+            String[] split = string.split("\n");
+            List<String> lines = new ArrayList<>();
+
+            for (int i = 0; i < split.length; i++) {
+                lines.addAll(fit(split[i]));
+            }
+
+            return lines;
+        }
+
         String msg = string.replace("&r", "&7");
         List<String> msgSplit = new ArrayList<>();
 
