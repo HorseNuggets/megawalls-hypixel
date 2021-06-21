@@ -4,7 +4,9 @@ import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
+import net.nuggetmc.mw.mwclass.MWClassManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -92,6 +94,11 @@ public class MWHealth implements Listener {
 
     public static void trueDamage(Player player, double amount) {
         double health = player.getHealth();
+
+        if (MWClassManager.isMW(player) && MWClassManager.get(player).getName().equals("Golem")) {
+            health *= 0.8;
+            player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, (float) 0.5, 2);
+        }
 
         if (health >= amount + 0.01) {
             player.damage(0.01);

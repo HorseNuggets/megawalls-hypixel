@@ -8,3 +8,16 @@ commands:
     description: The MegaWalls base command.
     usage: /mw
     aliases: [mw, class, kit]
+  energy:
+    description: Instant max energy (for debug).
+    usage: /energy
+    permission: mw.admin
+    aliases: [e]
+permissions:
+  mw.*:
+    description: MegaWalls parent permission.
+    default: op
+    children:
+      mw.admin: true
+  mw.admin:
+    default: op

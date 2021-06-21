@@ -2,6 +2,7 @@ package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
@@ -11,23 +12,29 @@ import net.nuggetmc.mw.mwclass.info.Playstyle;
 import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
+import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MWGolem implements MWClass {
+
+    private MegaWalls plugin;
 
     private final String NAME;
     private final Material ICON;
@@ -37,6 +44,8 @@ public class MWGolem implements MWClass {
     private final MWClassInfo CLASS_INFO;
 
     public MWGolem() {
+        this.plugin = MegaWalls.getInstance();
+
         NAME = "Golem";
         ICON = Material.IRON_CHESTPLATE;
         COLOR = ChatColor.WHITE;
@@ -99,9 +108,140 @@ public class MWGolem implements MWClass {
         return CLASS_INFO;
     }
 
+    private Set<Player> inRange(Player player) {
+        World world = player.getWorld();
+        Location locUp = player.getEyeLocation();
+        Set<Player> result = new HashSet<>();
+
+        for (Player victim : Bukkit.getOnlinePlayers()) {
+            if (world != victim.getWorld()) continue;
+
+            Location loc = victim.getEyeLocation();
+
+            if (locUp.distance(loc) <= 4.5 && player != victim && !victim.isDead()) {
+                result.add(victim);
+            }
+        }
+
+        return result;
+    }
+
     @Override
+    @SuppressWarnings("deprecation")
     public void ability(Player player) {
         Energy.clear(player);
+        World world = player.getWorld();
+        Location locUp = player.getEyeLocation();
+
+        for (Player victim : inRange(player)) {
+            victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1));
+
+            Vector vel = locUp.toVector().subtract(victim.getEyeLocation().toVector());
+            double y = vel.getY();
+
+            if (Math.abs(y) > 0.4) {
+                vel.setY(0.4 / y);
+            }
+
+            double len = vel.length();
+
+            if (len > 0.9) {
+                vel.multiply(0.9 / len);
+            }
+
+            vel.add(victim.getVelocity());
+            victim.setVelocity(vel);
+        }
+
+        Vector vel = new Vector(0, -1, 0);
+        Location loc = player.getLocation();
+
+        loc.add(0, 6, 0);
+        int theta = 30;
+
+        for (int i = 0; i < 12; i++) {
+            int deg = theta * i;
+            double rad = Math.toRadians(deg);
+
+            double x = 3 * Math.cos(rad);
+            double z = 3 * Math.sin(rad);
+
+            Location pt = loc.clone().add(x, 0, z);
+            FallingBlock block = world.spawnFallingBlock(pt, Material.IRON_BLOCK, (byte) 0);
+
+            block.setVelocity(vel);
+
+            Bukkit.getScheduler().runTaskLater(plugin, block::remove, 60);
+        }
+
+        ParticleUtils.play(EnumParticle.LAVA, locUp, 3, 0.1, 3, 10, 40);
+
+        world.playSound(locUp, Sound.ANVIL_LAND, 1, 2);
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            for (Player victim : inRange(player)) {
+                MWHealth.trueDamage(victim, 6);
+            }
+
+            ParticleUtils.play(EnumParticle.EXPLOSION_HUGE, loc, 0.1, 0.1, 0.1, 0, 3);
+
+            world.playSound(loc, Sound.EXPLODE, 1, 1);
+            world.playSound(loc, Sound.EXPLODE, 1, 1);
+            world.playSound(loc, Sound.EXPLODE, 1, (float) 0.7);
+            world.playSound(loc, Sound.EXPLODE, 1, (float) 0.7);
+        }, 7);
+    }
+
+    @EventHandler
+    public void onBlockChange(EntityChangeBlockEvent event) {
+        if (!(event.getEntity() instanceof FallingBlock)) return;
+
+        FallingBlock block = (FallingBlock) event.getEntity();
+
+        if (block.getMaterial() == Material.IRON_BLOCK) {
+            event.setCancelled(true);
+        }
+    }
+
+    private Map<Player, Integer> momentum = new HashMap<>();
+
+    @EventHandler
+    public void gathering(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+
+        if (MWClassManager.get(player) == this) {
+            if (!momentum.containsKey(player)) {
+                momentum.put(player, 0);
+            } else {
+                momentum.put(player, (momentum.get(player) + 1) % 4);
+            }
+
+            if (momentum.get(player) == 0) {
+                Block block = event.getBlock();
+                Location location = block.getLocation();
+
+                location.add(0.5, 0.5, 0.5);
+
+                if (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                        block.getWorld().dropItem(location, new ItemStack(Material.IRON_BLOCK));
+                    }, 2);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onKill(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+        Player player = victim.getKiller();
+
+        if (player == null || victim == player) return;
+        if (!MWClassManager.isMW(player)) return;
+
+        if (MWClassManager.get(player) == this) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + player.getName() + " absorption 10 1");
+        }
     }
 
     @EventHandler
@@ -109,9 +249,17 @@ public class MWGolem implements MWClass {
         Player player = Energy.validate(event);
         if (player == null) return;
 
-        if (MWClassManager.get(player) != this) return;
+        if (MWClassManager.get(player) == this) {
+            Energy.add(player, 10);
+        }
 
-        Energy.add(player, 10);
+        Player victim = (Player) event.getEntity();
+
+        if (MWClassManager.get(victim) == this) {
+            if (event.getDamager() instanceof Arrow) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + victim.getName() + " resistance 9");
+            }
+        }
     }
 
     @Override

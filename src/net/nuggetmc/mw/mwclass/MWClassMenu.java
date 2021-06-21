@@ -41,7 +41,19 @@ public class MWClassMenu implements CommandExecutor, Listener {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
-            openGUI((Player) sender);
+            Player player = (Player) sender;
+
+            if (args.length > 0) {
+                String name = StringUtils.capitalize(args[0].toLowerCase());
+                MWClass mwclass = MWClassManager.fetch(name);
+
+                if (mwclass != null) {
+                    select(player, mwclass);
+                    return true;
+                }
+            }
+
+            openGUI(player);
         }
 
         return true;
@@ -61,6 +73,21 @@ public class MWClassMenu implements CommandExecutor, Listener {
 
         inv.setItem(49, createClose());
         player.openInventory(inv);
+    }
+
+    private void select(Player player, String name) {
+        MWClass mwclass = MWClassManager.fetch(name);
+        if (mwclass == null) return;
+
+        select(player, mwclass);
+    }
+
+    private void select(Player player, MWClass mwclass) {
+        player.sendMessage("You have selected " + ChatColor.YELLOW + mwclass.getName() + ChatColor.RESET + ".");
+        player.closeInventory();
+
+        Energy.clear(player);
+        MWClassManager.assign(player, mwclass);
     }
 
     @EventHandler
@@ -89,14 +116,7 @@ public class MWClassMenu implements CommandExecutor, Listener {
             return;
         }
 
-        MWClass mwclass = MWClassManager.fetch(ChatColor.stripColor(name));
-        if (mwclass == null) return;
-
-        player.sendMessage("You have selected " + name + ChatColor.RESET + ".");
-        player.closeInventory();
-
-        Energy.clear(player);
-        MWClassManager.assign(player, mwclass);
+        select(player, ChatColor.stripColor(name));
     }
 
     private ItemStack createClose() {

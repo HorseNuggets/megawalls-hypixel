@@ -80,7 +80,7 @@ public class MWPotions {
         String time = "0:" + String.format("%02d", duration);
 
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "Regeneration (" + time + ") (" + ChatColor.RED + healthDisplay + "❤" + ChatColor.GRAY + ")");
+        lore.add(ChatColor.GRAY + "Regeneration III (" + time + ") (" + ChatColor.RED + healthDisplay + "❤" + ChatColor.GRAY + ")");
 
         meta.setLore(lore);
         item.setItemMeta(meta);
