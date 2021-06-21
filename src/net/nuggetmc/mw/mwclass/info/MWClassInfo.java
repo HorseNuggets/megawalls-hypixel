@@ -17,8 +17,8 @@ public class MWClassInfo {
     private final String PASSIVE_2;
     private final List<String> PASSIVE_2_INFO;
 
-    private final String GATHERING_TALENT;
-    private final List<String> GATHERING_TALENT_INFO;
+    private final String GATHERING;
+    private final List<String> GATHERING_INFO;
 
     private final Map<String, String> ENERGY_GAIN;
 
@@ -32,8 +32,8 @@ public class MWClassInfo {
         PASSIVE_2 = passive2;
         PASSIVE_2_INFO = DisplayUtils.fit(passive2Info);
 
-        GATHERING_TALENT = gatheringTalent;
-        GATHERING_TALENT_INFO = DisplayUtils.fit(gatheringTalentInfo);
+        GATHERING = gatheringTalent;
+        GATHERING_INFO = DisplayUtils.fit(gatheringTalentInfo);
 
         ENERGY_GAIN = new HashMap<>();
     }
@@ -62,12 +62,12 @@ public class MWClassInfo {
         return PASSIVE_2_INFO;
     }
 
-    public String getGatheringTalentName() {
-        return GATHERING_TALENT;
+    public String getGatheringName() {
+        return GATHERING;
     }
 
-    public List<String> getGatheringTalentInfo() {
-        return GATHERING_TALENT_INFO;
+    public List<String> getGatheringInfo() {
+        return GATHERING_INFO;
     }
 
     public Map<String, String> getEnergyGain() {

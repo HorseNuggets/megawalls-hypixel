@@ -1,12 +1,18 @@
 package net.nuggetmc.mw.mwclass.classes;
 
 import net.nuggetmc.mw.mwclass.MWClass;
-import net.nuggetmc.mw.mwclass.MWClassManager;
+import net.nuggetmc.mw.mwclass.items.MWItem;
+import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MWHerobrine implements MWClass {
 
@@ -74,6 +80,29 @@ public class MWHerobrine implements MWClass {
 
     @Override
     public void assign(Player player) {
-        MWClassManager.assign(player, this);
+        Map<Integer, ItemStack> items;
+
+        if (MWKit.contains(this)) {
+            items = MWKit.fetch(this);
+        }
+
+        else {
+            Map<Enchantment, Integer> swordEnch = new HashMap<>();
+            swordEnch.put(Enchantment.DURABILITY, 10);
+
+            Map<Enchantment, Integer> armorEnch = new HashMap<>();
+            armorEnch.put(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
+            armorEnch.put(Enchantment.DURABILITY, 10);
+            armorEnch.put(Enchantment.WATER_WORKER, 1);
+
+            ItemStack sword = MWItem.createSword(this, Material.DIAMOND_SWORD, swordEnch);
+            ItemStack bow = MWItem.createBow(this, null);
+            ItemStack tool = MWItem.createTool(this, Material.DIAMOND_PICKAXE);
+            ItemStack helmet = MWItem.createArmor(this, Material.IRON_HELMET, armorEnch);
+
+            items = MWKit.generate(this, sword, bow, tool, 2, 7, 2, helmet, null, null, null);
+        }
+
+        MWKit.assignItems(player, items);
     }
 }

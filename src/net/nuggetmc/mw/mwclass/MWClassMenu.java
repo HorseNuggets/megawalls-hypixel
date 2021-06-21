@@ -4,7 +4,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
-import net.nuggetmc.mw.utils.DisplayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -35,13 +34,11 @@ public class MWClassMenu implements CommandExecutor, Listener {
     public MWClassMenu(String title) {
         MENU_TITLE = title;
         CLOSE_NAME = ChatColor.RED + "Close";
-
         CACHE = new HashMap<>();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-
         if (sender instanceof Player) {
             openGUI((Player) sender);
         }
@@ -95,9 +92,9 @@ public class MWClassMenu implements CommandExecutor, Listener {
         if (mwclass == null) return;
 
         player.sendMessage("You have selected " + name + ChatColor.RESET + ".");
-
-        mwclass.assign(player);
         player.closeInventory();
+
+        MWClassManager.assign(player, mwclass);
     }
 
     private ItemStack createClose() {
@@ -158,8 +155,8 @@ public class MWClassMenu implements CommandExecutor, Listener {
         lore.addAll(info.getPassive2Info());
         lore.add("");
 
-        lore.add(ChatColor.GRAY + "Gathering Talent: " + ChatColor.RED + info.getGatheringTalentName());
-        lore.addAll(info.getGatheringTalentInfo());
+        lore.add(ChatColor.GRAY + "Gathering: " + ChatColor.RED + info.getGatheringName());
+        lore.addAll(info.getGatheringInfo());
         lore.add("");
 
         lore.add(ChatColor.GRAY + "Energy Gain:");

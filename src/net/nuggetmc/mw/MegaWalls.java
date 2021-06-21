@@ -3,6 +3,7 @@ package net.nuggetmc.mw;
 import net.nuggetmc.mw.mwclass.MWClassMenu;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.classes.MWHerobrine;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MegaWalls extends JavaPlugin {
@@ -22,7 +23,10 @@ public class MegaWalls extends JavaPlugin {
         menu = new MWClassMenu("Class Selector");
 
         getCommand("megawalls").setExecutor(menu);
-        getServer().getPluginManager().registerEvents(menu, this);
+
+        PluginManager manager = getServer().getPluginManager();
+        manager.registerEvents(menu, this);
+        manager.registerEvents(new MWClassManager(), this);
 
         registerClasses();
     }
