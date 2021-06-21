@@ -107,7 +107,7 @@ public class MWHealth implements Listener {
         }
     }
 
-    public static void trueDamage(Player player, double amount) {
+    public static void trueDamage(Player player, double amount, Player damager) {
         double health = player.getHealth();
 
         if (MWClassManager.isMW(player) && MWClassManager.get(player).getName().equals("Golem")) {
@@ -116,10 +116,10 @@ public class MWHealth implements Listener {
         }
 
         if (health >= amount + 0.01) {
-            player.damage(0.01);
+            player.damage(0.01, damager);
             player.setHealth(health - amount);
         } else {
-            player.setHealth(0);
+            player.damage(250, damager);
         }
     }
 }

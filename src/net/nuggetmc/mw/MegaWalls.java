@@ -62,6 +62,7 @@ public class MegaWalls extends JavaPlugin {
         MWClassManager.register(new MWGolem());
         MWClassManager.register(new MWHerobrine());
         MWClassManager.register(new MWSkeleton());
+        MWClassManager.register(new MWSpider());
         MWClassManager.register(new MWZombie());
     }
 

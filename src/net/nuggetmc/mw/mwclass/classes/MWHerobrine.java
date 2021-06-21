@@ -110,7 +110,7 @@ public class MWHerobrine implements MWClass {
                 world.strikeLightningEffect(loc);
                 pass = true;
 
-                MWHealth.trueDamage(victim, 4.5);
+                MWHealth.trueDamage(victim, 4.5, player);
             }
         }
 

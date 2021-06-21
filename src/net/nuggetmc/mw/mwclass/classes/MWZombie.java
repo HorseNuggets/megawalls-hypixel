@@ -198,7 +198,10 @@ public class MWZombie implements MWClass {
                 Wrapper wpr = TASKS.get(player);
 
                 if (wpr == null || wpr.time <= 0) {
-                    TASKS.remove(player);
+                    if (TASKS.containsKey(player)) {
+                        TASKS.remove(player);
+                    }
+
                     this.cancel();
                     return;
                 }

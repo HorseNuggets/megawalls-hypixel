@@ -83,7 +83,7 @@ public class MWClassMenu implements CommandExecutor, Listener {
     }
 
     private void select(Player player, MWClass mwclass) {
-        player.sendMessage("You have selected " + ChatColor.YELLOW + mwclass.getName() + ChatColor.RESET + ".");
+        player.sendMessage("You have selected " + mwclass.getColor() + mwclass.getName() + ChatColor.RESET + ".");
         player.closeInventory();
 
         Energy.clear(player);

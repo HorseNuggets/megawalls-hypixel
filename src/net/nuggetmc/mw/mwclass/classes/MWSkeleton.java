@@ -115,10 +115,12 @@ public class MWSkeleton implements MWClass {
         Location loc = player.getEyeLocation();
 
         Vector dir = loc.getDirection();
-        Vector vel = dir.clone().multiply(2);
+        Vector vel = dir.clone().multiply(1.5);
 
-        Arrow arrow = world.spawnArrow(loc.add(dir.getX() * 1.5, -0.1, dir.getZ() * 1.5), vel, 1, 0);
+        Arrow arrow = world.spawnArrow(loc.add(dir.getX() * 1.5, -0.1, dir.getZ() * 1.5), new Vector(0, 0, 0), 1, 0);
         arrow.setShooter(player);
+        arrow.setVelocity(vel);
+
         world.playSound(arrow.getLocation(), Sound.FUSE, (float) 0.6, (float) 1.4);
 
         particles(arrow);

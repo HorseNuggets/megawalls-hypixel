@@ -178,7 +178,7 @@ public class MWCreeper implements MWClass {
                 float dmg = (float) (10 - ((int) dist) * 0.75);
                 if (dmg < 5) dmg = 5;
 
-                MWHealth.trueDamage(victim, dmg);
+                MWHealth.trueDamage(victim, dmg, player);
             }
         }
     }

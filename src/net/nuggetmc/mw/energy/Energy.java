@@ -19,6 +19,25 @@ public class Energy implements Listener {
 
     private static final Map<Player, Integer> PLAYER_DATA = new HashMap<>();
 
+    public Energy() {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(MegaWalls.getInstance(), this::tick, 20, 20);
+    }
+
+    public void tick() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!MWClassManager.isMW(player)) continue;
+
+            switch (MWClassManager.get(player).getName()) {
+                default:
+                    return;
+
+                case "Spider":
+                    Energy.add(player, 4);
+                    return;
+            }
+        }
+    }
+
     public static Player validate(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) return null;
         if (!(event.getDamager() instanceof Player) && !(event.getDamager() instanceof Arrow)) return null;

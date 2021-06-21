@@ -180,7 +180,7 @@ public class MWGolem implements MWClass {
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             for (Player victim : inRange(player)) {
-                MWHealth.trueDamage(victim, 6);
+                MWHealth.trueDamage(victim, 6, player);
             }
 
             ParticleUtils.play(EnumParticle.EXPLOSION_HUGE, loc, 0.1, 0.1, 0.1, 0, 3);
