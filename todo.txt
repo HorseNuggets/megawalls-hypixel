@@ -18,3 +18,5 @@ add combat system, where you can't get a new class when in combat
 ***EVENTUALLY make class passives a lot more deliberate, and have an action bar display to show exactly the time remaining for each
 
 maybe in the future make a simple way to add cooldowns
+
+duplicate code for explosion cancelling in skeleton and creeper, eventually make a handler for both of them

@@ -52,7 +52,7 @@ public class MWHerobrine implements MWClass {
         CLASS_INFO = new MWClassInfo
         (
             "Wrath",
-            "Unleash the wrath of Herobrine, striking all nearby enemies in a 5 block radius for &a4.5 &rdamage.",
+            "Unleash the wrath of Herobrine, striking all nearby enemies in a 5 block radius for &a4.5 &rtrue damage.",
             "Power",
             "Killing an emeny grants you Strength I for 6 seconds.",
             "Flurry",

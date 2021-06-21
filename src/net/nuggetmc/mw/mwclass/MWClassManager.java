@@ -63,7 +63,7 @@ public class MWClassManager implements Listener {
     public static void assign(Player player, MWClass mwclass) {
         player.getInventory().clear();
 
-        if (player.getMaxHealth() == 20 || player.getHealth() > 38) {
+        if (player.getMaxHealth() == 20 || player.getHealth() >= 35) {
             player.setMaxHealth(40);
             player.setHealth(40);
             player.setFoodLevel(20);

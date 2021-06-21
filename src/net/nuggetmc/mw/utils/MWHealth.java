@@ -97,6 +97,16 @@ public class MWHealth implements Listener {
         }
     }
 
+    public static void feed(Player player, int amount) {
+        int food = player.getFoodLevel();
+
+        if (food < 20 - amount) {
+            player.setFoodLevel(food + amount);
+        } else {
+            player.setFoodLevel(20);
+        }
+    }
+
     public static void trueDamage(Player player, double amount) {
         double health = player.getHealth();
 
