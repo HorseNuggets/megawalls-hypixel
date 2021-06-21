@@ -83,6 +83,11 @@ public class MWHealth implements Listener {
         Player player = event.getPlayer();
 
         int amount = value * 2 - 4;
+
+        heal(player, amount);
+    }
+
+    public static void heal(Player player, double amount) {
         double health = player.getHealth();
 
         if (health < 40 - amount) {
@@ -96,7 +101,7 @@ public class MWHealth implements Listener {
         double health = player.getHealth();
 
         if (MWClassManager.isMW(player) && MWClassManager.get(player).getName().equals("Golem")) {
-            health *= 0.8;
+            amount *= 0.8;
             player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, (float) 0.5, 2);
         }
 

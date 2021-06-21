@@ -203,20 +203,20 @@ public class MWGolem implements MWClass {
         }
     }
 
-    private Map<Player, Integer> momentum = new HashMap<>();
+    private final Map<Player, Integer> INCREMENT = new HashMap<>();
 
     @EventHandler
     public void gathering(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
         if (MWClassManager.get(player) == this) {
-            if (!momentum.containsKey(player)) {
-                momentum.put(player, 0);
+            if (!INCREMENT.containsKey(player)) {
+                INCREMENT.put(player, 0);
             } else {
-                momentum.put(player, (momentum.get(player) + 1) % 4);
+                INCREMENT.put(player, (INCREMENT.get(player) + 1) % 4);
             }
 
-            if (momentum.get(player) == 0) {
+            if (INCREMENT.get(player) == 0) {
                 Block block = event.getBlock();
                 Location location = block.getLocation();
 
@@ -294,7 +294,7 @@ public class MWGolem implements MWClass {
             potions.add(MWPotions.createRegenerationPotions(NAME, COLOR, 3, 12, 10));
             potions.add(MWPotions.createSlowSplash(NAME, COLOR));
 
-            items = MWKit.generate(this, sword, bow, tool, toolAxe, null, potions, null, chestplate, null, boots);
+            items = MWKit.generate(this, sword, bow, tool, toolAxe, null, potions, null, chestplate, null, boots, null);
         }
 
         MWKit.assignItems(player, items);

@@ -48,6 +48,10 @@ public class Energy implements Listener {
         return null;
     }
 
+    public static int get(Player player) {
+        return PLAYER_DATA.get(player);
+    }
+
     @EventHandler
     public void onAbility(PlayerInteractEvent event) {
         Player player = event.getPlayer();

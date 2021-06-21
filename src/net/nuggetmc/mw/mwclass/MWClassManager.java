@@ -2,12 +2,14 @@ package net.nuggetmc.mw.mwclass;
 
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
+import net.nuggetmc.mw.mwclass.classes.MWEnderman;
 import net.nuggetmc.mw.utils.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -54,12 +56,19 @@ public class MWClassManager implements Listener {
         return active.get(player);
     }
 
+    public static Map<Player, MWClass> getActive() {
+        return active;
+    }
+
     public static void assign(Player player, MWClass mwclass) {
         player.getInventory().clear();
-        player.setMaxHealth(40);
-        player.setHealth(40);
-        player.setFoodLevel(20);
-        player.setSaturation(20);
+
+        if (player.getMaxHealth() == 20 || player.getHealth() > 38) {
+            player.setMaxHealth(40);
+            player.setHealth(40);
+            player.setFoodLevel(20);
+            player.setSaturation(20);
+        }
 
         mwclass.assign(player);
 
@@ -76,17 +85,23 @@ public class MWClassManager implements Listener {
         check(event, event.getPlayer(), event.getItem().getItemStack());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        Energy.clear(player);
+        MWClass mwclass = active.get(player);
 
-        if (active.containsKey(player)) {
-            active.remove(player);
+        boolean listed = active.containsKey(player);
+
+        if (!(listed && mwclass instanceof MWEnderman && ((MWEnderman) mwclass).isKeepInventory(player))) {
+            if (listed) {
+                active.remove(player);
+            }
+
+            Energy.clear(player);
+
+            event.setDroppedExp(0);
+            event.getDrops().removeIf(ItemUtils::isKitItem);
         }
-
-        event.setDroppedExp(0);
-        event.getDrops().removeIf(ItemUtils::isKitItem);
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (player != null && player.isDead()) {

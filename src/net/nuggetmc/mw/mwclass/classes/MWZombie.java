@@ -61,7 +61,7 @@ public class MWZombie implements MWClass {
             "Toughness",
             "You will gain Resistance I for 1 second after getting attacked every &a3 &rtimes.",
             "Berserk",
-            "After being hit by an arrow, you will receive Strength I and Speed II for &a6 &rseconds (15s cooldown).",
+            "After being hit by an arrow, you will receive Strength I and Speed II for &a6 &rseconds.\nCooldown: &a15s",
             "Well Trained",
             "You will gain Haste III for &a5 &rseconds when breaking blocks."
         );
@@ -129,7 +129,7 @@ public class MWZombie implements MWClass {
         }
     }
 
-    private Map<Player, Integer> toughness = new HashMap<>();
+    private final Map<Player, Integer> INCREMENT = new HashMap<>();
 
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
@@ -143,13 +143,13 @@ public class MWZombie implements MWClass {
         Player victim = (Player) event.getEntity();
 
         if (MWClassManager.get(victim) == this) {
-            if (!toughness.containsKey(victim)) {
-                toughness.put(victim, 0);
+            if (!INCREMENT.containsKey(victim)) {
+                INCREMENT.put(victim, 0);
             } else {
-                toughness.put(victim, (toughness.get(victim) + 1) % 3);
+                INCREMENT.put(victim, (INCREMENT.get(victim) + 1) % 3);
             }
 
-            if (toughness.get(victim) == 0) {
+            if (INCREMENT.get(victim) == 0) {
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20, 0));
                 victim.getWorld().playSound(victim.getLocation(), Sound.GHAST_FIREBALL, (float) 0.2, 2);
             }
@@ -243,7 +243,7 @@ public class MWZombie implements MWClass {
 
             List<ItemStack> potions = MWPotions.createBasic(this, 1, 10, 2);
 
-            items = MWKit.generate(this, sword, bow, tool, null, null, potions, helmet, chestplate, null, null);
+            items = MWKit.generate(this, sword, bow, tool, null, null, potions, helmet, chestplate, null, null, null);
         }
 
         MWKit.assignItems(player, items);

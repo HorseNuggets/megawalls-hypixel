@@ -120,10 +120,10 @@ public class MWHerobrine implements MWClass {
             return;
         }
 
-        ActionBar.send(player, "No players within " + ChatColor.RED + "5" + ChatColor.RESET + " meters!");
+        ActionBar.send(player, "No players within " + ChatColor.RED + 5 + ChatColor.RESET + " meters!");
     }
 
-    private Map<Player, Integer> flurry = new HashMap<>();
+    private final Map<Player, Integer> INCREMENT = new HashMap<>();
 
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
@@ -132,13 +132,13 @@ public class MWHerobrine implements MWClass {
 
         if (MWClassManager.get(player) != this) return;
 
-        if (!flurry.containsKey(player)) {
-            flurry.put(player, 0);
+        if (!INCREMENT.containsKey(player)) {
+            INCREMENT.put(player, 0);
         } else {
-            flurry.put(player, (flurry.get(player) + 1) % 3);
+            INCREMENT.put(player, (INCREMENT.get(player) + 1) % 3);
         }
 
-        if (flurry.get(player) == 0) {
+        if (INCREMENT.get(player) == 0) {
             String name = player.getName();
 
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + name + " speed 3 1");
@@ -185,7 +185,7 @@ public class MWHerobrine implements MWClass {
 
             List<ItemStack> potions = MWPotions.createBasic(this, 2, 7, 2);
 
-            items = MWKit.generate(this, sword, bow, tool, null, null, potions, helmet, null, null, null);
+            items = MWKit.generate(this, sword, bow, tool, null, null, potions, helmet, null, null, null, null);
         }
 
         MWKit.assignItems(player, items);

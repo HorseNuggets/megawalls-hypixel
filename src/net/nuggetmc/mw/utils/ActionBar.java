@@ -11,4 +11,8 @@ public class ActionBar {
         PacketPlayOutChat packet = new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + message + "\"}"), (byte) 2);
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
     }
+
+    public static void clear(Player player) {
+        send(player, "");
+    }
 }

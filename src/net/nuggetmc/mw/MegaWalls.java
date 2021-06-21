@@ -5,10 +5,7 @@ import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.MWClassMenu;
-import net.nuggetmc.mw.mwclass.classes.MWCreeper;
-import net.nuggetmc.mw.mwclass.classes.MWGolem;
-import net.nuggetmc.mw.mwclass.classes.MWHerobrine;
-import net.nuggetmc.mw.mwclass.classes.MWZombie;
+import net.nuggetmc.mw.mwclass.classes.*;
 import net.nuggetmc.mw.utils.MWHealth;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -61,6 +58,7 @@ public class MegaWalls extends JavaPlugin {
 
     private void registerClasses() {
         MWClassManager.register(new MWCreeper());
+        MWClassManager.register(new MWEnderman());
         MWClassManager.register(new MWGolem());
         MWClassManager.register(new MWHerobrine());
         MWClassManager.register(new MWZombie());

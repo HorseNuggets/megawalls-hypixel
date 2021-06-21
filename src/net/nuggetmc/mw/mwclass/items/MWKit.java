@@ -1,6 +1,5 @@
 package net.nuggetmc.mw.mwclass.items;
 
-import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.mwclass.MWClass;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,12 +23,9 @@ public class MWKit {
     }
 
     public static Map<Integer, ItemStack> generate(MWClass mwclass, ItemStack sword, ItemStack bow, ItemStack tool, ItemStack toolAxe, ItemStack toolShovel, List<ItemStack> potions,
-                   ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
+                   ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots, List<ItemStack> extra) {
 
         Map<Integer, ItemStack> items = new HashMap<>();
-
-        String name = mwclass.getName();
-        ChatColor color = mwclass.getColor();
 
         if (toolAxe == null) {
             toolAxe = new ItemStack(Material.IRON_AXE);
@@ -52,6 +48,10 @@ public class MWKit {
         contents.add(toolAxe);
         contents.add(toolShovel);
         contents.add(new ItemStack(Material.ARROW, 64));
+
+        if (extra != null) {
+            contents.addAll(extra);
+        }
 
         int n = 0;
 
