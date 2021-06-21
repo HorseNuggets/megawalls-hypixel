@@ -15,4 +15,6 @@ public interface MWClass extends Listener {
     Diamond[] getDiamonds();
 
     void assign(Player player);
+
+    void ability(Player player);
 }

@@ -1,20 +1,27 @@
 package net.nuggetmc.mw.mwclass.classes;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
+import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
 import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import net.nuggetmc.mw.utils.ActionBar;
+import net.nuggetmc.mw.utils.MWHealth;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,15 +90,69 @@ public class MWHerobrine implements MWClass {
         return CLASS_INFO;
     }
 
-    @EventHandler
-    public void hit(EntityDamageByEntityEvent event) {
-        if (!Energy.isValid(event)) {
+    public void ability(Player player) {
+        World world = player.getWorld();
+
+        boolean pass = false;
+
+        for (Player victim : Bukkit.getOnlinePlayers()) {
+            if (player.getWorld() != victim.getWorld()) continue;
+
+            Location loc = victim.getLocation();
+
+            if (player.getLocation().distance(loc) <= 5 && player != victim && !victim.isDead()) {
+                world.strikeLightningEffect(loc);
+                pass = true;
+
+                MWHealth.trueDamage(victim, 4.5);
+            }
+        }
+
+        if (pass) {
+            Energy.clear(player);
+            world.playSound(player.getLocation(), Sound.ENDERMAN_DEATH, 1, (float) 0.5);
             return;
         }
 
-        Player player = (Player) event.getDamager();
+        ActionBar.send(player, "No players within " + ChatColor.RED + "5" + ChatColor.RESET + " meters!");
+    }
+
+    private Map<Player, Integer> flurry = new HashMap<>();
+
+    @EventHandler
+    public void hit(EntityDamageByEntityEvent event) {
+        Player player = Energy.validate(event);
+        if (player == null) return;
+
+        if (MWClassManager.get(player) != this) return;
+
+        if (!flurry.containsKey(player)) {
+            flurry.put(player, 0);
+        } else {
+            flurry.put(player, (flurry.get(player) + 1) % 3);
+        }
+
+        if (flurry.get(player) == 0) {
+            String name = player.getName();
+
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + name + " speed 3 1");
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + name + " regeneration 5 0");
+        }
 
         Energy.add(player, 25);
+    }
+
+    @EventHandler
+    public void onKill(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+        Player player = victim.getKiller();
+
+        if (player == null || victim == player) return;
+        if (!MWClassManager.isMW(player)) return;
+
+        if (MWClassManager.get(player) == this) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + player.getName() + " strength 6");
+        }
     }
 
     @Override

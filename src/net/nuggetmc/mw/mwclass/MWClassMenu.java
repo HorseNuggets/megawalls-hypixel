@@ -1,6 +1,7 @@
 package net.nuggetmc.mw.mwclass;
 
 import net.md_5.bungee.api.ChatColor;
+import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
@@ -94,6 +95,7 @@ public class MWClassMenu implements CommandExecutor, Listener {
         player.sendMessage("You have selected " + name + ChatColor.RESET + ".");
         player.closeInventory();
 
+        Energy.clear(player);
         MWClassManager.assign(player, mwclass);
     }
 

@@ -3,20 +3,25 @@ package net.nuggetmc.mw.energy;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Energy {
+public class Energy implements Listener {
 
     private static final Map<Player, Integer> PLAYER_DATA = new HashMap<>();
 
-    public static boolean isValid(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player)) return false;
-        if (!(event.getDamager() instanceof Player) && !(event.getDamager() instanceof Arrow)) return false;
+    public static Player validate(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) return null;
+        if (!(event.getDamager() instanceof Player) && !(event.getDamager() instanceof Arrow)) return null;
 
         Player player;
 
@@ -26,17 +31,63 @@ public class Energy {
             if (arrow.getShooter() instanceof Player) {
                 player = (Player) arrow.getShooter();
             } else {
-                return false;
+                return null;
             }
 
         } else {
             player = (Player) event.getDamager();
         }
 
-        if (event.getDamage() == 0 || event.isCancelled()) return false;
-        if (!MWClassManager.isMW(player)) return false;
+        if (event.getDamage() == 0 || event.isCancelled()) return null;
 
-        return true;
+        if (MWClassManager.isMW(player)) {
+            return player;
+        }
+
+        return null;
+    }
+
+    @EventHandler
+    public void onAbility(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        String action = event.getAction().name();
+
+        checkActions(player, action);
+    }
+
+    @EventHandler
+    public void onAbility2(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+        if (!(event.getDamager() instanceof Player)) return;
+        if (event.getDamage() == 0 || event.isCancelled()) return;
+
+        checkActions((Player) event.getDamager(), "LEFT_CLICK");
+    }
+
+    private void checkActions(Player player, String action) {
+        ItemStack item = player.getInventory().getItemInHand();
+        if (item == null) return;
+
+        Material type = player.getInventory().getItemInHand().getType();
+
+        if (type == Material.BOW && action.contains("LEFT_CLICK")) {
+            callAbility(player);
+        }
+
+        if (type.name().contains("SWORD") && action.contains("RIGHT_CLICK")) {
+            callAbility(player);
+        }
+    }
+
+    private void callAbility(Player player) {
+        if (!MWClassManager.isMW(player)) return;
+        if (fetch(player) < 100) return;
+
+        MWClassManager.get(player).ability(player);
+    }
+
+    public static int fetch(Player player) {
+        return PLAYER_DATA.getOrDefault(player, 0);
     }
 
     public static void add(Player player, int amount) {

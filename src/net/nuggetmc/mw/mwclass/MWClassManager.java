@@ -42,6 +42,10 @@ public class MWClassManager implements Listener {
         return active.containsKey(player);
     }
 
+    public static MWClass get(Player player) {
+        return active.get(player);
+    }
+
     public static void assign(Player player, MWClass mwclass) {
         player.getInventory().clear();
         player.setMaxHealth(40);

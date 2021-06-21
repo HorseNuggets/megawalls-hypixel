@@ -31,6 +31,7 @@ public class MegaWalls extends JavaPlugin {
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(menu, this);
         manager.registerEvents(new MWClassManager(), this);
+        manager.registerEvents(new Energy(), this);
 
         registerClasses();
 

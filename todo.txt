@@ -10,3 +10,5 @@ cannot drop or pick up mega walls items, cannot even drop them on death
 exception for those in creative mode
 
 method for dealing true damage, then things like golem can counteract that and such
+
+health display!!!
