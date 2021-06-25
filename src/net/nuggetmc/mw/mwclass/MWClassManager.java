@@ -1,9 +1,11 @@
 package net.nuggetmc.mw.mwclass;
 
+import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.classes.MWEnderman;
 import net.nuggetmc.mw.utils.ItemUtils;
+import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -15,8 +17,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,8 +37,20 @@ public class MWClassManager implements Listener {
     private static Map<String, MWClass> classes = new HashMap<>();
     private static Map<Player, MWClass> active = new HashMap<>();
 
-    public static void register(MWClass mwclass) {
-        classes.put(mwclass.getName(), mwclass);
+    private static boolean kitLock = true;
+
+    public static boolean getKitLock() {
+        return kitLock;
+    }
+
+    public static void setKitLock(boolean lock) {
+        kitLock = lock;
+    }
+
+    public static void register(MWClass[] mwclasses) {
+        for (MWClass mwclass : mwclasses) {
+            classes.put(mwclass.getName(), mwclass);
+        }
     }
 
     public static Map<String, MWClass> getClasses() {
@@ -122,8 +139,29 @@ public class MWClassManager implements Listener {
     }
 
     private void check(Cancellable event, Player player, ItemStack item) {
-        if (ItemUtils.isKitItem(item) && player.getGameMode() == GameMode.SURVIVAL) {
+        if (ItemUtils.isKitItem(item) && player.getGameMode() == GameMode.SURVIVAL && kitLock) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (player.isOnline()) {
+                player.sendMessage(ChatColor.GREEN + "Do " + ChatColor.YELLOW + "/mw" + ChatColor.GREEN + " to select a class!");
+            }
+        }, 10);
+    }
+
+    @EventHandler
+    public void onPreJoin(PlayerSpawnLocationEvent event) {
+        event.setSpawnLocation(WorldUtils.nearby(event.getPlayer()));
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        event.setRespawnLocation(WorldUtils.nearby(event.getPlayer()));
     }
 }

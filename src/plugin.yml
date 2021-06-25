@@ -13,6 +13,11 @@ commands:
     usage: /energy
     permission: mw.admin
     aliases: [e]
+  debug:
+    description: Parent debug command.
+    usage: /debug
+    permission: mw.admin
+    aliases: [d]
 permissions:
   mw.*:
     description: MegaWalls parent permission.

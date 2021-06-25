@@ -47,7 +47,7 @@ public class MWKit {
         contents.add(tool);
         contents.add(toolAxe);
         contents.add(toolShovel);
-        contents.add(new ItemStack(Material.ARROW, 64));
+        contents.add(new ItemStack(Material.ARROW, 48));
 
         if (extra != null) {
             contents.addAll(extra);

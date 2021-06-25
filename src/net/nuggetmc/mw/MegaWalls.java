@@ -1,5 +1,6 @@
 package net.nuggetmc.mw;
 
+import net.nuggetmc.mw.admin.DebugCommand;
 import net.nuggetmc.mw.admin.EnergyCommand;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
@@ -7,7 +8,6 @@ import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.MWClassMenu;
 import net.nuggetmc.mw.mwclass.classes.*;
 import net.nuggetmc.mw.utils.MWHealth;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -36,6 +36,7 @@ public class MegaWalls extends JavaPlugin {
         menu = new MWClassMenu("Class Selector");
 
         getCommand("energy").setExecutor(new EnergyCommand());
+        getCommand("debug").setExecutor(new DebugCommand());
 
         PluginCommand command = getCommand("megawalls");
         command.setExecutor(menu);
@@ -57,13 +58,15 @@ public class MegaWalls extends JavaPlugin {
     }
 
     private void registerClasses() {
-        MWClassManager.register(new MWCreeper());
-        MWClassManager.register(new MWEnderman());
-        MWClassManager.register(new MWGolem());
-        MWClassManager.register(new MWHerobrine());
-        MWClassManager.register(new MWSkeleton());
-        MWClassManager.register(new MWSpider());
-        MWClassManager.register(new MWZombie());
+        MWClassManager.register(new MWClass[] {
+            new MWCreeper(),
+            new MWEnderman(),
+            new MWGolem(),
+            new MWHerobrine(),
+            new MWSkeleton(),
+            new MWSpider(),
+            new MWZombie()
+        });
     }
 
     @Override
@@ -74,34 +77,32 @@ public class MegaWalls extends JavaPlugin {
         List<String> groupnames = new ArrayList<>(MWClassManager.getClasses().keySet()).stream().map(String::toLowerCase).collect(Collectors.toList());
         String arg = args[0];
 
-        if (tabConditional(arg)) {
+        if (!isEmptyTab(arg)) {
             return autofill(groupnames, arg);
         }
 
         return groupnames;
     }
 
-    private boolean tabConditional(String argument) {
-        if (argument == null || argument == "" || argument == " " || argument.isEmpty()) {
-            return false;
-        }
-        return true;
+    private boolean isEmptyTab(String s) {
+        return s == null || s.equals("") || s.equals(" ") || s.isEmpty();
     }
 
     private List<String> autofill(List<String> groupnames, String input) {
-        List<String> newlist = new ArrayList<>();
+        List<String> list = new ArrayList<>();
+
         for (String entry : groupnames) {
             if (entry.length() >= input.length()) {
                 if (input.equalsIgnoreCase(entry.substring(0, input.length()))) {
-                    newlist.add(entry);
+                    list.add(entry);
                 }
             }
         }
 
-        if (newlist.isEmpty()) {
+        if (list.isEmpty()) {
             return groupnames;
         }
 
-        return newlist;
+        return list;
     }
 }

@@ -118,7 +118,7 @@ public class MWHerobrine implements MWClass {
             Energy.clear(player);
 
             for (Player victim : cache) {
-                MWHealth.trueDamage(victim, 4.5, player);
+                MWHealth.trueDamage(victim, 4.5, null);
             }
 
             world.playSound(player.getLocation(), Sound.ENDERMAN_DEATH, 1, (float) 0.5);

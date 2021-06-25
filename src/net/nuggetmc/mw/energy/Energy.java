@@ -52,7 +52,11 @@ public class Energy implements Listener {
 
             if (arrow.getShooter() instanceof Player) {
                 player = (Player) arrow.getShooter();
-            } else {
+
+                if (player == event.getEntity()) return null;
+            }
+
+            else {
                 return null;
             }
 

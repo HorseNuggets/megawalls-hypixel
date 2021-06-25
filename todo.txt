@@ -22,3 +22,8 @@ maybe in the future make a simple way to add cooldowns
 duplicate code for explosion cancelling in skeleton and creeper, eventually make a handler for both of them
 
 don't forget to make enderman drop diamond related things on death
+
+event cancelled in no pvp area
+
+OPTIMIZE respawn thing, instead of going all the way up to 255, just add up and down depending on if the location is solid or not
+  ^ glitch when there is snow, doesn't spawn you entirely, to fix spawn 1 extra block up
