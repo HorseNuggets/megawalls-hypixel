@@ -14,6 +14,7 @@ import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
+import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -277,7 +278,6 @@ public class MWCreeper implements MWClass {
             if (WILLPOWER_LIST.contains(player)) return;
 
             Location loc = player.getEyeLocation();
-            String name = player.getName();
 
             player.getWorld().playSound(loc, Sound.GHAST_FIREBALL, (float) 0.2, 2);
 
@@ -285,13 +285,13 @@ public class MWCreeper implements MWClass {
 
             if (own) {
                 n = 10;
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + name + " speed 4 1");
+                PotionUtils.effect(player, "speed", 4, 1);
             }
 
             else {
                 n = 20;
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + name + " regeneration 12");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + name + " speed 12 1");
+                PotionUtils.effect(player, "regeneration", 12);
+                PotionUtils.effect(player, "speed", 12, 1);
             }
 
             ParticleUtils.play(EnumParticle.VILLAGER_ANGRY, loc, 0.5, 0.5, 0.5, 0.15, 1);

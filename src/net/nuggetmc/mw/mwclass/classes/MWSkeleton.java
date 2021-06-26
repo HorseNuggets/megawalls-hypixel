@@ -14,6 +14,7 @@ import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
+import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -65,7 +66,7 @@ public class MWSkeleton implements MWClass {
             "Explosive Arrow",
             "You will fire an explosive arrow that deals &a6 &rdamage in a 6 block radius and breaks blocks.",
             "Salvaging",
-            "When landing a bow shot onto an opponent, you will receive &a2 &rarrows and &a2 &rfood levels.",
+            "When landing a bow shot onto an opponent, you will receive &a2 &rarrows and &a2 &rhunger.",
             "Agile",
             "You gain Speed II and Regeneration I for &a7 &rseconds after hitting an enemy with a bow shot.\nThe cooldown only affects Speed II.\nCooldown: &a14s",
             "Efficiency",
@@ -224,15 +225,14 @@ public class MWSkeleton implements MWClass {
             Energy.add(player, (int) (25 * force));
         }
 
-        String name = player.getName();
-
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + name + " regeneration 7 0");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "give " + name + " arrow 2");
+        PotionUtils.effect(player, "regeneration", 7);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "give " + player.getName() + " arrow 2");
 
         MWHealth.feed(player, 4);
 
         if (!COOLDOWN_CACHE.contains(player)) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + name + " speed 7 1");
+            PotionUtils.effect(player, "speed", 7, 1);
+
             player.getWorld().playSound(player.getLocation(), Sound.SKELETON_WALK, 1, 1);
 
             COOLDOWN_CACHE.add(player);

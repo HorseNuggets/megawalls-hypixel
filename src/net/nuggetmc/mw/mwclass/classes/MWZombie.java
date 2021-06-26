@@ -12,6 +12,7 @@ import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.ParticleUtils;
+import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
@@ -125,7 +126,7 @@ public class MWZombie implements MWClass {
         Player player = event.getPlayer();
 
         if (MWClassManager.get(player) == this) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + player.getName() + " haste 5 2");
+            PotionUtils.effect(player, "haste", 5, 2);
         }
     }
 

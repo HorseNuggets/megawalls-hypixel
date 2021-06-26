@@ -6,10 +6,12 @@ import net.nuggetmc.mw.mwclass.MWClassManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -72,6 +74,13 @@ public class Energy implements Listener {
         }
 
         return null;
+    }
+
+    @EventHandler
+    public void onExpSpawn(EntitySpawnEvent event) {
+        if (event.getEntity() instanceof ExperienceOrb) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler

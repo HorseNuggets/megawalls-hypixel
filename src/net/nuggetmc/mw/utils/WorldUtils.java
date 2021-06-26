@@ -10,11 +10,13 @@ public class WorldUtils {
     private static Random RANDOM = new Random();
 
     public static Location nearby(Player player) {
+        int top = 150;
+
         Location loc = player.getLocation();
-        loc.setY(255);
+        loc.setY(top);
         loc.add(RANDOM.nextInt(60) - 30, 0, RANDOM.nextInt(60) - 30);
 
-        for (int y = 255; y >= 1; y--) {
+        for (int y = top; y >= 1; y--) {
             loc.setY(y);
 
             if (loc.getBlock().getType().isSolid()) {

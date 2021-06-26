@@ -15,6 +15,7 @@ import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.ActionBar;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
+import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -175,7 +176,7 @@ public class MWEnderman implements MWClass {
             Energy.clear(player);
             player.teleport(target);
 
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + player.getName() + " speed 5 2");
+            PotionUtils.effect(player, "speed", 5, 2);
             Location[] locs = new Location[]{loc, target.getLocation()};
 
             for (Location point : locs) {
@@ -266,7 +267,7 @@ public class MWEnderman implements MWClass {
 
         if (energy >= 80 && energy < 100) {
             if (!COOLDOWN_CACHE_2.contains(player)) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + player.getName() + " regeneration 10");
+                PotionUtils.effect(player, "regeneration", 10);
 
                 COOLDOWN_CACHE_2.add(player);
 

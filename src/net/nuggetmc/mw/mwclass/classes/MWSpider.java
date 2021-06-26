@@ -15,6 +15,7 @@ import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.ActionBar;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
+import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -121,7 +122,7 @@ public class MWSpider implements MWClass {
     @Override
     public void ability(Player player) {
         Energy.clear(player);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + player.getName() + " absorption 5");
+        PotionUtils.effect(player, "absorption", 5);
 
         World world = player.getWorld();
         Location loc = player.getLocation();
@@ -267,7 +268,7 @@ public class MWSpider implements MWClass {
                     ActionBar.send(player, ChatColor.GREEN + ChatColor.stripColor(msg));
                     Energy.add(player, 20);
 
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + player.getName() + " speed 5");
+                    PotionUtils.effect(player, "speed", 5);
 
                     this.cancel();
                     return;
@@ -303,10 +304,9 @@ public class MWSpider implements MWClass {
                 INCREMENT.put(player, (INCREMENT.get(player) + 1) % 4);
             }
 
-            if (INCREMENT.get(player) == 0) {
+            if (INCREMENT.get(player) == 3) {
                 Player victim = (Player) event.getEntity();
-
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + victim.getName() + " poison 5");
+                PotionUtils.effect(victim, "poison", 5);
             }
         }
 

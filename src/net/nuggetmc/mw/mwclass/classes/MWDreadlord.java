@@ -1,6 +1,8 @@
 package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
@@ -10,20 +12,29 @@ import net.nuggetmc.mw.mwclass.info.Playstyle;
 import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
-import net.nuggetmc.mw.utils.ActionBar;
 import net.nuggetmc.mw.utils.MWHealth;
+import net.nuggetmc.mw.utils.ParticleUtils;
 import net.nuggetmc.mw.utils.PotionUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class MWHerobrine implements MWClass {
+public class MWDreadlord implements MWClass {
+
+    private MegaWalls plugin;
 
     private final String NAME;
     private final Material ICON;
@@ -32,36 +43,39 @@ public class MWHerobrine implements MWClass {
     private final Diamond[] DIAMONDS;
     private final MWClassInfo CLASS_INFO;
 
-    public MWHerobrine() {
-        NAME = "Herobrine";
-        ICON = Material.DIAMOND_SWORD;
-        COLOR = ChatColor.YELLOW;
+    public MWDreadlord() {
+        this.plugin = MegaWalls.getInstance();
+
+        NAME = "Dreadlord";
+        ICON = Material.NETHER_BRICK_ITEM;
+        COLOR = ChatColor.DARK_RED;
 
         PLAYSTYLES = new Playstyle[]
         {
-            Playstyle.DAMAGE,
-            Playstyle.CONTROL
+            Playstyle.RUSHER,
+            Playstyle.DAMAGE
         };
 
         DIAMONDS = new Diamond[]
         {
-            Diamond.SWORD
+            Diamond.SWORD,
+            Diamond.HELMET
         };
 
         CLASS_INFO = new MWClassInfo
         (
-            "Wrath",
-            "Unleash the wrath of Herobrine, striking all nearby enemies in a 5 block radius for &a4.5 &rtrue damage.",
-            "Power",
-            "Killing an emeny grants you Strength I for &a6 &rseconds.",
-            "Flurry",
-            "Every &a3 &rattacks will grant you Speed II for 3 seconds and Regeneration I for 5 seconds.",
-            "Treasure Hunter",
-            "Increases the chance to find treasure chests by &a300% &rwhen mining."
+            "Shadow Burst",
+            "Fire three wither skulls at once dealing a total of &a8 &rtrue damage.",
+            "Soul Eater",
+            "Every &a5 &rattacks will restore 3 hunger and &a2 HP&r.",
+            "Soul Siphon",
+            "Gain Strength I and Regeneration I for &a5 &rseconds on kill.",
+            "Dark Matter",
+            "Every &a1 &riron ore will be auto-smelted when mined, dropping an iron ingot."
         );
 
-        CLASS_INFO.addEnergyGainType("Melee", 25);
-        CLASS_INFO.addEnergyGainType("Bow", 25);
+        CLASS_INFO.addEnergyGainType("Melee", 10);
+        CLASS_INFO.addEnergyGainType("Bow", 10);
     }
 
     @Override
@@ -96,37 +110,7 @@ public class MWHerobrine implements MWClass {
 
     @Override
     public void ability(Player player) {
-        World world = player.getWorld();
-
-        boolean pass = false;
-
-        Set<Player> cache = new HashSet<>();
-
-        for (Player victim : Bukkit.getOnlinePlayers()) {
-            if (player.getWorld() != victim.getWorld()) continue;
-
-            Location loc = victim.getLocation();
-
-            if (player.getLocation().distance(loc) <= 5 && player != victim && !victim.isDead()) {
-                world.strikeLightningEffect(loc);
-                pass = true;
-
-                cache.add(victim);
-            }
-        }
-
-        if (pass) {
-            Energy.clear(player);
-
-            for (Player victim : cache) {
-                MWHealth.trueDamage(victim, 4.5, null);
-            }
-
-            world.playSound(player.getLocation(), Sound.ENDERMAN_DEATH, 1, (float) 0.5);
-            return;
-        }
-
-        ActionBar.send(player, "No players within " + ChatColor.RED + 5 + ChatColor.RESET + " meters!");
+        Energy.clear(player);
     }
 
     private final Map<Player, Integer> INCREMENT = new HashMap<>();
@@ -141,15 +125,17 @@ public class MWHerobrine implements MWClass {
         if (!INCREMENT.containsKey(player)) {
             INCREMENT.put(player, 0);
         } else {
-            INCREMENT.put(player, (INCREMENT.get(player) + 1) % 3);
+            INCREMENT.put(player, (INCREMENT.get(player) + 1) % 5);
         }
 
-        if (INCREMENT.get(player) == 0) {
-            PotionUtils.effect(player, "speed", 3, 1);
-            PotionUtils.effect(player, "regeneration", 5);
+        if (INCREMENT.get(player) == 4) {
+            MWHealth.heal(player, 2);
+            MWHealth.feed(player, 3);
+
+            ParticleUtils.play(EnumParticle.HEART, player.getEyeLocation(), 0.5, 0.5, 0.5, 0.15, 1);
         }
 
-        Energy.add(player, 25);
+        Energy.add(player, 10);
     }
 
     @EventHandler
@@ -161,7 +147,28 @@ public class MWHerobrine implements MWClass {
         if (!MWClassManager.isMW(player)) return;
 
         if (MWClassManager.get(player) == this) {
-            PotionUtils.effect(player, "strength", 6);
+            PotionUtils.effect(player, "strength", 5);
+            PotionUtils.effect(player, "regeneration", 5);
+        }
+    }
+
+    @EventHandler
+    public void gathering(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+
+        if (MWClassManager.get(player) == this) {
+            Block block = event.getBlock();
+
+            if (block.getType() == Material.IRON_ORE) {
+                block.setType(Material.AIR);
+
+                Location loc = block.getLocation().add(0.5, 0.5, 0.5);
+                World world = block.getWorld();
+
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    world.dropItem(loc, new ItemStack(Material.IRON_INGOT));
+                }, 2);
+            }
         }
     }
 
@@ -178,16 +185,16 @@ public class MWHerobrine implements MWClass {
             swordEnch.put(Enchantment.DURABILITY, 10);
 
             Map<Enchantment, Integer> armorEnch = new HashMap<>();
-            armorEnch.put(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
             armorEnch.put(Enchantment.DURABILITY, 10);
-            armorEnch.put(Enchantment.WATER_WORKER, 1);
+            armorEnch.put(Enchantment.PROTECTION_FIRE, 1);
+            armorEnch.put(Enchantment.PROTECTION_EXPLOSIONS, 2);
 
             ItemStack sword = MWItem.createSword(this, Material.DIAMOND_SWORD, swordEnch);
             ItemStack bow = MWItem.createBow(this, null);
             ItemStack tool = MWItem.createTool(this, Material.DIAMOND_PICKAXE);
-            ItemStack helmet = MWItem.createArmor(this, Material.IRON_HELMET, armorEnch);
+            ItemStack helmet = MWItem.createArmor(this, Material.DIAMOND_HELMET, armorEnch);
 
-            List<ItemStack> potions = MWPotions.createBasic(this, 2, 7, 2);
+            List<ItemStack> potions = MWPotions.createBasic(this, 2, 8, 2);
 
             items = MWKit.generate(this, sword, bow, tool, null, null, potions, helmet, null, null, null, null);
         }

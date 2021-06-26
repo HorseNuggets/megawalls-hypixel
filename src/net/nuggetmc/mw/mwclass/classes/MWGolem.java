@@ -14,6 +14,7 @@ import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
+import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -240,7 +241,7 @@ public class MWGolem implements MWClass {
         if (!MWClassManager.isMW(player)) return;
 
         if (MWClassManager.get(player) == this) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + player.getName() + " absorption 10 1");
+            PotionUtils.effect(player, "absorption", 10, 1);
         }
     }
 
@@ -257,7 +258,7 @@ public class MWGolem implements MWClass {
 
         if (MWClassManager.get(victim) == this) {
             if (event.getDamager() instanceof Arrow) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "effect " + victim.getName() + " resistance 9");
+                PotionUtils.effect(victim, "resistance", 9);
             }
         }
     }
