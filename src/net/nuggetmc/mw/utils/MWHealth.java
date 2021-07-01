@@ -112,7 +112,7 @@ public class MWHealth implements Listener {
 
         if (MWClassManager.isMW(player) && MWClassManager.get(player).getName().equals("Golem")) {
             amount *= 0.8;
-            player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, (float) 0.5, 2);
+            player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 1, 1);
         }
 
         if (health >= amount + 0.01) {

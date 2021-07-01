@@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,10 +48,8 @@ public class MWClassManager implements Listener {
         kitLock = lock;
     }
 
-    public static void register(MWClass[] mwclasses) {
-        for (MWClass mwclass : mwclasses) {
-            classes.put(mwclass.getName(), mwclass);
-        }
+    public static void register(MWClass... mwclasses) {
+        Arrays.stream(mwclasses).forEach(m -> classes.put(m.getName(), m));
     }
 
     public static Map<String, MWClass> getClasses() {
@@ -58,11 +57,7 @@ public class MWClassManager implements Listener {
     }
 
     public static MWClass fetch(String name) {
-        if (classes.containsKey(name)) {
-            return classes.get(name);
-        }
-
-        return null;
+        return classes.getOrDefault(name, null);
     }
 
     public static boolean isMW(Player player) {
@@ -77,7 +72,7 @@ public class MWClassManager implements Listener {
         return active;
     }
 
-    public static void assign(Player player, MWClass mwclass) {
+    public void assign(Player player, MWClass mwclass) {
         player.getInventory().clear();
 
         if (player.getMaxHealth() == 20 || player.getHealth() >= 35) {
@@ -90,6 +85,9 @@ public class MWClassManager implements Listener {
         mwclass.assign(player);
 
         active.put(player, mwclass);
+
+        plugin.getConfig().set(player.getName(), mwclass.getName());
+        plugin.saveConfig();
     }
 
     @EventHandler

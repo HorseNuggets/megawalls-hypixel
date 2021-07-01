@@ -27,12 +27,16 @@ import java.util.Map;
 
 public class MWClassMenu implements CommandExecutor, Listener {
 
+    private MWClassManager manager;
+
     private final String MENU_TITLE;
     private final String CLOSE_NAME;
 
     private final Map<String, ItemStack> CACHE;
 
-    public MWClassMenu(String title) {
+    public MWClassMenu(String title, MWClassManager manager) {
+        this.manager = manager;
+
         MENU_TITLE = title;
         CLOSE_NAME = ChatColor.RED + "Close";
         CACHE = new HashMap<>();
@@ -87,7 +91,8 @@ public class MWClassMenu implements CommandExecutor, Listener {
         player.closeInventory();
 
         Energy.clear(player);
-        MWClassManager.assign(player, mwclass);
+
+        manager.assign(player, mwclass);
     }
 
     @EventHandler

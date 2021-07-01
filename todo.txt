@@ -27,3 +27,6 @@ event cancelled in no pvp area
 
 OPTIMIZE respawn thing, instead of going all the way up to 255, just add up and down depending on if the location is solid or not
   ^ glitch when there is snow, doesn't spawn you entirely, to fix spawn 1 extra block up
+
+
+add time limit to dreadlord for how long the heads can last

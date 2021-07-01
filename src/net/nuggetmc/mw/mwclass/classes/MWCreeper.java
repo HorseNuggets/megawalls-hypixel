@@ -15,6 +15,7 @@ import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
 import net.nuggetmc.mw.utils.PotionUtils;
+import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -157,15 +158,10 @@ public class MWCreeper implements MWClass {
         task.runTaskTimer(plugin, 0, 5);
     }
 
-    private final Set<TNTPrimed> DETONATE_LIST = new HashSet<>();
     private final Map<TNTPrimed, Player> MINI_TNTS = new HashMap<>();
 
     private void explode(Player player) {
-        TNTPrimed tnt = (TNTPrimed) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.PRIMED_TNT);
-        tnt.setFuseTicks(0);
-        tnt.setYield(2);
-
-        DETONATE_LIST.add(tnt);
+        WorldUtils.createNoDamageExplosion(player.getLocation(), 2);
 
         for (Player victim : Bukkit.getOnlinePlayers()) {
             if (player.getWorld() != victim.getWorld()) continue;
@@ -224,11 +220,6 @@ public class MWCreeper implements MWClass {
                 }
             }
         }
-
-        if (DETONATE_LIST.contains(tnt)) {
-            DETONATE_LIST.remove(tnt);
-            event.setCancelled(true);
-        }
     }
 
     @EventHandler
@@ -240,18 +231,6 @@ public class MWCreeper implements MWClass {
         if (MINI_TNTS.containsKey(tnt)) {
             MINI_TNTS.remove(tnt);
             event.blockList().clear();
-        }
-
-        if (DETONATE_LIST.contains(tnt)) {
-            List<Block> blockList = event.blockList();
-
-            if (blockList.size() > 0) {
-                event.blockList().clear();
-
-                for (Block block : blockList) {
-                    block.breakNaturally();
-                }
-            }
         }
     }
 

@@ -8,9 +8,12 @@ import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.MWClassMenu;
 import net.nuggetmc.mw.mwclass.classes.*;
 import net.nuggetmc.mw.utils.MWHealth;
+import net.nuggetmc.mw.utils.WorldUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,6 +26,7 @@ public class MegaWalls extends JavaPlugin {
 
     private static MegaWalls instance;
 
+    private MWClassManager mwClassManager;
     private MWClassMenu menu;
 
     public static MegaWalls getInstance() {
@@ -33,7 +37,8 @@ public class MegaWalls extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        menu = new MWClassMenu("Class Selector");
+        this.mwClassManager = new MWClassManager(this);
+        this.menu = new MWClassMenu("Class Selector", mwClassManager);
 
         getCommand("energy").setExecutor(new EnergyCommand());
         getCommand("debug").setExecutor(new DebugCommand());
@@ -43,30 +48,52 @@ public class MegaWalls extends JavaPlugin {
         command.setTabCompleter(this);
 
         PluginManager manager = getServer().getPluginManager();
-        manager.registerEvents(new Energy(), this);
-        manager.registerEvents(new MWClassManager(this), this);
-        manager.registerEvents(new MWHealth(this), this);
+        manager.registerEvents(mwClassManager, this);
         manager.registerEvents(menu, this);
+        manager.registerEvents(new Energy(), this);
+        manager.registerEvents(new MWHealth(this), this);
+        manager.registerEvents(new WorldUtils(), this);
 
         registerClasses();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Energy.set(player, 0);
+        }
 
         for (Map.Entry<String, MWClass> entry : MWClassManager.getClasses().entrySet()) {
             manager.registerEvents(entry.getValue(), this);
         }
 
+        for (String key : getConfig().getKeys(false)) {
+            String name = getConfig().getString(key);
+
+            getConfig().set(key, null);
+
+            Player player = Bukkit.getPlayer(key);
+            if (player == null || !player.isOnline()) continue;
+
+            MWClass mwclass = MWClassManager.fetch(name);
+            if (mwclass == null) continue;
+
+            MWClassManager.getActive().put(player, mwclass);
+        }
+
+        saveConfig();
+
         Energy.flash();
     }
 
     private void registerClasses() {
-        MWClassManager.register(new MWClass[] {
+        MWClassManager.register(
             new MWCreeper(),
+            new MWDreadlord(),
             new MWEnderman(),
             new MWGolem(),
             new MWHerobrine(),
             new MWSkeleton(),
             new MWSpider(),
             new MWZombie()
-        });
+        );
     }
 
     @Override

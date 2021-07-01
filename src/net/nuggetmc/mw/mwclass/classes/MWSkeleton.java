@@ -15,15 +15,16 @@ import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
 import net.nuggetmc.mw.utils.PotionUtils;
+import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -146,20 +147,15 @@ public class MWSkeleton implements MWClass {
         task.runTaskTimer(plugin, 0, 2);
     }
 
-    private final Set<TNTPrimed> DETONATE_LIST = new HashSet<>();
-
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {
         Projectile proj = event.getEntity();
 
         if (EXPLOSIVE_ARROWS.containsKey(proj)) {
-            TNTPrimed tnt = (TNTPrimed) proj.getWorld().spawnEntity(proj.getLocation(), EntityType.PRIMED_TNT);
-            tnt.setFuseTicks(0);
-            tnt.setYield(2.0F);
+            WorldUtils.createNoDamageExplosion(proj.getLocation(), 2);
 
             explosionDamage(proj, EXPLOSIVE_ARROWS.get(proj));
 
-            DETONATE_LIST.add(tnt);
             EXPLOSIVE_ARROWS.remove(proj);
 
             proj.remove();
@@ -172,38 +168,6 @@ public class MWSkeleton implements MWClass {
 
             if (player != victim && !victim.isDead() && proj.getLocation().distance(victim.getLocation()) < 6) {
                 victim.damage(6, player);
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void explosionCancel(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
-        if (!(event.getDamager() instanceof TNTPrimed)) return;
-
-        TNTPrimed tnt = (TNTPrimed) event.getDamager();
-
-        if (DETONATE_LIST.contains(tnt)) {
-            DETONATE_LIST.remove(tnt);
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void blockList(EntityExplodeEvent event) {
-        if (!(event.getEntity() instanceof TNTPrimed)) return;
-
-        TNTPrimed tnt = (TNTPrimed) event.getEntity();
-
-        if (DETONATE_LIST.contains(tnt)) {
-            List<Block> blockList = event.blockList();
-
-            if (blockList.size() > 0) {
-                event.blockList().clear();
-
-                for (Block block : blockList) {
-                    block.breakNaturally();
-                }
             }
         }
     }

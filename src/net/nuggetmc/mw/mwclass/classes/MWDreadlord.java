@@ -2,6 +2,7 @@ package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
@@ -12,25 +13,23 @@ import net.nuggetmc.mw.mwclass.info.Playstyle;
 import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
-import net.nuggetmc.mw.utils.MWHealth;
-import net.nuggetmc.mw.utils.ParticleUtils;
-import net.nuggetmc.mw.utils.PotionUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import net.nuggetmc.mw.utils.*;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MWDreadlord implements MWClass {
 
@@ -108,9 +107,106 @@ public class MWDreadlord implements MWClass {
         return CLASS_INFO;
     }
 
+    private final Set<ArmorStand> ARMOR_STANDS = new HashSet<>();
+
     @Override
     public void ability(Player player) {
         Energy.clear(player);
+
+        World world = player.getWorld();
+        Location loc = player.getEyeLocation();
+
+        world.playSound(loc, Sound.WITHER_SHOOT, 1, 1);
+
+        Set<Vector> directions = new HashSet<>();
+        Vector facing = loc.getDirection();
+
+        directions.add(facing);
+        directions.add(MathUtils.rotateAroundY(facing, 15));
+        directions.add(MathUtils.rotateAroundY(facing, -15));
+
+        for (Vector dir : directions) {
+            Location ahead = loc.clone().add(dir.getX(), -1, dir.getZ());
+            ArmorStand pt = (ArmorStand) world.spawnEntity(ahead, EntityType.ARMOR_STAND);
+
+            ARMOR_STANDS.add(pt);
+
+            pt.setVisible(false);
+            pt.setGravity(false);
+            pt.setSmall(true);
+            pt.setHelmet(new ItemStack(Material.SKULL_ITEM, 1, (byte) 1));
+
+            BukkitRunnable task = new BukkitRunnable() {
+
+                @Override
+                public void run() {
+                    if (pt.isDead() || !ARMOR_STANDS.contains(pt)) {
+                        this.cancel();
+                        return;
+                    }
+
+                    Location pointLoc = pt.getEyeLocation();
+
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                        ParticleUtils.play(EnumParticle.REDSTONE, pointLoc, 0.01, 0, 0, 1, 0);
+                    }, 2);
+
+                    for (Player target : Bukkit.getOnlinePlayers()) {
+                        if (player == target) continue;
+                        if (target.getWorld() != pointLoc.getWorld()) continue;
+
+                        if (pointLoc.distance(target.getLocation().add(0, 1, 0)) < 1) {
+                            witherSkullHit(player, pointLoc, target);
+                            pt.remove();
+                            this.cancel();
+                            return;
+                        }
+                    }
+
+                    if (pointLoc.getBlock().getType().isSolid()) {
+                        witherSkullHit(player, pointLoc, null);
+                        pt.remove();
+                        this.cancel();
+                    }
+
+                    pt.teleport(pt.getLocation().clone().add(dir));
+                }
+            };
+
+            task.runTaskTimer(plugin, 0, 1);
+        }
+    }
+
+    private void witherSkullHit(Player player, Location loc, Player hit) {
+        Set<Player> playersToDamage = new HashSet<>();
+        if (hit != null) playersToDamage.add(hit);
+
+        WorldUtils.createNoDamageExplosion(loc, 2);
+
+        for (Player target : Bukkit.getOnlinePlayers()) {
+            if (player == target) continue;
+            if (playersToDamage.contains(target)) continue;
+            if (target.getWorld() != loc.getWorld()) continue;
+
+            if (loc.distance(target.getLocation()) < 1) {
+                playersToDamage.add(target);
+            }
+        }
+
+        for (Player target : playersToDamage) {
+            MWHealth.trueDamage(target, 2.666667, player);
+        }
+    }
+
+    @EventHandler
+    public void cancelArmorStand(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof ArmorStand)) return;
+
+        ArmorStand stand = (ArmorStand) event.getEntity();
+
+        if (ARMOR_STANDS.contains(stand)) {
+            event.setCancelled(true);
+        }
     }
 
     private final Map<Player, Integer> INCREMENT = new HashMap<>();
