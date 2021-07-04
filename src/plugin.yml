@@ -17,7 +17,10 @@ commands:
     description: Parent debug command.
     usage: /debug
     permission: mw.admin
-    aliases: [d]
+  mwinfo:
+    description: MegaWalls class info command.
+    usage: /mwinfo
+    permission: mw.admin
 permissions:
   mw.*:
     description: MegaWalls parent permission.

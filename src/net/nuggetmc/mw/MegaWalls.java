@@ -2,6 +2,7 @@ package net.nuggetmc.mw;
 
 import net.nuggetmc.mw.command.DebugCommand;
 import net.nuggetmc.mw.command.EnergyCommand;
+import net.nuggetmc.mw.command.InfoCommand;
 import net.nuggetmc.mw.command.MegaWallsCommand;
 import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.MWClass;
@@ -65,6 +66,7 @@ public class MegaWalls extends JavaPlugin {
         // Register commands
         setExecutor("energy", new EnergyCommand());
         setExecutor("debug", new DebugCommand());
+        setExecutor("mwinfo", new InfoCommand());
         setExecutorAndTabCompleter("megawalls", new MegaWallsCommand());
 
         this.registerClasses(
