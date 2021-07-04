@@ -18,17 +18,23 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Energy implements Listener {
+public class EnergyManager implements Listener {
 
-    private static final Map<Player, Integer> PLAYER_DATA = new HashMap<>();
+    private final MegaWalls plugin;
 
-    public Energy() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(MegaWalls.getInstance(), this::tick, 20, 20);
+    private final MWClassManager manager;
+    private final Map<Player, Integer> playerData = new HashMap<>();
+
+    public EnergyManager() {
+        this.plugin = MegaWalls.getInstance();
+        this.manager = MegaWalls.getInstance().getManager();
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tick, 20, 20);
     }
 
     public void tick() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            MWClass mwclass = MWClassManager.get(player);
+            MWClass mwclass = manager.get(player);
 
             if (mwclass == null) continue;
 
@@ -37,13 +43,13 @@ public class Energy implements Listener {
                     break;
 
                 case "Spider":
-                    Energy.add(player, 4);
+                    add(player, 4);
                     break;
             }
         }
     }
 
-    public static Player validate(EntityDamageByEntityEvent event) {
+    public Player validate(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) return null;
         if (!(event.getDamager() instanceof Player) && !(event.getDamager() instanceof Arrow)) return null;
 
@@ -69,7 +75,7 @@ public class Energy implements Listener {
         if (((Player) event.getEntity()).getNoDamageTicks() >= 12) return null;
         if (event.getDamage() == 0 || event.isCancelled()) return null;
 
-        if (MWClassManager.isMW(player)) {
+        if (manager.isMW(player)) {
             return player;
         }
 
@@ -116,23 +122,23 @@ public class Energy implements Listener {
     }
 
     private void callAbility(Player player) {
-        if (!MWClassManager.isMW(player)) return;
+        if (!manager.isMW(player)) return;
         if (fetch(player) < 100) return;
 
-        MWClassManager.get(player).ability(player);
+        manager.get(player).ability(player);
     }
 
-    public static int fetch(Player player) {
-        return PLAYER_DATA.getOrDefault(player, 0);
+    public int fetch(Player player) {
+        return playerData.getOrDefault(player, 0);
     }
 
-    public static void add(Player player, int amount) {
-        if (!PLAYER_DATA.containsKey(player)) {
+    public void add(Player player, int amount) {
+        if (!playerData.containsKey(player)) {
             set(player, amount);
             return;
         }
 
-        int current = PLAYER_DATA.get(player);
+        int current = playerData.get(player);
         int updated = current + amount;
 
         if (updated > 100) {
@@ -142,9 +148,9 @@ public class Energy implements Listener {
         set(player, updated);
     }
 
-    public static void set(Player player, int amount) {
+    public void set(Player player, int amount) {
         if (amount != 0) {
-            PLAYER_DATA.put(player, amount);
+            playerData.put(player, amount);
         }
 
         float bar = (float) (amount / 100.0);
@@ -153,26 +159,24 @@ public class Energy implements Listener {
         player.setExp(bar);
     }
 
-    public static void clear(Player player) {
-        if (PLAYER_DATA.containsKey(player)) {
-            PLAYER_DATA.remove(player);
-        }
+    public void clear(Player player) {
+        playerData.remove(player);
 
         set(player, 0);
     }
 
-    public static void flash() {
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(MegaWalls.getInstance(), () -> {
-            for (Player player : PLAYER_DATA.keySet()) {
-                int level = player.getLevel();
-                float bar = player.getExp();
+    public void flash() {
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            playerData.keySet().forEach(p -> {
+                int level = p.getLevel();
+                float bar = p.getExp();
 
                 if (level == 100 && bar == 1) {
-                    player.setExp(0);
+                    p.setExp(0);
                 } else if (level == 100 && bar == 0) {
-                    player.setExp(1);
+                    p.setExp(1);
                 }
-            }
+            });
         }, 6, 6);
     }
 }

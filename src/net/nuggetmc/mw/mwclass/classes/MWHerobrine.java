@@ -1,9 +1,7 @@
 package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
-import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
-import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
@@ -11,7 +9,6 @@ import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.ActionBar;
-import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -78,10 +75,10 @@ public class MWHerobrine extends MWClass {
         }
 
         if (pass) {
-            Energy.clear(player);
+            energyManager.clear(player);
 
             for (Player victim : cache) {
-                MWHealth.trueDamage(victim, 4.5, null);
+                mwhealth.trueDamage(victim, 4.5, null);
             }
 
             world.playSound(player.getLocation(), Sound.ENDERMAN_DEATH, 1, (float) 0.5);
@@ -93,10 +90,10 @@ public class MWHerobrine extends MWClass {
 
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
-        Player player = Energy.validate(event);
+        Player player = energyManager.validate(event);
         if (player == null) return;
 
-        if (MWClassManager.get(player) != this) return;
+        if (manager.get(player) != this) return;
 
         if (!increment.containsKey(player)) {
             increment.put(player, 0);
@@ -109,7 +106,7 @@ public class MWHerobrine extends MWClass {
             PotionUtils.effect(player, "regeneration", 5);
         }
 
-        Energy.add(player, 25);
+        energyManager.add(player, 25);
     }
 
     @EventHandler
@@ -118,9 +115,9 @@ public class MWHerobrine extends MWClass {
         Player player = victim.getKiller();
 
         if (player == null || victim == player) return;
-        if (!MWClassManager.isMW(player)) return;
+        if (!manager.isMW(player)) return;
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             PotionUtils.effect(player, "strength", 6);
         }
     }

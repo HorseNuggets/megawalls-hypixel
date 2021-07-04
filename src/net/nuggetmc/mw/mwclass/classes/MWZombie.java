@@ -1,10 +1,9 @@
 package net.nuggetmc.mw.mwclass.classes;
 
+import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.nuggetmc.mw.MegaWalls;
-import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
-import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
@@ -13,7 +12,10 @@ import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.ParticleUtils;
 import net.nuggetmc.mw.utils.PotionUtils;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -24,7 +26,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import net.md_5.bungee.api.ChatColor;
 
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +69,7 @@ public class MWZombie extends MWClass {
 
     @Override
     public void ability(Player player) {
-        Energy.clear(player);
+        energyManager.clear(player);
 
         double health = player.getHealth();
 
@@ -88,23 +89,23 @@ public class MWZombie extends MWClass {
     public void gathering(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             PotionUtils.effect(player, "haste", 5, 2);
         }
     }
 
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
-        Player player = Energy.validate(event);
+        Player player = energyManager.validate(event);
         if (player == null) return;
 
-        if (MWClassManager.get(player) == this) {
-            Energy.add(player, 12);
+        if (manager.get(player) == this) {
+            energyManager.add(player, 12);
         }
 
         Player victim = (Player) event.getEntity();
 
-        if (MWClassManager.get(victim) == this) {
+        if (manager.get(victim) == this) {
             if (!increment.containsKey(victim)) {
                 increment.put(victim, 0);
             } else {
@@ -125,7 +126,7 @@ public class MWZombie extends MWClass {
                 n = 1;
             }
 
-            Energy.add(victim, n);
+            energyManager.add(victim, n);
         }
     }
 

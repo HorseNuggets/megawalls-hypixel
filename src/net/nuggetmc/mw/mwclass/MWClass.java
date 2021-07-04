@@ -2,9 +2,11 @@ package net.nuggetmc.mw.mwclass;
 
 import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
+import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
+import net.nuggetmc.mw.utils.MWHealth;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -12,6 +14,9 @@ import org.bukkit.event.Listener;
 public abstract class MWClass implements Listener {
 
     protected final MegaWalls plugin;
+    protected final MWClassManager manager;
+    protected final MWHealth mwhealth;
+    protected final EnergyManager energyManager;
 
     protected String name;
     protected Material icon;
@@ -22,27 +27,36 @@ public abstract class MWClass implements Listener {
 
     public MWClass() {
         this.plugin = MegaWalls.getInstance();
+        this.manager = plugin.getManager();
+        this.mwhealth = plugin.getMWHealth();
+        this.energyManager = plugin.getEnergyManager();
     }
 
     public String getName() {
         return name;
     }
+
     public Material getIcon() {
         return icon;
     }
+
     public ChatColor getColor() {
         return color;
     }
+
     public Playstyle[] getPlaystyles() {
         return playstyles;
     }
+
     public Diamond[] getDiamonds() {
         return diamonds;
     }
+
     public MWClassInfo getInfo() {
         return classInfo;
     }
 
-    abstract public void ability(Player player);
-    abstract public void assign(Player player);
+    public abstract void ability(Player player);
+
+    public abstract void assign(Player player);
 }

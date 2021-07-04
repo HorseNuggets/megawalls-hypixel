@@ -2,9 +2,7 @@ package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
-import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
@@ -12,7 +10,6 @@ import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.ActionBar;
-import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
 import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
@@ -57,7 +54,7 @@ public class MWEnderman extends MWClass {
             "Ender Heart",
             "For every &a3 &rdeaths, you will keep your inventory outside of Diamond-related items.\nYou heal &a3 HP &ron kill, and &a1.5 HP &ron assist.",
             "Soul Charge",
-            "You gain &a10 &rseconds of Regeneration I when you reach 100 energy.\nCooldown: &a5s",
+            "You gain &a10 &rseconds of Regeneration I when you reach 100 energyManager.\nCooldown: &a5s",
             "Enderblocks",
             "You will instantly break all adjacent blocks of a similar type for every &a3 &rore, stone, or wooden logs broken."
         );
@@ -67,12 +64,9 @@ public class MWEnderman extends MWClass {
     }
 
     static class Wrapper {
-        public Wrapper(BukkitRunnable task, int time) {
-            this.task = task;
+        public Wrapper(int time) {
             this.time = time;
         }
-
-        private BukkitRunnable task;
 
         public int time;
     }
@@ -130,7 +124,7 @@ public class MWEnderman extends MWClass {
         }
 
         if (target != null) {
-            Energy.clear(player);
+            energyManager.clear(player);
             player.teleport(target);
 
             PotionUtils.effect(player, "speed", 5, 2);
@@ -165,7 +159,7 @@ public class MWEnderman extends MWClass {
                 }
             };
 
-            cooldownCacheAbility.put(player, new Wrapper(task, 60));
+            cooldownCacheAbility.put(player, new Wrapper(60));
             task.runTaskTimer(plugin, 0, 2);
 
             return;
@@ -180,10 +174,10 @@ public class MWEnderman extends MWClass {
         Player player = victim.getKiller();
 
         if (player == null || victim == player) return;
-        if (!MWClassManager.isMW(player)) return;
+        if (!manager.isMW(player)) return;
 
-        if (MWClassManager.get(player) == this) {
-            MWHealth.heal(player, 3);
+        if (manager.get(player) == this) {
+            mwhealth.heal(player, 3);
         }
     }
 
@@ -194,9 +188,9 @@ public class MWEnderman extends MWClass {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if (!MWClassManager.isMW(player)) return;
+        if (!manager.isMW(player)) return;
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             if (!incrementEChest.containsKey(player)) {
                 incrementEChest.put(player, 0);
             } else {
@@ -212,12 +206,12 @@ public class MWEnderman extends MWClass {
 
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
-        Player player = Energy.validate(event);
+        Player player = energyManager.validate(event);
         if (player == null) return;
 
-        if (MWClassManager.get(player) != this) return;
+        if (manager.get(player) != this) return;
 
-        int energy = Energy.fetch(player);
+        int energy = energyManager.fetch(player);
 
         if (energy >= 80 && energy < 100) {
             if (!cooldownCacheRegen.contains(player)) {
@@ -229,14 +223,14 @@ public class MWEnderman extends MWClass {
             }
         }
 
-        Energy.add(player, 20);
+        energyManager.add(player, 20);
     }
 
     @EventHandler
     public void gathering(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             if (!incrementGathering.containsKey(player)) {
                 incrementGathering.put(player, 0);
             } else {

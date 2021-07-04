@@ -2,16 +2,13 @@ package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
-import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
 import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
-import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
 import net.nuggetmc.mw.utils.PotionUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
@@ -68,7 +65,7 @@ public class MWSkeleton extends MWClass {
 
     @Override
     public void ability(Player player) {
-        Energy.clear(player);
+        energyManager.clear(player);
 
         World world = player.getWorld();
         Location loc = player.getEyeLocation();
@@ -131,23 +128,23 @@ public class MWSkeleton extends MWClass {
 
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
-        Player player = Energy.validate(event);
+        Player player = energyManager.validate(event);
 
         if (player == null) return;
-        if (MWClassManager.get(player) != this) return;
+        if (manager.get(player) != this) return;
         if (!(event.getDamager() instanceof Arrow)) return;
 
         Arrow arrow = (Arrow) event.getDamager();
 
         if (arrowForce.containsKey(arrow)) {
             float force = arrowForce.get(arrow);
-            Energy.add(player, (int) (25 * force));
+            energyManager.add(player, (int) (25 * force));
         }
 
         PotionUtils.effect(player, "regeneration", 7);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "give " + player.getName() + " arrow 2");
 
-        MWHealth.feed(player, 4);
+        mwhealth.feed(player, 4);
 
         if (!cooldownCache.contains(player)) {
             PotionUtils.effect(player, "speed", 7, 1);
@@ -167,7 +164,7 @@ public class MWSkeleton extends MWClass {
 
         Player player = (Player) event.getEntity();
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             Arrow arrow = (Arrow) event.getProjectile();
             arrowForce.put(arrow, event.getForce());
         }
@@ -177,7 +174,7 @@ public class MWSkeleton extends MWClass {
     public void gathering(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             Block block = event.getBlock();
             Material type = block.getType();
             Collection<ItemStack> drops = block.getDrops();

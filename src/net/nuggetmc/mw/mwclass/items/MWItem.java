@@ -2,6 +2,8 @@ package net.nuggetmc.mw.mwclass.items;
 
 import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.mwclass.MWClass;
+import net.nuggetmc.mw.mwclass.info.ClassInfoEntry;
+import net.nuggetmc.mw.mwclass.info.EnumInfoType;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.utils.ItemUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +20,6 @@ public class MWItem {
 
     public static ItemStack createSword(MWClass mwclass, Material type, Map<Enchantment, Integer> enchantments) {
         ItemStack item = new ItemStack(type);
-
         List<String> lore = new ArrayList<>();
 
         if (enchantments != null) {
@@ -31,8 +32,7 @@ public class MWItem {
 
         MWClassInfo info = mwclass.getInfo();
 
-        lore.add(ChatColor.GRAY + "Ability: " + ChatColor.RED + info.getAbilityName());
-        lore.addAll(info.getAbilityInfo());
+        lore.addAll(info.getLoreFormatted(EnumInfoType.ABILITY, false));
 
         lore.add(ChatColor.DARK_GRAY + " ▪ " + ChatColor.GRAY + "How to Activate: Right-Click with your Sword");
         lore.add(ChatColor.GRAY + "   or Left-Click with your Bow");
@@ -68,15 +68,8 @@ public class MWItem {
 
         MWClassInfo info = mwclass.getInfo();
 
-        lore.add(ChatColor.GRAY + "Passive I: " + ChatColor.RED + info.getPassive1Name());
-        lore.addAll(info.getPassive1Info());
-
-        lore.add("");
-
-        lore.add(ChatColor.GRAY + "Passive II: " + ChatColor.RED + info.getPassive2Name());
-        lore.addAll(info.getPassive2Info());
-
-        lore.add("");
+        lore.addAll(info.getLoreFormatted(EnumInfoType.PASSIVE_1));
+        lore.addAll(info.getLoreFormatted(EnumInfoType.PASSIVE_2));
 
         meta.setLore(lore);
         meta.spigot().setUnbreakable(true);
@@ -112,8 +105,7 @@ public class MWItem {
 
         lore.add("");
 
-        lore.add(ChatColor.GRAY + "Gathering: " + ChatColor.RED + info.getGatheringName());
-        lore.addAll(info.getGatheringInfo());
+        lore.addAll(info.getLoreFormatted(EnumInfoType.GATHERING, false));
 
         meta.setLore(lore);
         meta.spigot().setUnbreakable(true);

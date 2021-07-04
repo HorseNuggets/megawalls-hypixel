@@ -2,16 +2,13 @@ package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
-import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
 import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
-import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
 import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
@@ -87,7 +84,7 @@ public class MWGolem extends MWClass {
     @Override
     @SuppressWarnings("deprecation")
     public void ability(Player player) {
-        Energy.clear(player);
+        energyManager.clear(player);
         World world = player.getWorld();
         Location locUp = player.getEyeLocation();
 
@@ -138,7 +135,7 @@ public class MWGolem extends MWClass {
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             for (Player victim : inRange(player)) {
-                MWHealth.trueDamage(victim, 6, player);
+                mwhealth.trueDamage(victim, 6, player);
             }
 
             ParticleUtils.play(EnumParticle.EXPLOSION_HUGE, loc, 0.1, 0.1, 0.1, 0, 3);
@@ -165,7 +162,7 @@ public class MWGolem extends MWClass {
     public void gathering(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             if (!increment.containsKey(player)) {
                 increment.put(player, 0);
             } else {
@@ -193,25 +190,25 @@ public class MWGolem extends MWClass {
         Player player = victim.getKiller();
 
         if (player == null || victim == player) return;
-        if (!MWClassManager.isMW(player)) return;
+        if (!manager.isMW(player)) return;
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             PotionUtils.effect(player, "absorption", 10, 1);
         }
     }
 
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
-        Player player = Energy.validate(event);
+        Player player = energyManager.validate(event);
         if (player == null) return;
 
-        if (MWClassManager.get(player) == this) {
-            Energy.add(player, 10);
+        if (manager.get(player) == this) {
+            energyManager.add(player, 10);
         }
 
         Player victim = (Player) event.getEntity();
 
-        if (MWClassManager.get(victim) == this) {
+        if (manager.get(victim) == this) {
             if (event.getDamager() instanceof Arrow) {
                 PotionUtils.effect(victim, "resistance", 9);
             }

@@ -1,77 +1,54 @@
 package net.nuggetmc.mw.mwclass.info;
 
-import net.nuggetmc.mw.utils.DisplayUtils;
+import net.md_5.bungee.api.ChatColor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MWClassInfo {
 
-    private final String ABILITY_NAME;
-    private final List<String> ABILITY_INFO;
-
-    private final String PASSIVE_1;
-    private final List<String> PASSIVE_1_INFO;
-
-    private final String PASSIVE_2;
-    private final List<String> PASSIVE_2_INFO;
-
-    private final String GATHERING;
-    private final List<String> GATHERING_INFO;
-
-    private final Map<String, String> ENERGY_GAIN;
+    private final Map<EnumInfoType, ClassInfoEntry> data;
+    private final Map<String, String> energyGain;
 
     public MWClassInfo(String ability, String abilityInfo, String passive1, String passive1Info, String passive2, String passive2Info, String gatheringTalent, String gatheringTalentInfo) {
-        ABILITY_NAME = ability;
-        ABILITY_INFO = DisplayUtils.fit(abilityInfo);
+        this.data = new HashMap<>();
 
-        PASSIVE_1 = passive1;
-        PASSIVE_1_INFO = DisplayUtils.fit(passive1Info);
+        data.put(EnumInfoType.ABILITY, new ClassInfoEntry(ability, abilityInfo));
+        data.put(EnumInfoType.PASSIVE_1, new ClassInfoEntry(passive1, passive1Info));
+        data.put(EnumInfoType.PASSIVE_2, new ClassInfoEntry(passive2, passive2Info));
+        data.put(EnumInfoType.GATHERING, new ClassInfoEntry(gatheringTalent, gatheringTalentInfo));
 
-        PASSIVE_2 = passive2;
-        PASSIVE_2_INFO = DisplayUtils.fit(passive2Info);
-
-        GATHERING = gatheringTalent;
-        GATHERING_INFO = DisplayUtils.fit(gatheringTalentInfo);
-
-        ENERGY_GAIN = new HashMap<>();
+        this.energyGain = new HashMap<>();
     }
 
-    public String getAbilityName() {
-        return ABILITY_NAME;
+    public ClassInfoEntry getInfoEntry(EnumInfoType type) {
+        return data.get(type);
     }
 
-    public List<String> getAbilityInfo() {
-        return ABILITY_INFO;
+    public List<String> getLoreFormatted(EnumInfoType type, boolean whitespace) {
+        List<String> list = new ArrayList<>();
+        ClassInfoEntry entry = getInfoEntry(type);
+
+        if (entry != null) {
+            list.add(ChatColor.GRAY + type.getLabel() + ": " + ChatColor.RED + entry.getName());
+            list.addAll(entry.getDescription());
+
+            if (whitespace) {
+                list.add("");
+            }
+        }
+
+        return list;
     }
 
-    public String getPassive1Name() {
-        return PASSIVE_1;
-    }
-
-    public List<String> getPassive1Info() {
-        return PASSIVE_1_INFO;
-    }
-
-    public String getPassive2Name() {
-        return PASSIVE_2;
-    }
-
-    public List<String> getPassive2Info() {
-        return PASSIVE_2_INFO;
-    }
-
-    public String getGatheringName() {
-        return GATHERING;
-    }
-
-    public List<String> getGatheringInfo() {
-        return GATHERING_INFO;
+    public List<String> getLoreFormatted(EnumInfoType type) {
+        return getLoreFormatted(type, true);
     }
 
     public Map<String, String> getEnergyGain() {
-        return ENERGY_GAIN;
+        return energyGain;
     }
 
     /*
@@ -83,11 +60,7 @@ public class MWClassInfo {
      * - Per Second
      */
 
-    public void addEnergyGainType(String type, int value) {
-        ENERGY_GAIN.put(type, String.valueOf(value));
-    }
-
-    public void addEnergyGainType(String type, String value) {
-        ENERGY_GAIN.put(type, value);
+    public void addEnergyGainType(String type, Object value) {
+        energyGain.put(type, String.valueOf(value));
     }
 }

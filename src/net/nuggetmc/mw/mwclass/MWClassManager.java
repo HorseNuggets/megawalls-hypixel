@@ -2,7 +2,7 @@ package net.nuggetmc.mw.mwclass;
 
 import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
-import net.nuggetmc.mw.energy.Energy;
+import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.classes.MWEnderman;
 import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
@@ -29,46 +29,51 @@ import java.util.Map;
 
 public class MWClassManager implements Listener {
 
-    private MegaWalls plugin;
+    private final MegaWalls plugin;
+
+    private final EnergyManager energyManager;
+
+    private final Map<String, MWClass> classes;
+    private final Map<Player, MWClass> active;
+
+    private boolean kitLock = true;
 
     public MWClassManager(MegaWalls instance) {
         this.plugin = instance;
+        this.energyManager = plugin.getEnergyManager();
+        this.classes = new HashMap<>();
+        this.active = new HashMap<>();
     }
 
-    private static Map<String, MWClass> classes = new HashMap<>();
-    private static Map<Player, MWClass> active = new HashMap<>();
-
-    private static boolean kitLock = true;
-
-    public static boolean getKitLock() {
+    public boolean getKitLock() {
         return kitLock;
     }
 
-    public static void setKitLock(boolean lock) {
+    public void setKitLock(boolean lock) {
         kitLock = lock;
     }
 
-    public static void register(MWClass... mwclasses) {
+    public void register(MWClass... mwclasses) {
         Arrays.stream(mwclasses).forEach(m -> classes.put(m.getName(), m));
     }
 
-    public static Map<String, MWClass> getClasses() {
+    public Map<String, MWClass> getClasses() {
         return classes;
     }
 
-    public static MWClass fetch(String name) {
+    public MWClass fetch(String name) {
         return classes.getOrDefault(name, null);
     }
 
-    public static boolean isMW(Player player) {
+    public boolean isMW(Player player) {
         return active.containsKey(player);
     }
 
-    public static MWClass get(Player player) {
+    public MWClass get(Player player) {
         return active.get(player);
     }
 
-    public static Map<Player, MWClass> getActive() {
+    public Map<Player, MWClass> getActive() {
         return active;
     }
 
@@ -112,7 +117,7 @@ public class MWClassManager implements Listener {
                 active.remove(player);
             }
 
-            Energy.clear(player);
+            energyManager.clear(player);
 
             event.setDroppedExp(0);
             event.getDrops().removeIf(ItemUtils::isKitItem);

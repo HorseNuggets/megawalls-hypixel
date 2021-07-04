@@ -3,7 +3,7 @@ package net.nuggetmc.mw;
 import net.nuggetmc.mw.command.DebugCommand;
 import net.nuggetmc.mw.command.EnergyCommand;
 import net.nuggetmc.mw.command.MegaWallsCommand;
-import net.nuggetmc.mw.energy.Energy;
+import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.MWClassMenu;
@@ -23,28 +23,44 @@ import java.util.Arrays;
 
 public class MegaWalls extends JavaPlugin {
 
-    private static MegaWalls instance;
+    private static MegaWalls INSTANCE;
 
     private PluginManager pluginManager;
     private MWClassManager mwClassManager;
-    private MWClassMenu menu;
+    private MWClassMenu mwClassMenu;
+    private MWHealth mwhealth;
+    private EnergyManager energyManager;
 
     public static MegaWalls getInstance() {
-        return instance;
+        return INSTANCE;
+    }
+
+    public MWClassManager getManager() {
+        return mwClassManager;
     }
 
     public MWClassMenu getMenu() {
-        return menu;
+        return mwClassMenu;
+    }
+
+    public MWHealth getMWHealth() {
+        return mwhealth;
+    }
+
+    public EnergyManager getEnergyManager() {
+        return energyManager;
     }
 
     @Override
     public void onEnable() {
-        instance = this;
+        INSTANCE = this;
 
         // Create instances
         this.pluginManager = this.getServer().getPluginManager();
         this.mwClassManager = new MWClassManager(this);
-        this.menu = new MWClassMenu("Class Selector", mwClassManager);
+        this.energyManager = new EnergyManager();
+        this.mwClassMenu = new MWClassMenu(this, "Class Selector");
+        this.mwhealth = new MWHealth();
 
         // Register commands
         setExecutor("energy", new EnergyCommand());
@@ -63,10 +79,10 @@ public class MegaWalls extends JavaPlugin {
         ;
 
         this.registerEvents(
-            mwClassManager,
-            menu,
-            new Energy(),
-            new MWHealth(this),
+            this.mwClassManager,
+            this.mwClassMenu,
+            this.mwhealth,
+            this.energyManager,
             new WorldUtils()
         );
 
@@ -75,8 +91,8 @@ public class MegaWalls extends JavaPlugin {
     }
 
     private void initEnergy() {
-        Bukkit.getOnlinePlayers().forEach(p -> Energy.set(p, 0));
-        Energy.flash();
+        Bukkit.getOnlinePlayers().forEach(energyManager::clear);
+        energyManager.flash();
     }
 
     private void restoreClasses() {
@@ -88,10 +104,10 @@ public class MegaWalls extends JavaPlugin {
             Player player = Bukkit.getPlayer(key);
             if (player == null || !player.isOnline()) continue;
 
-            MWClass mwclass = MWClassManager.fetch(name);
+            MWClass mwclass = mwClassManager.fetch(name);
             if (mwclass == null) continue;
 
-            MWClassManager.getActive().put(player, mwclass);
+            mwClassManager.getActive().put(player, mwclass);
         }
 
         this.saveConfig();
@@ -113,7 +129,7 @@ public class MegaWalls extends JavaPlugin {
     }
 
     private void registerClasses(MWClass... mwclasses) {
-        MWClassManager.register(mwclasses);
+        mwClassManager.register(mwclasses);
         Arrays.stream(mwclasses).forEach(this::registerEvents);
     }
 }

@@ -2,17 +2,13 @@ package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.nuggetmc.mw.MegaWalls;
-import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
-import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
 import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
-import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
 import net.nuggetmc.mw.utils.PotionUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
@@ -74,7 +70,7 @@ public class MWCreeper extends MWClass {
 
     @Override
     public void ability(Player player) {
-        Energy.clear(player);
+        energyManager.clear(player);
 
         BukkitRunnable task = new BukkitRunnable() {
 
@@ -131,7 +127,7 @@ public class MWCreeper extends MWClass {
                 float dmg = (float) (10 - ((int) dist) * 0.75);
                 if (dmg < 5) dmg = 5;
 
-                MWHealth.trueDamage(victim, dmg, player);
+                mwhealth.trueDamage(victim, dmg, player);
             }
         }
     }
@@ -140,7 +136,7 @@ public class MWCreeper extends MWClass {
     public void miniTNTPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             Block block = event.getBlock();
 
             if (block.getType() != Material.TNT) return;
@@ -166,13 +162,13 @@ public class MWCreeper extends MWClass {
         if (miniTNTList.containsKey(tnt)) {
             Player player = miniTNTList.get(tnt);
 
-            if (MWClassManager.get(player) == this) {
+            if (manager.get(player) == this) {
                 Player victim = (Player) event.getEntity();
 
                 if (player == victim) {
                     willpower(victim, victim.getHealth() - event.getDamage(), true);
                 } else {
-                    Energy.add(player, 10);
+                    energyManager.add(player, 10);
                 }
             }
         }
@@ -192,16 +188,16 @@ public class MWCreeper extends MWClass {
 
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
-        Player player = Energy.validate(event);
+        Player player = energyManager.validate(event);
         if (player == null) return;
 
-        if (MWClassManager.get(player) == this) {
-            Energy.add(player, 20);
+        if (manager.get(player) == this) {
+            energyManager.add(player, 20);
         }
 
         Player victim = (Player) event.getEntity();
 
-        if (MWClassManager.get(victim) == this) {
+        if (manager.get(victim) == this) {
             willpower(victim, player.getHealth() - event.getDamage(), false);
         }
     }
@@ -239,7 +235,7 @@ public class MWCreeper extends MWClass {
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             Creeper creeper = (Creeper) player.getWorld().spawnEntity(player.getLocation(), EntityType.CREEPER);
             creeper.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1000000, 4));
         }
@@ -249,7 +245,7 @@ public class MWCreeper extends MWClass {
     public void gathering(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             Block block = event.getBlock();
             if (block.getType() != Material.COAL_ORE) return;
 

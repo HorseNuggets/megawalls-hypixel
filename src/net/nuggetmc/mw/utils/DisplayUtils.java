@@ -3,6 +3,7 @@ package net.nuggetmc.mw.utils;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DisplayUtils {
@@ -13,9 +14,7 @@ public class DisplayUtils {
             String[] split = string.split("\n");
             List<String> lines = new ArrayList<>();
 
-            for (int i = 0; i < split.length; i++) {
-                lines.addAll(fit(split[i]));
-            }
+            Arrays.stream(split).forEach(s -> lines.addAll(fit(s)));
 
             return lines;
         }

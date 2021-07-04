@@ -76,8 +76,6 @@ public class MWKit {
     }
 
     public static void assignItems(Player player, Map<Integer, ItemStack> items) {
-        for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
-            player.getInventory().setItem(entry.getKey(), entry.getValue());
-        }
+        items.forEach((key, value) -> player.getInventory().setItem(key, value));
     }
 }

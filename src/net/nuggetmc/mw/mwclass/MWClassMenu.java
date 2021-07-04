@@ -1,8 +1,10 @@
 package net.nuggetmc.mw.mwclass;
 
 import net.md_5.bungee.api.ChatColor;
-import net.nuggetmc.mw.energy.Energy;
+import net.nuggetmc.mw.MegaWalls;
+import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
+import net.nuggetmc.mw.mwclass.info.EnumInfoType;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
 import org.apache.commons.lang3.StringUtils;
@@ -17,26 +19,22 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MWClassMenu implements Listener {
 
+    private static final String CLOSE_NAME = ChatColor.RED + "Close";
+
     private final MWClassManager manager;
-
+    private final EnergyManager energyManager;
     private final String menuTitle;
-    private final String closeName;
+    private final Map<String, ItemStack> cache;
 
-    private final Map<String, ItemStack> CACHE;
-
-    public MWClassMenu(String title, MWClassManager manager) {
-        this.manager = manager;
-
-        menuTitle = title;
-        closeName = ChatColor.RED + "Close";
-        CACHE = new HashMap<>();
+    public MWClassMenu(MegaWalls plugin, String title) {
+        this.manager = plugin.getManager();
+        this.energyManager = plugin.getEnergyManager();
+        this.menuTitle = title;
+        this.cache = new HashMap<>();
     }
 
     public void openGUI(Player player) {
@@ -44,7 +42,7 @@ public class MWClassMenu implements Listener {
 
         int n = 1;
 
-        for (Map.Entry<String, MWClass> entry : MWClassManager.getClasses().entrySet()) {
+        for (Map.Entry<String, MWClass> entry : manager.getClasses().entrySet()) {
             ItemStack item = generateClassInfo(entry.getValue());
             inv.setItem(n + 9 + 2 * ((n - 1) / 7), item);
 
@@ -56,7 +54,7 @@ public class MWClassMenu implements Listener {
     }
 
     private void select(Player player, String name) {
-        MWClass mwclass = MWClassManager.fetch(name);
+        MWClass mwclass = manager.fetch(name);
         if (mwclass == null) return;
 
         select(player, mwclass);
@@ -66,7 +64,7 @@ public class MWClassMenu implements Listener {
         player.sendMessage("You have selected " + mwclass.getColor() + mwclass.getName() + ChatColor.RESET + ".");
         player.closeInventory();
 
-        Energy.clear(player);
+        energyManager.clear(player);
 
         manager.assign(player, mwclass);
     }
@@ -92,7 +90,7 @@ public class MWClassMenu implements Listener {
 
         Player player = (Player) event.getWhoClicked();
 
-        if (name.equals(closeName)) {
+        if (name.equals(CLOSE_NAME)) {
             player.closeInventory();
             return;
         }
@@ -104,7 +102,7 @@ public class MWClassMenu implements Listener {
         ItemStack item = new ItemStack(Material.BARRIER);
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(closeName);
+        meta.setDisplayName(CLOSE_NAME);
         item.setItemMeta(meta);
 
         return item;
@@ -113,8 +111,8 @@ public class MWClassMenu implements Listener {
     private ItemStack generateClassInfo(MWClass mwclass) {
         String name = mwclass.getName();
 
-        if (CACHE.containsKey(name)) {
-            return CACHE.get(name);
+        if (cache.containsKey(name)) {
+            return cache.get(name);
         }
 
         ItemStack item = new ItemStack(mwclass.getIcon());
@@ -145,28 +143,11 @@ public class MWClassMenu implements Listener {
         lore.add("");
 
         MWClassInfo info = mwclass.getInfo();
-
-        lore.add(ChatColor.GRAY + "Ability: " + ChatColor.RED + info.getAbilityName());
-        lore.addAll(info.getAbilityInfo());
-        lore.add("");
-
-        lore.add(ChatColor.GRAY + "Passive I: " + ChatColor.RED + info.getPassive1Name());
-        lore.addAll(info.getPassive1Info());
-        lore.add("");
-
-        lore.add(ChatColor.GRAY + "Passive II: " + ChatColor.RED + info.getPassive2Name());
-        lore.addAll(info.getPassive2Info());
-        lore.add("");
-
-        lore.add(ChatColor.GRAY + "Gathering: " + ChatColor.RED + info.getGatheringName());
-        lore.addAll(info.getGatheringInfo());
-        lore.add("");
+        Arrays.stream(EnumInfoType.values()).forEach(type -> lore.addAll(info.getLoreFormatted(type)));
 
         lore.add(ChatColor.GRAY + "Energy Gain:");
 
-        for (Map.Entry<String, String> entry : info.getEnergyGain().entrySet()) {
-            lore.add(ChatColor.DARK_GRAY + " ▪ " + ChatColor.GRAY + entry.getKey() + ": " + ChatColor.GREEN + entry.getValue());
-        }
+        info.getEnergyGain().forEach((key, value) -> lore.add(ChatColor.DARK_GRAY + " ▪ " + ChatColor.GRAY + key + ": " + ChatColor.GREEN + value));
 
         lore.add("");
         lore.add(ChatColor.GRAY + "Click to play!");
@@ -174,7 +155,7 @@ public class MWClassMenu implements Listener {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        CACHE.put(name, item);
+        cache.put(name, item);
 
         return item;
     }

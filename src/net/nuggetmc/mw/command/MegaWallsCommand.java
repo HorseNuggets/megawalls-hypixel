@@ -17,10 +17,14 @@ import java.util.stream.Collectors;
 
 public class MegaWallsCommand implements CommandExecutor, TabCompleter {
 
+    private final MWClassManager manager;
     private final MWClassMenu menu;
 
     public MegaWallsCommand() {
-        this.menu = MegaWalls.getInstance().getMenu();
+        MegaWalls plugin = MegaWalls.getInstance();
+
+        this.manager = plugin.getManager();
+        this.menu = plugin.getMenu();
     }
 
     @Override
@@ -30,7 +34,7 @@ public class MegaWallsCommand implements CommandExecutor, TabCompleter {
 
             if (args.length > 0) {
                 String name = StringUtils.capitalize(args[0].toLowerCase());
-                MWClass mwclass = MWClassManager.fetch(name);
+                MWClass mwclass = manager.fetch(name);
 
                 if (mwclass != null) {
                     menu.select(player, mwclass);
@@ -48,7 +52,7 @@ public class MegaWallsCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length != 1) return null;
 
-        List<String> groupnames = new ArrayList<>(MWClassManager.getClasses().keySet()).stream().map(String::toLowerCase).collect(Collectors.toList());
+        List<String> groupnames = new ArrayList<>(manager.getClasses().keySet()).stream().map(String::toLowerCase).collect(Collectors.toList());
         String arg = args[0];
 
         if (!isEmptyTab(arg)) {

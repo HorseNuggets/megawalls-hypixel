@@ -3,9 +3,7 @@ package net.nuggetmc.mw.mwclass.classes;
 import com.google.common.collect.Sets;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
-import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
@@ -13,7 +11,6 @@ import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.ActionBar;
-import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.ParticleUtils;
 import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
@@ -61,7 +58,7 @@ public class MWSpider extends MWClass {
             "Venom Strike",
             "For every &a4 &rmelee attacks, you will poison your opponent, dealing 3 damage over &a5 &rseconds.",
             "Skitter",
-            "If you melee enemies &a4 &rtimes after landing with Leap within 3 seconds, you gain Speed I for &a5 &rseconds and earn &a20 &renergy.",
+            "If you melee enemies &a4 &rtimes after landing with Leap within 3 seconds, you gain Speed I for &a5 &rseconds and earn &a20 &renergyManager.",
             "Iron Rush",
             "When digging with a shovel, you will receive an iron ingot for every &a1 &rblock mined."
         );
@@ -75,7 +72,7 @@ public class MWSpider extends MWClass {
 
     @Override
     public void ability(Player player) {
-        Energy.clear(player);
+        energyManager.clear(player);
         PotionUtils.effect(player, "absorption", 5);
 
         World world = player.getWorld();
@@ -91,9 +88,7 @@ public class MWSpider extends MWClass {
 
         player.setVelocity(dir);
 
-        if (!leapingCache.contains(player)) {
-            leapingCache.add(player);
-        }
+        leapingCache.add(player);
 
         BukkitRunnable task = new BukkitRunnable() {
 
@@ -126,7 +121,7 @@ public class MWSpider extends MWClass {
 
         Player player = (Player) event.getEntity();
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             if (leapingCache.contains(player)) {
                 leapingCache.remove(player);
 
@@ -149,7 +144,7 @@ public class MWSpider extends MWClass {
             if (player != victim && !victim.isDead() && loc.distance(victim.getLocation()) <= 4) {
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 5 * 20, 0));
 
-                MWHealth.trueDamage(victim, dmg, player);
+                mwhealth.trueDamage(victim, dmg, player);
             }
         }
 
@@ -166,7 +161,7 @@ public class MWSpider extends MWClass {
         }, 5);
     }
 
-    class SkitterData {
+    static class SkitterData {
         public SkitterData(BukkitRunnable task, int time, int count) {
             this.task = task;
             this.time = time;
@@ -218,7 +213,7 @@ public class MWSpider extends MWClass {
                     }
 
                     ActionBar.send(player, ChatColor.GREEN + ChatColor.stripColor(msg));
-                    Energy.add(player, 20);
+                    energyManager.add(player, 20);
 
                     PotionUtils.effect(player, "speed", 5);
 
@@ -238,10 +233,10 @@ public class MWSpider extends MWClass {
 
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
-        Player player = Energy.validate(event);
+        Player player = energyManager.validate(event);
         if (player == null) return;
 
-        if (MWClassManager.get(player) != this) return;
+        if (manager.get(player) != this) return;
 
         if (skitterData.containsKey(player)) {
             skitterData.get(player).add();
@@ -260,14 +255,14 @@ public class MWSpider extends MWClass {
             }
         }
 
-        Energy.add(player, 8);
+        energyManager.add(player, 8);
     }
 
     @EventHandler
     public void gathering(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        if (MWClassManager.get(player) == this) {
+        if (manager.get(player) == this) {
             ItemStack item = player.getItemInHand();
             if (item == null) return;
 
