@@ -2,7 +2,6 @@ package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
@@ -33,38 +32,26 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class MWGolem implements MWClass {
+public class MWGolem extends MWClass {
 
-    private MegaWalls plugin;
-
-    private final String NAME;
-    private final Material ICON;
-    private final ChatColor COLOR;
-    private final Playstyle[] PLAYSTYLES;
-    private final Diamond[] DIAMONDS;
-    private final MWClassInfo CLASS_INFO;
+    private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWGolem() {
-        this.plugin = MegaWalls.getInstance();
+        this.name = "Golem";
+        this.icon = Material.IRON_CHESTPLATE;
+        this.color = ChatColor.WHITE;
 
-        NAME = "Golem";
-        ICON = Material.IRON_CHESTPLATE;
-        COLOR = ChatColor.WHITE;
-
-        PLAYSTYLES = new Playstyle[]
-        {
+        this.playstyles = new Playstyle[] {
             Playstyle.TANK,
             Playstyle.CONTROL
         };
 
-        DIAMONDS = new Diamond[]
-        {
+        this.diamonds = new Diamond[] {
             Diamond.CHESTPLATE,
             Diamond.BOOTS
         };
 
-        CLASS_INFO = new MWClassInfo
-        (
+        this.classInfo = new MWClassInfo(
             "Iron Punch",
             "Punch the ground, forming a hexagon shockwave which deals &a6 &rdamage to opponents in a 4.5 block radius and pulls them inwards.",
             "Iron Heart",
@@ -75,38 +62,8 @@ public class MWGolem implements MWClass {
             "An Iron Block will be dropped after every &a4 &rwooden logs chopped."
         );
 
-        CLASS_INFO.addEnergyGainType("Melee", 10);
-        CLASS_INFO.addEnergyGainType("Bow", 10);
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public Material getIcon() {
-        return ICON;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return COLOR;
-    }
-
-    @Override
-    public Playstyle[] getPlaystyles() {
-        return PLAYSTYLES;
-    }
-
-    @Override
-    public Diamond[] getDiamonds() {
-        return DIAMONDS;
-    }
-
-    @Override
-    public MWClassInfo getInfo() {
-        return CLASS_INFO;
+        this.classInfo.addEnergyGainType("Melee", 10);
+        this.classInfo.addEnergyGainType("Bow", 10);
     }
 
     private Set<Player> inRange(Player player) {
@@ -204,20 +161,18 @@ public class MWGolem implements MWClass {
         }
     }
 
-    private final Map<Player, Integer> INCREMENT = new HashMap<>();
-
     @EventHandler
     public void gathering(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
         if (MWClassManager.get(player) == this) {
-            if (!INCREMENT.containsKey(player)) {
-                INCREMENT.put(player, 0);
+            if (!increment.containsKey(player)) {
+                increment.put(player, 0);
             } else {
-                INCREMENT.put(player, (INCREMENT.get(player) + 1) % 4);
+                increment.put(player, (increment.get(player) + 1) % 4);
             }
 
-            if (INCREMENT.get(player) == 0) {
+            if (increment.get(player) == 0) {
                 Block block = event.getBlock();
                 Location location = block.getLocation();
 
@@ -292,8 +247,8 @@ public class MWGolem implements MWClass {
 
             List<ItemStack> potions = new ArrayList<>();
 
-            potions.add(MWPotions.createRegenerationPotions(NAME, COLOR, 3, 12, 10));
-            potions.add(MWPotions.createSlowSplash(NAME, COLOR));
+            potions.add(MWPotions.createRegenerationPotions(this.name, this.color, 3, 12, 10));
+            potions.add(MWPotions.createSlowSplash(this.name, this.color));
 
             items = MWKit.generate(this, sword, bow, tool, toolAxe, null, potions, null, chestplate, null, boots, null);
         }

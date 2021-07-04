@@ -18,8 +18,8 @@ import java.util.Set;
 
 public class WorldUtils implements Listener {
 
-    private static Random RANDOM = new Random();
-    private static Set<TNTPrimed> DETONATE_LIST = new HashSet<>();
+    private static final Random RANDOM = new Random();
+    private static final Set<TNTPrimed> DETONATE_LIST = new HashSet<>();
 
     public static Location nearby(Player player) {
         int top = 150;

@@ -8,9 +8,6 @@ import net.nuggetmc.mw.mwclass.info.Playstyle;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,46 +22,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MWClassMenu implements CommandExecutor, Listener {
+public class MWClassMenu implements Listener {
 
-    private MWClassManager manager;
+    private final MWClassManager manager;
 
-    private final String MENU_TITLE;
-    private final String CLOSE_NAME;
+    private final String menuTitle;
+    private final String closeName;
 
     private final Map<String, ItemStack> CACHE;
 
     public MWClassMenu(String title, MWClassManager manager) {
         this.manager = manager;
 
-        MENU_TITLE = title;
-        CLOSE_NAME = ChatColor.RED + "Close";
+        menuTitle = title;
+        closeName = ChatColor.RED + "Close";
         CACHE = new HashMap<>();
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-
-            if (args.length > 0) {
-                String name = StringUtils.capitalize(args[0].toLowerCase());
-                MWClass mwclass = MWClassManager.fetch(name);
-
-                if (mwclass != null) {
-                    select(player, mwclass);
-                    return true;
-                }
-            }
-
-            openGUI(player);
-        }
-
-        return true;
-    }
-
-    private void openGUI(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 54, MENU_TITLE);
+    public void openGUI(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 54, menuTitle);
 
         int n = 1;
 
@@ -86,7 +62,7 @@ public class MWClassMenu implements CommandExecutor, Listener {
         select(player, mwclass);
     }
 
-    private void select(Player player, MWClass mwclass) {
+    public void select(Player player, MWClass mwclass) {
         player.sendMessage("You have selected " + mwclass.getColor() + mwclass.getName() + ChatColor.RESET + ".");
         player.closeInventory();
 
@@ -101,7 +77,7 @@ public class MWClassMenu implements CommandExecutor, Listener {
         if (inv == null) return;
 
         String invName = inv.getName();
-        if (!invName.equals(MENU_TITLE)) return;
+        if (!invName.equals(menuTitle)) return;
 
         event.setCancelled(true);
 
@@ -116,7 +92,7 @@ public class MWClassMenu implements CommandExecutor, Listener {
 
         Player player = (Player) event.getWhoClicked();
 
-        if (name.equals(CLOSE_NAME)) {
+        if (name.equals(closeName)) {
             player.closeInventory();
             return;
         }
@@ -128,7 +104,7 @@ public class MWClassMenu implements CommandExecutor, Listener {
         ItemStack item = new ItemStack(Material.BARRIER);
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(CLOSE_NAME);
+        meta.setDisplayName(closeName);
         item.setItemMeta(meta);
 
         return item;

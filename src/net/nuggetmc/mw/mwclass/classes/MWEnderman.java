@@ -2,7 +2,6 @@ package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
@@ -31,37 +30,28 @@ import org.bukkit.util.Vector;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MWEnderman implements MWClass {
+public class MWEnderman extends MWClass {
 
-    private MegaWalls plugin;
-
-    private final String NAME;
-    private final Material ICON;
-    private final ChatColor COLOR;
-    private final Playstyle[] PLAYSTYLES;
-    private final Diamond[] DIAMONDS;
-    private final MWClassInfo CLASS_INFO;
+    private final Map<Player, Wrapper> cooldownCacheAbility = new HashMap<>();
+    private final Set<Player> cooldownCacheRegen = new HashSet<>();
+    private final Map<Player, Integer> incrementGathering = new HashMap<>();
+    private final Map<Player, Integer> incrementEChest = new HashMap<>();
 
     public MWEnderman() {
-        this.plugin = MegaWalls.getInstance();
+        this.name = "Enderman";
+        this.icon = Material.ENDER_PEARL;
+        this.color = ChatColor.DARK_PURPLE;
 
-        NAME = "Enderman";
-        ICON = Material.ENDER_PEARL;
-        COLOR = ChatColor.DARK_PURPLE;
-
-        PLAYSTYLES = new Playstyle[]
-        {
+        this.playstyles = new Playstyle[] {
             Playstyle.MOBILITY,
             Playstyle.FIGHTER
         };
 
-        DIAMONDS = new Diamond[]
-        {
+        this.diamonds = new Diamond[] {
             Diamond.BOOTS
         };
 
-        CLASS_INFO = new MWClassInfo
-        (
+        this.classInfo = new MWClassInfo(
             "Teleport",
             "Teleport up to &a25 &rblocks onto an opponent, gaining Speed III for &a5 &rseconds.\nCooldown: &a6s",
             "Ender Heart",
@@ -72,41 +62,11 @@ public class MWEnderman implements MWClass {
             "You will instantly break all adjacent blocks of a similar type for every &a3 &rore, stone, or wooden logs broken."
         );
 
-        CLASS_INFO.addEnergyGainType("Melee", 20);
-        CLASS_INFO.addEnergyGainType("Bow", 20);
+        this.classInfo.addEnergyGainType("Melee", 20);
+        this.classInfo.addEnergyGainType("Bow", 20);
     }
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public Material getIcon() {
-        return ICON;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return COLOR;
-    }
-
-    @Override
-    public Playstyle[] getPlaystyles() {
-        return PLAYSTYLES;
-    }
-
-    @Override
-    public Diamond[] getDiamonds() {
-        return DIAMONDS;
-    }
-
-    @Override
-    public MWClassInfo getInfo() {
-        return CLASS_INFO;
-    }
-
-    class Wrapper {
+    static class Wrapper {
         public Wrapper(BukkitRunnable task, int time) {
             this.task = task;
             this.time = time;
@@ -117,12 +77,9 @@ public class MWEnderman implements MWClass {
         public int time;
     }
 
-    private final Map<Player, Wrapper> COOLDOWN_CACHE = new HashMap<>();
-    private final Set<Player> COOLDOWN_CACHE_2 = new HashSet<>();
-
     @Override
     public void ability(Player player) {
-        if (COOLDOWN_CACHE.containsKey(player)) return;
+        if (cooldownCacheAbility.containsKey(player)) return;
 
         World world = player.getWorld();
         Location loc = player.getLocation();
@@ -188,10 +145,10 @@ public class MWEnderman implements MWClass {
 
                 @Override
                 public void run() {
-                    Wrapper wpr = COOLDOWN_CACHE.get(player);
+                    Wrapper wpr = cooldownCacheAbility.get(player);
 
                     if (wpr == null || wpr.time <= 0) {
-                        COOLDOWN_CACHE.remove(player);
+                        cooldownCacheAbility.remove(player);
 
                         ActionBar.clear(player);
 
@@ -208,7 +165,7 @@ public class MWEnderman implements MWClass {
                 }
             };
 
-            COOLDOWN_CACHE.put(player, new Wrapper(task, 60));
+            cooldownCacheAbility.put(player, new Wrapper(task, 60));
             task.runTaskTimer(plugin, 0, 2);
 
             return;
@@ -230,11 +187,8 @@ public class MWEnderman implements MWClass {
         }
     }
 
-    private final Map<Player, Integer> INCREMENT = new HashMap();
-    private final Map<Player, Integer> INCREMENT_2 = new HashMap();
-
     public boolean isKeepInventory(Player player) {
-        return INCREMENT_2.get(player) == 0;
+        return incrementEChest.get(player) == 0;
     }
 
     @EventHandler
@@ -243,10 +197,10 @@ public class MWEnderman implements MWClass {
         if (!MWClassManager.isMW(player)) return;
 
         if (MWClassManager.get(player) == this) {
-            if (!INCREMENT_2.containsKey(player)) {
-                INCREMENT_2.put(player, 0);
+            if (!incrementEChest.containsKey(player)) {
+                incrementEChest.put(player, 0);
             } else {
-                INCREMENT_2.put(player, (INCREMENT_2.get(player) + 1) % 3);
+                incrementEChest.put(player, (incrementEChest.get(player) + 1) % 3);
             }
 
             if (isKeepInventory(player)) {
@@ -266,12 +220,12 @@ public class MWEnderman implements MWClass {
         int energy = Energy.fetch(player);
 
         if (energy >= 80 && energy < 100) {
-            if (!COOLDOWN_CACHE_2.contains(player)) {
+            if (!cooldownCacheRegen.contains(player)) {
                 PotionUtils.effect(player, "regeneration", 10);
 
-                COOLDOWN_CACHE_2.add(player);
+                cooldownCacheRegen.add(player);
 
-                Bukkit.getScheduler().runTaskLater(plugin, () -> COOLDOWN_CACHE_2.remove(player), 5 * 20);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> cooldownCacheRegen.remove(player), 5 * 20);
             }
         }
 
@@ -283,13 +237,13 @@ public class MWEnderman implements MWClass {
         Player player = event.getPlayer();
 
         if (MWClassManager.get(player) == this) {
-            if (!INCREMENT.containsKey(player)) {
-                INCREMENT.put(player, 0);
+            if (!incrementGathering.containsKey(player)) {
+                incrementGathering.put(player, 0);
             } else {
-                INCREMENT.put(player, (INCREMENT.get(player) + 1) % 3);
+                incrementGathering.put(player, (incrementGathering.get(player) + 1) % 3);
             }
 
-            if (INCREMENT.get(player) == 0) {
+            if (incrementGathering.get(player) == 0) {
                 Block block = event.getBlock();
                 Location loc = block.getLocation();
                 Material type = block.getType();

@@ -23,33 +23,25 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class MWHerobrine implements MWClass {
+public class MWHerobrine extends MWClass {
 
-    private final String NAME;
-    private final Material ICON;
-    private final ChatColor COLOR;
-    private final Playstyle[] PLAYSTYLES;
-    private final Diamond[] DIAMONDS;
-    private final MWClassInfo CLASS_INFO;
+    private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWHerobrine() {
-        NAME = "Herobrine";
-        ICON = Material.DIAMOND_SWORD;
-        COLOR = ChatColor.YELLOW;
+        this.name = "Herobrine";
+        this.icon = Material.DIAMOND_SWORD;
+        this.color = ChatColor.YELLOW;
 
-        PLAYSTYLES = new Playstyle[]
-        {
+        this.playstyles = new Playstyle[] {
             Playstyle.DAMAGE,
             Playstyle.CONTROL
         };
 
-        DIAMONDS = new Diamond[]
-        {
+        this.diamonds = new Diamond[] {
             Diamond.SWORD
         };
 
-        CLASS_INFO = new MWClassInfo
-        (
+        this.classInfo = new MWClassInfo(
             "Wrath",
             "Unleash the wrath of Herobrine, striking all nearby enemies in a 5 block radius for &a4.5 &rtrue damage.",
             "Power",
@@ -60,38 +52,8 @@ public class MWHerobrine implements MWClass {
             "Increases the chance to find treasure chests by &a300% &rwhen mining."
         );
 
-        CLASS_INFO.addEnergyGainType("Melee", 25);
-        CLASS_INFO.addEnergyGainType("Bow", 25);
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public Material getIcon() {
-        return ICON;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return COLOR;
-    }
-
-    @Override
-    public Playstyle[] getPlaystyles() {
-        return PLAYSTYLES;
-    }
-
-    @Override
-    public Diamond[] getDiamonds() {
-        return DIAMONDS;
-    }
-
-    @Override
-    public MWClassInfo getInfo() {
-        return CLASS_INFO;
+        this.classInfo.addEnergyGainType("Melee", 25);
+        this.classInfo.addEnergyGainType("Bow", 25);
     }
 
     @Override
@@ -129,8 +91,6 @@ public class MWHerobrine implements MWClass {
         ActionBar.send(player, "No players within " + ChatColor.RED + 5 + ChatColor.RESET + " meters!");
     }
 
-    private final Map<Player, Integer> INCREMENT = new HashMap<>();
-
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
         Player player = Energy.validate(event);
@@ -138,13 +98,13 @@ public class MWHerobrine implements MWClass {
 
         if (MWClassManager.get(player) != this) return;
 
-        if (!INCREMENT.containsKey(player)) {
-            INCREMENT.put(player, 0);
+        if (!increment.containsKey(player)) {
+            increment.put(player, 0);
         } else {
-            INCREMENT.put(player, (INCREMENT.get(player) + 1) % 3);
+            increment.put(player, (increment.get(player) + 1) % 3);
         }
 
-        if (INCREMENT.get(player) == 0) {
+        if (increment.get(player) == 0) {
             PotionUtils.effect(player, "speed", 3, 1);
             PotionUtils.effect(player, "regeneration", 5);
         }

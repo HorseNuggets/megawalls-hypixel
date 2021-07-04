@@ -1,4 +1,4 @@
-package net.nuggetmc.mw.admin;
+package net.nuggetmc.mw.command;
 
 import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.mwclass.MWClassManager;

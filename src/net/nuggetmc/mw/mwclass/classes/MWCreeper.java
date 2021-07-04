@@ -37,37 +37,27 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class MWCreeper implements MWClass {
+public class MWCreeper extends MWClass {
 
-    private MegaWalls plugin;
-
-    private final String NAME;
-    private final Material ICON;
-    private final ChatColor COLOR;
-    private final Playstyle[] PLAYSTYLES;
-    private final Diamond[] DIAMONDS;
-    private final MWClassInfo CLASS_INFO;
+    private final Map<BukkitRunnable, Integer> tasks = new HashMap<>();
+    private final Map<TNTPrimed, Player> miniTNTList = new HashMap<>();
+    private final Set<Player> willpowerList = new HashSet<>();
 
     public MWCreeper() {
-        this.plugin = MegaWalls.getInstance();
+        this.name = "Creeper";
+        this.icon = Material.TNT;
+        this.color = ChatColor.GREEN;
 
-        NAME = "Creeper";
-        ICON = Material.TNT;
-        COLOR = ChatColor.GREEN;
-
-        PLAYSTYLES = new Playstyle[]
-        {
+        this.playstyles = new Playstyle[] {
             Playstyle.CONTROL,
             Playstyle.DAMAGE
         };
 
-        DIAMONDS = new Diamond[]
-        {
+        this.diamonds = new Diamond[] {
             Diamond.LEGGINGS
         };
 
-        CLASS_INFO = new MWClassInfo
-        (
+        this.classInfo = new MWClassInfo(
             "Detonate",
             "You will set off an explosion that deals up to &a10 &rtrue damage in a 6 block radius with a &a3 &rsecond delay.\nHowever, you will lose &a0.75 &rdamage for every block that separates you and an opponent, with a minimum of &a5 &rdamage.",
             "Fission Heart",
@@ -78,41 +68,9 @@ public class MWCreeper implements MWClass {
             "A TNT block will be dropped for every &a1 &rcoal ore mined."
         );
 
-        CLASS_INFO.addEnergyGainType("Melee", 20);
-        CLASS_INFO.addEnergyGainType("Bow", 20);
+        this.classInfo.addEnergyGainType("Melee", 20);
+        this.classInfo.addEnergyGainType("Bow", 20);
     }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public Material getIcon() {
-        return ICON;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return COLOR;
-    }
-
-    @Override
-    public Playstyle[] getPlaystyles() {
-        return PLAYSTYLES;
-    }
-
-    @Override
-    public Diamond[] getDiamonds() {
-        return DIAMONDS;
-    }
-
-    @Override
-    public MWClassInfo getInfo() {
-        return CLASS_INFO;
-    }
-
-    private final Map<BukkitRunnable, Integer> TASKS = new HashMap<>();
 
     @Override
     public void ability(Player player) {
@@ -122,12 +80,12 @@ public class MWCreeper implements MWClass {
 
             @Override
             public void run() {
-                if (!TASKS.containsKey(this) || player == null || player.isDead() || !player.isOnline()) {
+                if (!tasks.containsKey(this) || player == null || player.isDead() || !player.isOnline()) {
                     this.cancel();
                     return;
                 }
 
-                int n = TASKS.get(this);
+                int n = tasks.get(this);
 
                 Location loc = player.getEyeLocation();
                 World world = player.getWorld();
@@ -150,15 +108,13 @@ public class MWCreeper implements MWClass {
                     world.playSound(loc, Sound.CREEPER_HISS, 1, 1);
                 }
 
-                TASKS.put(this, n - 1);
+                tasks.put(this, n - 1);
             }
         };
 
-        TASKS.put(task, 12);
+        tasks.put(task, 12);
         task.runTaskTimer(plugin, 0, 5);
     }
-
-    private final Map<TNTPrimed, Player> MINI_TNTS = new HashMap<>();
 
     private void explode(Player player) {
         WorldUtils.createNoDamageExplosion(player.getLocation(), 2);
@@ -196,7 +152,7 @@ public class MWCreeper implements MWClass {
             tnt.setFuseTicks(20);
             tnt.setYield(2);
 
-            MINI_TNTS.put(tnt, player);
+            miniTNTList.put(tnt, player);
         }
     }
 
@@ -207,8 +163,8 @@ public class MWCreeper implements MWClass {
 
         TNTPrimed tnt = (TNTPrimed) event.getDamager();
 
-        if (MINI_TNTS.containsKey(tnt)) {
-            Player player = MINI_TNTS.get(tnt);
+        if (miniTNTList.containsKey(tnt)) {
+            Player player = miniTNTList.get(tnt);
 
             if (MWClassManager.get(player) == this) {
                 Player victim = (Player) event.getEntity();
@@ -228,8 +184,8 @@ public class MWCreeper implements MWClass {
 
         TNTPrimed tnt = (TNTPrimed) event.getEntity();
 
-        if (MINI_TNTS.containsKey(tnt)) {
-            MINI_TNTS.remove(tnt);
+        if (miniTNTList.containsKey(tnt)) {
+            miniTNTList.remove(tnt);
             event.blockList().clear();
         }
     }
@@ -250,11 +206,9 @@ public class MWCreeper implements MWClass {
         }
     }
 
-    private final Set<Player> WILLPOWER_LIST = new HashSet<>();
-
     private void willpower(Player player, double health, boolean own) {
         if ((own && health >= 25) || (!own && health < 20)) {
-            if (WILLPOWER_LIST.contains(player)) return;
+            if (willpowerList.contains(player)) return;
 
             Location loc = player.getEyeLocation();
 
@@ -275,10 +229,9 @@ public class MWCreeper implements MWClass {
 
             ParticleUtils.play(EnumParticle.VILLAGER_ANGRY, loc, 0.5, 0.5, 0.5, 0.15, 1);
 
-            WILLPOWER_LIST.add(player);
+            willpowerList.add(player);
 
-
-            Bukkit.getScheduler().runTaskLater(plugin, () -> WILLPOWER_LIST.remove(player), n * 20);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> willpowerList.remove(player), n * 20);
         }
     }
 

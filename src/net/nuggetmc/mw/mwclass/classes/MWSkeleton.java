@@ -2,7 +2,6 @@ package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
@@ -33,37 +32,27 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class MWSkeleton implements MWClass {
+public class MWSkeleton extends MWClass {
 
-    private MegaWalls plugin;
-
-    private final String NAME;
-    private final Material ICON;
-    private final ChatColor COLOR;
-    private final Playstyle[] PLAYSTYLES;
-    private final Diamond[] DIAMONDS;
-    private final MWClassInfo CLASS_INFO;
+    private final Map<Arrow, Player> explosiveArrows = new HashMap<>();
+    private final Map<Arrow, Float> arrowForce = new HashMap<>();
+    private final Set<Player> cooldownCache = new HashSet<>();
 
     public MWSkeleton() {
-        this.plugin = MegaWalls.getInstance();
+        this.name = "Skeleton";
+        this.icon = Material.BONE;
+        this.color = ChatColor.AQUA;
 
-        NAME = "Skeleton";
-        ICON = Material.BONE;
-        COLOR = ChatColor.AQUA;
-
-        PLAYSTYLES = new Playstyle[]
-        {
+        this.playstyles = new Playstyle[] {
             Playstyle.RANGED,
             Playstyle.CONTROL
         };
 
-        DIAMONDS = new Diamond[]
-        {
+        this.diamonds = new Diamond[] {
             Diamond.HELMET
         };
 
-        CLASS_INFO = new MWClassInfo
-        (
+        this.classInfo = new MWClassInfo(
             "Explosive Arrow",
             "You will fire an explosive arrow that deals &a6 &rdamage in a 6 block radius and breaks blocks.",
             "Salvaging",
@@ -74,40 +63,8 @@ public class MWSkeleton implements MWClass {
             "Drops while breaking iron ore, coal ore, and wooden logs are tripled, and drops while mining diamond ore are doubled."
         );
 
-        CLASS_INFO.addEnergyGainType("Bow", "25 × CHARGE%");
+        this.classInfo.addEnergyGainType("Bow", "25 × CHARGE%");
     }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public Material getIcon() {
-        return ICON;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return COLOR;
-    }
-
-    @Override
-    public Playstyle[] getPlaystyles() {
-        return PLAYSTYLES;
-    }
-
-    @Override
-    public Diamond[] getDiamonds() {
-        return DIAMONDS;
-    }
-
-    @Override
-    public MWClassInfo getInfo() {
-        return CLASS_INFO;
-    }
-
-    private final Map<Arrow, Player> EXPLOSIVE_ARROWS = new HashMap<>();
 
     @Override
     public void ability(Player player) {
@@ -127,7 +84,7 @@ public class MWSkeleton implements MWClass {
 
         particles(arrow);
 
-        EXPLOSIVE_ARROWS.put(arrow, player);
+        explosiveArrows.put(arrow, player);
     }
 
     private void particles(Arrow arrow) {
@@ -135,7 +92,7 @@ public class MWSkeleton implements MWClass {
 
             @Override
             public void run() {
-                if (arrow == null || arrow.isDead() || !EXPLOSIVE_ARROWS.containsKey(arrow)) {
+                if (arrow == null || arrow.isDead() || !explosiveArrows.containsKey(arrow)) {
                     this.cancel();
                     return;
                 }
@@ -151,12 +108,12 @@ public class MWSkeleton implements MWClass {
     public void onProjectileHit(ProjectileHitEvent event) {
         Projectile proj = event.getEntity();
 
-        if (EXPLOSIVE_ARROWS.containsKey(proj)) {
+        if (explosiveArrows.containsKey(proj)) {
             WorldUtils.createNoDamageExplosion(proj.getLocation(), 2);
 
-            explosionDamage(proj, EXPLOSIVE_ARROWS.get(proj));
+            explosionDamage(proj, explosiveArrows.get(proj));
 
-            EXPLOSIVE_ARROWS.remove(proj);
+            explosiveArrows.remove(proj);
 
             proj.remove();
         }
@@ -172,8 +129,6 @@ public class MWSkeleton implements MWClass {
         }
     }
 
-    private final Map<Arrow, Float> ARROW_FORCE = new HashMap<>();
-
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
         Player player = Energy.validate(event);
@@ -184,8 +139,8 @@ public class MWSkeleton implements MWClass {
 
         Arrow arrow = (Arrow) event.getDamager();
 
-        if (ARROW_FORCE.containsKey(arrow)) {
-            float force = ARROW_FORCE.get(arrow);
+        if (arrowForce.containsKey(arrow)) {
+            float force = arrowForce.get(arrow);
             Energy.add(player, (int) (25 * force));
         }
 
@@ -194,18 +149,16 @@ public class MWSkeleton implements MWClass {
 
         MWHealth.feed(player, 4);
 
-        if (!COOLDOWN_CACHE.contains(player)) {
+        if (!cooldownCache.contains(player)) {
             PotionUtils.effect(player, "speed", 7, 1);
 
             player.getWorld().playSound(player.getLocation(), Sound.SKELETON_WALK, 1, 1);
 
-            COOLDOWN_CACHE.add(player);
+            cooldownCache.add(player);
 
-            Bukkit.getScheduler().runTaskLater(plugin, () -> COOLDOWN_CACHE.remove(player), 21 * 20);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> cooldownCache.remove(player), 21 * 20);
         }
     }
-
-    private final Set<Player> COOLDOWN_CACHE = new HashSet<>();
 
     @EventHandler
     public void onBowShoot(EntityShootBowEvent event) {
@@ -216,7 +169,7 @@ public class MWSkeleton implements MWClass {
 
         if (MWClassManager.get(player) == this) {
             Arrow arrow = (Arrow) event.getProjectile();
-            ARROW_FORCE.put(arrow, event.getForce());
+            arrowForce.put(arrow, event.getForce());
         }
     }
 

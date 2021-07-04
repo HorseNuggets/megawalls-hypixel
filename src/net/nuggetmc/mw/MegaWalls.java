@@ -1,7 +1,8 @@
 package net.nuggetmc.mw;
 
-import net.nuggetmc.mw.admin.DebugCommand;
-import net.nuggetmc.mw.admin.EnergyCommand;
+import net.nuggetmc.mw.command.DebugCommand;
+import net.nuggetmc.mw.command.EnergyCommand;
+import net.nuggetmc.mw.command.MegaWallsCommand;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
@@ -10,22 +11,21 @@ import net.nuggetmc.mw.mwclass.classes.*;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 public class MegaWalls extends JavaPlugin {
 
     private static MegaWalls instance;
 
+    private PluginManager pluginManager;
     private MWClassManager mwClassManager;
     private MWClassMenu menu;
 
@@ -33,37 +33,53 @@ public class MegaWalls extends JavaPlugin {
         return instance;
     }
 
+    public MWClassMenu getMenu() {
+        return menu;
+    }
+
     @Override
     public void onEnable() {
         instance = this;
 
+        // Create instances
+        this.pluginManager = this.getServer().getPluginManager();
         this.mwClassManager = new MWClassManager(this);
         this.menu = new MWClassMenu("Class Selector", mwClassManager);
 
-        getCommand("energy").setExecutor(new EnergyCommand());
-        getCommand("debug").setExecutor(new DebugCommand());
+        // Register commands
+        setExecutor("energy", new EnergyCommand());
+        setExecutor("debug", new DebugCommand());
+        setExecutorAndTabCompleter("megawalls", new MegaWallsCommand());
 
-        PluginCommand command = getCommand("megawalls");
-        command.setExecutor(menu);
-        command.setTabCompleter(this);
+        this.registerClasses(
+            new MWCreeper(),
+            new MWDreadlord(),
+            new MWEnderman(),
+            new MWGolem(),
+            new MWHerobrine(),
+            new MWSkeleton(),
+            new MWSpider(),
+            new MWZombie())
+        ;
 
-        PluginManager manager = getServer().getPluginManager();
-        manager.registerEvents(mwClassManager, this);
-        manager.registerEvents(menu, this);
-        manager.registerEvents(new Energy(), this);
-        manager.registerEvents(new MWHealth(this), this);
-        manager.registerEvents(new WorldUtils(), this);
+        this.registerEvents(
+            mwClassManager,
+            menu,
+            new Energy(),
+            new MWHealth(this),
+            new WorldUtils()
+        );
 
-        registerClasses();
+        this.initEnergy();
+        this.restoreClasses();
+    }
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            Energy.set(player, 0);
-        }
+    private void initEnergy() {
+        Bukkit.getOnlinePlayers().forEach(p -> Energy.set(p, 0));
+        Energy.flash();
+    }
 
-        for (Map.Entry<String, MWClass> entry : MWClassManager.getClasses().entrySet()) {
-            manager.registerEvents(entry.getValue(), this);
-        }
-
+    private void restoreClasses() {
         for (String key : getConfig().getKeys(false)) {
             String name = getConfig().getString(key);
 
@@ -78,58 +94,26 @@ public class MegaWalls extends JavaPlugin {
             MWClassManager.getActive().put(player, mwclass);
         }
 
-        saveConfig();
-
-        Energy.flash();
+        this.saveConfig();
     }
 
-    private void registerClasses() {
-        MWClassManager.register(
-            new MWCreeper(),
-            new MWDreadlord(),
-            new MWEnderman(),
-            new MWGolem(),
-            new MWHerobrine(),
-            new MWSkeleton(),
-            new MWSpider(),
-            new MWZombie()
-        );
+    private void setExecutor(String name, CommandExecutor executor) {
+        getCommand(name).setExecutor(executor);
     }
 
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!cmd.getName().equals("megawalls")) return null;
-        if (args.length != 1) return null;
+    private void setExecutorAndTabCompleter(String name, Object obj) {
+        PluginCommand command = getCommand(name);
 
-        List<String> groupnames = new ArrayList<>(MWClassManager.getClasses().keySet()).stream().map(String::toLowerCase).collect(Collectors.toList());
-        String arg = args[0];
-
-        if (!isEmptyTab(arg)) {
-            return autofill(groupnames, arg);
-        }
-
-        return groupnames;
+        command.setExecutor((CommandExecutor) obj);
+        command.setTabCompleter((TabCompleter) obj);
     }
 
-    private boolean isEmptyTab(String s) {
-        return s == null || s.equals("") || s.equals(" ") || s.isEmpty();
+    private void registerEvents(Listener... listeners) {
+        Arrays.stream(listeners).forEach(c -> pluginManager.registerEvents(c, this));
     }
 
-    private List<String> autofill(List<String> groupnames, String input) {
-        List<String> list = new ArrayList<>();
-
-        for (String entry : groupnames) {
-            if (entry.length() >= input.length()) {
-                if (input.equalsIgnoreCase(entry.substring(0, input.length()))) {
-                    list.add(entry);
-                }
-            }
-        }
-
-        if (list.isEmpty()) {
-            return groupnames;
-        }
-
-        return list;
+    private void registerClasses(MWClass... mwclasses) {
+        MWClassManager.register(mwclasses);
+        Arrays.stream(mwclasses).forEach(this::registerEvents);
     }
 }

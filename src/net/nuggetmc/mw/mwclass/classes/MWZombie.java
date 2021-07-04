@@ -30,33 +30,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MWZombie implements MWClass {
-
-    private final String NAME;
-    private final Material ICON;
-    private final ChatColor COLOR;
-    private final Playstyle[] PLAYSTYLES;
-    private final Diamond[] DIAMONDS;
-    private final MWClassInfo CLASS_INFO;
+public class MWZombie extends MWClass {
+    
+    private final Map<Player, Wrapper> tasks = new HashMap<>();
+    private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWZombie() {
-        NAME = "Zombie";
-        ICON = Material.ROTTEN_FLESH;
-        COLOR = ChatColor.DARK_GREEN;
+        this.name = "Zombie";
+        this.icon = Material.ROTTEN_FLESH;
+        this.color = ChatColor.DARK_GREEN;
 
-        PLAYSTYLES = new Playstyle[]
-        {
+        this.playstyles = new Playstyle[] {
             Playstyle.TANK,
             Playstyle.SUPPORT
         };
 
-        DIAMONDS = new Diamond[]
-        {
+        this.diamonds = new Diamond[] {
             Diamond.CHESTPLATE
         };
 
-        CLASS_INFO = new MWClassInfo
-        (
+        this.classInfo = new MWClassInfo(
             "Circle of Healing",
             "Heal yourself for &a8 HP &rand nearby allies in a 5 block radius for &a5 HP&r.",
             "Toughness",
@@ -67,40 +60,10 @@ public class MWZombie implements MWClass {
             "You will gain Haste III for &a5 &rseconds when breaking blocks."
         );
 
-        CLASS_INFO.addEnergyGainType("Melee", 12);
-        CLASS_INFO.addEnergyGainType("Bow", 12);
-        CLASS_INFO.addEnergyGainType("When Hit", 1);
-        CLASS_INFO.addEnergyGainType("When Bowed", 2);
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public Material getIcon() {
-        return ICON;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return COLOR;
-    }
-
-    @Override
-    public Playstyle[] getPlaystyles() {
-        return PLAYSTYLES;
-    }
-
-    @Override
-    public Diamond[] getDiamonds() {
-        return DIAMONDS;
-    }
-
-    @Override
-    public MWClassInfo getInfo() {
-        return CLASS_INFO;
+        this.classInfo.addEnergyGainType("Melee", 12);
+        this.classInfo.addEnergyGainType("Bow", 12);
+        this.classInfo.addEnergyGainType("When Hit", 1);
+        this.classInfo.addEnergyGainType("When Bowed", 2);
     }
 
     @Override
@@ -130,8 +93,6 @@ public class MWZombie implements MWClass {
         }
     }
 
-    private final Map<Player, Integer> INCREMENT = new HashMap<>();
-
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
         Player player = Energy.validate(event);
@@ -144,13 +105,13 @@ public class MWZombie implements MWClass {
         Player victim = (Player) event.getEntity();
 
         if (MWClassManager.get(victim) == this) {
-            if (!INCREMENT.containsKey(victim)) {
-                INCREMENT.put(victim, 0);
+            if (!increment.containsKey(victim)) {
+                increment.put(victim, 0);
             } else {
-                INCREMENT.put(victim, (INCREMENT.get(victim) + 1) % 3);
+                increment.put(victim, (increment.get(victim) + 1) % 3);
             }
 
-            if (INCREMENT.get(victim) == 0) {
+            if (increment.get(victim) == 0) {
                 victim.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20, 0));
                 victim.getWorld().playSound(victim.getLocation(), Sound.GHAST_FIREBALL, (float) 0.2, 2);
             }
@@ -168,8 +129,6 @@ public class MWZombie implements MWClass {
         }
     }
 
-    private final Map<Player, Wrapper> TASKS = new HashMap<>();
-
     class Wrapper {
         public Wrapper(BukkitRunnable task, int time) {
             this.task = task;
@@ -182,7 +141,7 @@ public class MWZombie implements MWClass {
     }
 
     private void berserk(Player player) {
-        if (TASKS.containsKey(player)) {
+        if (tasks.containsKey(player)) {
             return;
         }
 
@@ -196,11 +155,11 @@ public class MWZombie implements MWClass {
 
             @Override
             public void run() {
-                Wrapper wpr = TASKS.get(player);
+                Wrapper wpr = tasks.get(player);
 
                 if (wpr == null || wpr.time <= 0) {
-                    if (TASKS.containsKey(player)) {
-                        TASKS.remove(player);
+                    if (tasks.containsKey(player)) {
+                        tasks.remove(player);
                     }
 
                     this.cancel();
@@ -215,7 +174,7 @@ public class MWZombie implements MWClass {
             }
         };
 
-        TASKS.put(player, new Wrapper(task, 42));
+        tasks.put(player, new Wrapper(task, 42));
         task.runTaskTimer(MegaWalls.getInstance(), 0, 10);
     }
 

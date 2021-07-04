@@ -2,8 +2,6 @@ package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
-import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.Energy;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
@@ -16,7 +14,6 @@ import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -31,38 +28,27 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class MWDreadlord implements MWClass {
+public class MWDreadlord extends MWClass {
 
-    private MegaWalls plugin;
-
-    private final String NAME;
-    private final Material ICON;
-    private final ChatColor COLOR;
-    private final Playstyle[] PLAYSTYLES;
-    private final Diamond[] DIAMONDS;
-    private final MWClassInfo CLASS_INFO;
+    private final Set<ArmorStand> armorStands = new HashSet<>();
+    private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWDreadlord() {
-        this.plugin = MegaWalls.getInstance();
+        this.name = "Dreadlord";
+        this.icon = Material.NETHER_BRICK_ITEM;
+        this.color = ChatColor.DARK_RED;
 
-        NAME = "Dreadlord";
-        ICON = Material.NETHER_BRICK_ITEM;
-        COLOR = ChatColor.DARK_RED;
-
-        PLAYSTYLES = new Playstyle[]
-        {
+        this.playstyles = new Playstyle[] {
             Playstyle.RUSHER,
             Playstyle.DAMAGE
         };
 
-        DIAMONDS = new Diamond[]
-        {
+        this.diamonds = new Diamond[] {
             Diamond.SWORD,
             Diamond.HELMET
         };
 
-        CLASS_INFO = new MWClassInfo
-        (
+        this.classInfo = new MWClassInfo(
             "Shadow Burst",
             "Fire three wither skulls at once dealing a total of &a8 &rtrue damage.",
             "Soul Eater",
@@ -73,41 +59,9 @@ public class MWDreadlord implements MWClass {
             "Every &a1 &riron ore will be auto-smelted when mined, dropping an iron ingot."
         );
 
-        CLASS_INFO.addEnergyGainType("Melee", 10);
-        CLASS_INFO.addEnergyGainType("Bow", 10);
+        this.classInfo.addEnergyGainType("Melee", 10);
+        this.classInfo.addEnergyGainType("Bow", 10);
     }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public Material getIcon() {
-        return ICON;
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return COLOR;
-    }
-
-    @Override
-    public Playstyle[] getPlaystyles() {
-        return PLAYSTYLES;
-    }
-
-    @Override
-    public Diamond[] getDiamonds() {
-        return DIAMONDS;
-    }
-
-    @Override
-    public MWClassInfo getInfo() {
-        return CLASS_INFO;
-    }
-
-    private final Set<ArmorStand> ARMOR_STANDS = new HashSet<>();
 
     @Override
     public void ability(Player player) {
@@ -129,7 +83,7 @@ public class MWDreadlord implements MWClass {
             Location ahead = loc.clone().add(dir.getX(), -1, dir.getZ());
             ArmorStand pt = (ArmorStand) world.spawnEntity(ahead, EntityType.ARMOR_STAND);
 
-            ARMOR_STANDS.add(pt);
+            armorStands.add(pt);
 
             pt.setVisible(false);
             pt.setGravity(false);
@@ -140,7 +94,7 @@ public class MWDreadlord implements MWClass {
 
                 @Override
                 public void run() {
-                    if (pt.isDead() || !ARMOR_STANDS.contains(pt)) {
+                    if (pt.isDead() || !armorStands.contains(pt)) {
                         this.cancel();
                         return;
                     }
@@ -204,12 +158,10 @@ public class MWDreadlord implements MWClass {
 
         ArmorStand stand = (ArmorStand) event.getEntity();
 
-        if (ARMOR_STANDS.contains(stand)) {
+        if (armorStands.contains(stand)) {
             event.setCancelled(true);
         }
     }
-
-    private final Map<Player, Integer> INCREMENT = new HashMap<>();
 
     @EventHandler
     public void hit(EntityDamageByEntityEvent event) {
@@ -218,13 +170,13 @@ public class MWDreadlord implements MWClass {
 
         if (MWClassManager.get(player) != this) return;
 
-        if (!INCREMENT.containsKey(player)) {
-            INCREMENT.put(player, 0);
+        if (!increment.containsKey(player)) {
+            increment.put(player, 0);
         } else {
-            INCREMENT.put(player, (INCREMENT.get(player) + 1) % 5);
+            increment.put(player, (increment.get(player) + 1) % 5);
         }
 
-        if (INCREMENT.get(player) == 4) {
+        if (increment.get(player) == 4) {
             MWHealth.heal(player, 2);
             MWHealth.feed(player, 3);
 
