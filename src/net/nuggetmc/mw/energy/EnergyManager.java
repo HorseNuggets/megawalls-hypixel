@@ -27,7 +27,7 @@ public class EnergyManager implements Listener {
 
     public EnergyManager() {
         this.plugin = MegaWalls.getInstance();
-        this.manager = MegaWalls.getInstance().getManager();
+        this.manager = plugin.getManager();
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tick, 20, 20);
     }
@@ -149,9 +149,10 @@ public class EnergyManager implements Listener {
     }
 
     public void set(Player player, int amount) {
-        if (amount != 0) {
-            playerData.put(player, amount);
-        }
+        playerData.put(player, amount);
+
+        plugin.getConfig().set("energy." + player.getName(), amount);
+        plugin.saveConfig();
 
         float bar = (float) (amount / 100.0);
 
@@ -159,9 +160,15 @@ public class EnergyManager implements Listener {
         player.setExp(bar);
     }
 
-    public void clear(Player player) {
-        playerData.remove(player);
+    public int get(Player player) {
+        if (playerData.containsKey(player)) {
+            return playerData.get(player);
+        }
 
+        return 0;
+    }
+
+    public void clear(Player player) {
         set(player, 0);
     }
 

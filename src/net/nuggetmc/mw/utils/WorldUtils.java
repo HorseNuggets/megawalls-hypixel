@@ -21,10 +21,9 @@ public class WorldUtils implements Listener {
     private static final Random RANDOM = new Random();
     private static final Set<TNTPrimed> DETONATE_LIST = new HashSet<>();
 
-    public static Location nearby(Player player) {
+    public static Location nearby(Location loc) {
         int top = 150;
 
-        Location loc = player.getLocation();
         loc.setY(top);
         loc.add(RANDOM.nextInt(60) - 30, 0, RANDOM.nextInt(60) - 30);
 

@@ -115,7 +115,6 @@ public class MWHerobrine extends MWClass {
         Player player = victim.getKiller();
 
         if (player == null || victim == player) return;
-        if (!manager.isMW(player)) return;
 
         if (manager.get(player) == this) {
             PotionUtils.effect(player, "strength", 6);

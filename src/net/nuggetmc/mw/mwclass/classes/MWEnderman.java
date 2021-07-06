@@ -73,6 +73,7 @@ public class MWEnderman extends MWClass {
 
     @Override
     public void ability(Player player) {
+
         if (cooldownCacheAbility.containsKey(player)) return;
 
         World world = player.getWorld();
@@ -152,7 +153,7 @@ public class MWEnderman extends MWClass {
 
                     double num = wpr.time / 10.0;
 
-                    String msg = "Teleport (" + ChatColor.RED + num + ChatColor.RESET + ")";
+                    String msg = "Teleport (" + ChatColor.RED + num + "s" + ChatColor.RESET + ")";
                     ActionBar.send(player, msg);
 
                     wpr.time--;
@@ -174,7 +175,6 @@ public class MWEnderman extends MWClass {
         Player player = victim.getKiller();
 
         if (player == null || victim == player) return;
-        if (!manager.isMW(player)) return;
 
         if (manager.get(player) == this) {
             mwhealth.heal(player, 3);
@@ -188,7 +188,6 @@ public class MWEnderman extends MWClass {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if (!manager.isMW(player)) return;
 
         if (manager.get(player) == this) {
             if (!incrementEChest.containsKey(player)) {

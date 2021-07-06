@@ -191,7 +191,6 @@ public class MWDreadlord extends MWClass {
         Player player = victim.getKiller();
 
         if (player == null || victim == player) return;
-        if (!manager.isMW(player)) return;
 
         if (manager.get(player) == this) {
             PotionUtils.effect(player, "strength", 5);
@@ -229,6 +228,7 @@ public class MWDreadlord extends MWClass {
 
         else {
             Map<Enchantment, Integer> swordEnch = new HashMap<>();
+            swordEnch.put(Enchantment.DAMAGE_UNDEAD, 1);
             swordEnch.put(Enchantment.DURABILITY, 10);
 
             Map<Enchantment, Integer> armorEnch = new HashMap<>();

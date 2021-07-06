@@ -63,32 +63,15 @@ public class MWGolem extends MWClass {
         this.classInfo.addEnergyGainType("Bow", 10);
     }
 
-    private Set<Player> inRange(Player player) {
-        World world = player.getWorld();
-        Location locUp = player.getEyeLocation();
-        Set<Player> result = new HashSet<>();
-
-        for (Player victim : Bukkit.getOnlinePlayers()) {
-            if (world != victim.getWorld()) continue;
-
-            Location loc = victim.getEyeLocation();
-
-            if (locUp.distance(loc) <= 4.5 && player != victim && !victim.isDead()) {
-                result.add(victim);
-            }
-        }
-
-        return result;
-    }
-
     @Override
     @SuppressWarnings("deprecation")
     public void ability(Player player) {
         energyManager.clear(player);
+
         World world = player.getWorld();
         Location locUp = player.getEyeLocation();
 
-        for (Player victim : inRange(player)) {
+        for (Player victim : inRange(player, 4.5)) {
             victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1));
 
             Vector vel = locUp.toVector().subtract(victim.getEyeLocation().toVector());
@@ -134,7 +117,7 @@ public class MWGolem extends MWClass {
         world.playSound(locUp, Sound.ANVIL_LAND, 1, 2);
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            for (Player victim : inRange(player)) {
+            for (Player victim : inRange(player, 4.5)) {
                 mwhealth.trueDamage(victim, 6, player);
             }
 
@@ -190,7 +173,6 @@ public class MWGolem extends MWClass {
         Player player = victim.getKiller();
 
         if (player == null || victim == player) return;
-        if (!manager.isMW(player)) return;
 
         if (manager.get(player) == this) {
             PotionUtils.effect(player, "absorption", 10, 1);

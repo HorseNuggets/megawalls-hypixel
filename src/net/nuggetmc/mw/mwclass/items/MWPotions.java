@@ -88,6 +88,19 @@ public class MWPotions {
         return ItemUtils.toMWItem(item);
     }
 
+    public static ItemStack createAbsorptionPotions(String name, ChatColor color, int count, int duration) {
+        Potion potion = new Potion(PotionType.WEAKNESS);
+        ItemStack item = potion.toItemStack(count);
+        PotionMeta meta = (PotionMeta) item.getItemMeta();
+
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.ABSORPTION, duration * 20, 1), true);
+        meta.setDisplayName(color + name + " Potion of Absorption II");
+
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
     public static ItemStack createSlowSplash(String name, ChatColor color) {
         Potion potion = new Potion(PotionType.SLOWNESS);
         potion.setSplash(true);

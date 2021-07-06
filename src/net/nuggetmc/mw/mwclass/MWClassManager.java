@@ -2,17 +2,17 @@ package net.nuggetmc.mw.mwclass;
 
 import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
-import net.nuggetmc.mw.energy.EnergyManager;
-import net.nuggetmc.mw.mwclass.classes.MWEnderman;
 import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -21,17 +21,18 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MWClassManager implements Listener {
 
     private final MegaWalls plugin;
-
-    private final EnergyManager energyManager;
 
     private final Map<String, MWClass> classes;
     private final Map<Player, MWClass> active;
@@ -40,7 +41,6 @@ public class MWClassManager implements Listener {
 
     public MWClassManager(MegaWalls instance) {
         this.plugin = instance;
-        this.energyManager = plugin.getEnergyManager();
         this.classes = new HashMap<>();
         this.active = new HashMap<>();
     }
@@ -77,8 +77,8 @@ public class MWClassManager implements Listener {
         return active;
     }
 
-    public void assign(Player player, MWClass mwclass) {
-        player.getInventory().clear();
+    public void assign(Player player, MWClass mwclass, boolean items) {
+        PlayerInventory inventory = player.getInventory();
 
         if (player.getMaxHealth() == 20 || player.getHealth() >= 35) {
             player.setMaxHealth(40);
@@ -87,11 +87,20 @@ public class MWClassManager implements Listener {
             player.setSaturation(20);
         }
 
-        mwclass.assign(player);
+        if (items) {
+            List<ItemStack> contents = ItemUtils.getAllContents(inventory).stream().filter(i -> !ItemUtils.isKitItem(i)).collect(Collectors.toList());
+
+            inventory.clear();
+
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                contents.forEach(i -> ItemUtils.givePlayerItemStack(player, i));
+            }, 1);
+
+            mwclass.assign(player);
+        }
 
         active.put(player, mwclass);
-
-        plugin.getConfig().set(player.getName(), mwclass.getName());
+        plugin.getConfig().set("active_classes." + player.getName(), mwclass.getName());
         plugin.saveConfig();
     }
 
@@ -108,19 +117,18 @@ public class MWClassManager implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        MWClass mwclass = active.get(player);
 
-        boolean listed = active.containsKey(player);
+        if (active.containsKey(player)) {
+            List<ItemStack> drops = event.getDrops();
 
-        if (!(listed && mwclass instanceof MWEnderman && ((MWEnderman) mwclass).isKeepInventory(player))) {
-            if (listed) {
-                active.remove(player);
+            if (drops != null) {
+                drops.removeIf(ItemUtils::isKitItem);
             }
 
-            energyManager.clear(player);
-
             event.setDroppedExp(0);
-            event.getDrops().removeIf(ItemUtils::isKitItem);
+
+            active.remove(player);
+            plugin.getEnergyManager().clear(player);
         }
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -128,6 +136,13 @@ public class MWClassManager implements Listener {
                 player.spigot().respawn();
             }
         }, 12);
+    }
+
+    @EventHandler
+    public void onEntitySpawn(EntitySpawnEvent event) {
+        if (event.getEntityType() == EntityType.EXPERIENCE_ORB) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -160,11 +175,11 @@ public class MWClassManager implements Listener {
 
     @EventHandler
     public void onPreJoin(PlayerSpawnLocationEvent event) {
-        event.setSpawnLocation(WorldUtils.nearby(event.getPlayer()));
+        event.setSpawnLocation(WorldUtils.nearby(event.getSpawnLocation()));
     }
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
-        event.setRespawnLocation(WorldUtils.nearby(event.getPlayer()));
+        event.setRespawnLocation(WorldUtils.nearby(event.getRespawnLocation()));
     }
 }

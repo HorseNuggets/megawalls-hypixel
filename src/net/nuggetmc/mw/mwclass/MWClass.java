@@ -7,9 +7,15 @@ import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
 import net.nuggetmc.mw.utils.MWHealth;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class MWClass implements Listener {
 
@@ -34,6 +40,24 @@ public abstract class MWClass implements Listener {
 
     public String getName() {
         return name;
+    }
+
+    protected Set<Player> inRange(Player player, double radius) {
+        World world = player.getWorld();
+        Location locUp = player.getEyeLocation();
+        Set<Player> result = new HashSet<>();
+
+        for (Player victim : Bukkit.getOnlinePlayers()) {
+            if (world != victim.getWorld()) continue;
+
+            Location loc = victim.getEyeLocation();
+
+            if (locUp.distance(loc) <= radius && player != victim && !victim.isDead()) {
+                result.add(victim);
+            }
+        }
+
+        return result;
     }
 
     public Material getIcon() {

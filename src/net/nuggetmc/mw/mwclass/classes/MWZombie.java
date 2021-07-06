@@ -130,7 +130,7 @@ public class MWZombie extends MWClass {
         }
     }
 
-    class Wrapper {
+    static class Wrapper {
         public Wrapper(BukkitRunnable task, int time) {
             this.task = task;
             this.time = time;

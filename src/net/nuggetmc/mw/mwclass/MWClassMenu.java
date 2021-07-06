@@ -65,8 +65,7 @@ public class MWClassMenu implements Listener {
         player.closeInventory();
 
         energyManager.clear(player);
-
-        manager.assign(player, mwclass);
+        manager.assign(player, mwclass, true);
     }
 
     @EventHandler
@@ -135,9 +134,7 @@ public class MWClassMenu implements Listener {
         Diamond[] diamonds = mwclass.getDiamonds();
         List<String> diamondValues = new ArrayList<>();
 
-        for (Diamond diamond : diamonds) {
-            diamondValues.add(ChatColor.AQUA + StringUtils.capitalize(diamond.name().toLowerCase()));
-        }
+        Arrays.stream(diamonds).forEach(d -> diamondValues.add(ChatColor.AQUA + StringUtils.capitalize(d.name().toLowerCase())));
 
         lore.add(ChatColor.GRAY + "Diamond: " + String.join(ChatColor.GRAY + ", ", diamondValues));
         lore.add("");

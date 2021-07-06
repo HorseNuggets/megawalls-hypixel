@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -77,8 +78,9 @@ public class MegaWalls extends JavaPlugin {
             new MWHerobrine(),
             new MWSkeleton(),
             new MWSpider(),
-            new MWZombie())
-        ;
+            new MWSquid(),
+            new MWZombie()
+        );
 
         this.registerEvents(
             this.mwClassManager,
@@ -88,20 +90,31 @@ public class MegaWalls extends JavaPlugin {
             new WorldUtils()
         );
 
+        this.restore();
         this.initEnergy();
-        this.restoreClasses();
     }
 
     private void initEnergy() {
-        Bukkit.getOnlinePlayers().forEach(energyManager::clear);
         energyManager.flash();
+
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            if (energyManager.get(p) == 0) {
+                energyManager.clear(p);
+            }
+        });
     }
 
-    private void restoreClasses() {
-        for (String key : getConfig().getKeys(false)) {
-            String name = getConfig().getString(key);
+    private void restore() {
+        ConfigurationSection section = getConfig().getConfigurationSection("active_classes");
+        if (section == null) return;
 
-            getConfig().set(key, null);
+        ConfigurationSection sectionEnergy = getConfig().getConfigurationSection("energy");
+        boolean checkEnergy = sectionEnergy != null;
+
+        for (String key : section.getKeys(false)) {
+            String name = section.getString(key);
+
+            section.set(key, null);
 
             Player player = Bukkit.getPlayer(key);
             if (player == null || !player.isOnline()) continue;
@@ -109,10 +122,20 @@ public class MegaWalls extends JavaPlugin {
             MWClass mwclass = mwClassManager.fetch(name);
             if (mwclass == null) continue;
 
-            mwClassManager.getActive().put(player, mwclass);
+            mwClassManager.assign(player, mwclass, false);
+
+            if (checkEnergy) {
+                if (sectionEnergy.contains(key)) {
+                    int energy = sectionEnergy.getInt(key);
+
+                    energyManager.set(player, energy);
+
+                    sectionEnergy.set(key, null);
+                }
+            }
         }
 
-        this.saveConfig();
+        saveConfig();
     }
 
     private void setExecutor(String name, CommandExecutor executor) {
