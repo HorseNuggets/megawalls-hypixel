@@ -54,7 +54,7 @@ public class MWEnderman extends MWClass {
             "Ender Heart",
             "For every &a3 &rdeaths, you will keep your inventory outside of Diamond-related items.\nYou heal &a3 HP &ron kill, and &a1.5 HP &ron assist.",
             "Soul Charge",
-            "You gain &a10 &rseconds of Regeneration I when you reach 100 energyManager.\nCooldown: &a5s",
+            "You gain &a10 &rseconds of Regeneration I when you reach 100 energy.\nCooldown: &a5s",
             "Enderblocks",
             "You will instantly break all adjacent blocks of a similar type for every &a3 &rore, stone, or wooden logs broken."
         );

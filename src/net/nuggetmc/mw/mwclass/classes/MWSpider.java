@@ -58,7 +58,7 @@ public class MWSpider extends MWClass {
             "Venom Strike",
             "For every &a4 &rmelee attacks, you will poison your opponent, dealing 3 damage over &a5 &rseconds.",
             "Skitter",
-            "If you melee enemies &a4 &rtimes after landing with Leap within 3 seconds, you gain Speed I for &a5 &rseconds and earn &a20 &renergyManager.",
+            "If you melee enemies &a4 &rtimes after landing with Leap within 3 seconds, you gain Speed I for &a5 &rseconds and earn &a20 &renergy.",
             "Iron Rush",
             "When digging with a shovel, you will receive an iron ingot for every &a1 &rblock mined."
         );
