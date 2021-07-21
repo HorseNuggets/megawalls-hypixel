@@ -114,21 +114,23 @@ public class MWClassManager implements Listener {
         check(event, event.getPlayer(), event.getItem().getItemStack());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(
+        priority = EventPriority.HIGHEST,
+        ignoreCancelled = true
+    )
     public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        List<ItemStack> drops = event.getDrops();
+
+        if (drops != null) {
+            drops.removeIf(ItemUtils::isKitItem);
+        }
 
         if (active.containsKey(player)) {
-            List<ItemStack> drops = event.getDrops();
-
-            if (drops != null) {
-                drops.removeIf(ItemUtils::isKitItem);
-            }
-
-            event.setDroppedExp(0);
-
             active.remove(player);
             plugin.getEnergyManager().clear(player);
+
+            event.setDroppedExp(0);
         }
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {

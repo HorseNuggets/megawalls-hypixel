@@ -9,6 +9,7 @@ import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.MWClassMenu;
 import net.nuggetmc.mw.mwclass.classes.*;
+import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
@@ -92,6 +93,8 @@ public class MegaWalls extends JavaPlugin {
 
         this.restore();
         this.initEnergy();
+
+        ItemUtils.tickMWItems();
     }
 
     private void initEnergy() {
