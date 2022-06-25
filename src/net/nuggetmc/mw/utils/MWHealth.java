@@ -118,6 +118,10 @@ public class MWHealth implements Listener {
             amount *= 0.8;
             player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 1, 1);
         }
+        if (manager.isMW(player) && manager.get(player).getName().equals("傀儡")) {
+            amount *= 0.8;
+            player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 1, 1);
+        }
 
         if (health >= amount + 0.01) {
             player.damage(0.01, damager);

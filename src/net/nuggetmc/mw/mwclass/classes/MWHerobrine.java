@@ -25,7 +25,7 @@ public class MWHerobrine extends MWClass {
     private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWHerobrine() {
-        this.name = "Herobrine";
+        this.name = new String[]{"Herobrine","Herobrine"};
         this.icon = Material.DIAMOND_SWORD;
         this.color = ChatColor.YELLOW;
 

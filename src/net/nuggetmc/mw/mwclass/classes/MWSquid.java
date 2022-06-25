@@ -31,7 +31,7 @@ public class MWSquid extends MWClass {
     private final Set<Player> rejuvenateList = new HashSet<>();
 
     public MWSquid() {
-        this.name = "Squid";
+        this.name = new String[]{"鱿鱼","Squid"};
         this.icon = Material.INK_SACK;
         this.color = ChatColor.BLUE;
 
@@ -116,7 +116,7 @@ public class MWSquid extends MWClass {
     }
 
     private void givePotions(Player player) {
-        ItemStack potions = MWPotions.createAbsorptionPotions(this.name, this.color, 2, 60);
+        ItemStack potions = MWPotions.createAbsorptionPotions(plugin.isChinese()?this.name[0]:this.name[1], this.color, 2, 60);
         ItemUtils.givePlayerItemStack(player, potions);
     }
 

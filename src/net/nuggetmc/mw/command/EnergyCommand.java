@@ -34,7 +34,6 @@ public class EnergyCommand implements CommandExecutor {
         if (player != null) {
             maxEnergy(player);
         }
-
         return true;
     }
 

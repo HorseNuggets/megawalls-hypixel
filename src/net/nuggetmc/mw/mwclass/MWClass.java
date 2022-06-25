@@ -24,7 +24,7 @@ public abstract class MWClass implements Listener {
     protected final MWHealth mwhealth;
     protected final EnergyManager energyManager;
 
-    protected String name;
+    protected String[] name;
     protected Material icon;
     protected ChatColor color;
     protected Playstyle[] playstyles;
@@ -39,7 +39,7 @@ public abstract class MWClass implements Listener {
     }
 
     public String getName() {
-        return name;
+        return plugin.isChinese()?name[0]:name[1];
     }
 
     protected Set<Player> inRange(Player player, double radius) {

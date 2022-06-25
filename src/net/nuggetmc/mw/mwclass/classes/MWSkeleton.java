@@ -36,7 +36,7 @@ public class MWSkeleton extends MWClass {
     private final Set<Player> cooldownCache = new HashSet<>();
 
     public MWSkeleton() {
-        this.name = "Skeleton";
+        this.name = new String[]{"骷髅","Skeleton"};
         this.icon = Material.BONE;
         this.color = ChatColor.AQUA;
 

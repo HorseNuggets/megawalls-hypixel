@@ -1,9 +1,9 @@
 package net.nuggetmc.mw;
 
-import net.nuggetmc.mw.command.DebugCommand;
-import net.nuggetmc.mw.command.EnergyCommand;
-import net.nuggetmc.mw.command.InfoCommand;
-import net.nuggetmc.mw.command.MegaWallsCommand;
+import com.google.common.eventbus.Subscribe;
+import net.minecraft.server.v1_8_R3.BlockAir;
+import net.minecraft.server.v1_8_R3.Items;
+import net.nuggetmc.mw.command.*;
 import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
@@ -13,12 +13,19 @@ import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -53,6 +60,7 @@ public class MegaWalls extends JavaPlugin {
     public EnergyManager getEnergyManager() {
         return energyManager;
     }
+    private boolean isChinese;
 
     @Override
     public void onEnable() {
@@ -69,6 +77,7 @@ public class MegaWalls extends JavaPlugin {
         setExecutor("energy", new EnergyCommand());
         setExecutor("debug", new DebugCommand());
         setExecutor("mwinfo", new InfoCommand());
+        setExecutor("lang",new LangCommand());
         setExecutorAndTabCompleter("megawalls", new MegaWallsCommand());
 
         this.registerClasses(
@@ -95,6 +104,14 @@ public class MegaWalls extends JavaPlugin {
         this.initEnergy();
 
         ItemUtils.tickMWItems();
+        //Create config
+        try {
+            isChinese=(getConfig().get("use_chinese").equals(true));
+        }catch (Exception e){
+            getConfig().set("use_chinese",false);
+            saveConfig();
+        }
+
     }
 
     private void initEnergy() {
@@ -160,4 +177,21 @@ public class MegaWalls extends JavaPlugin {
         mwClassManager.register(mwclasses);
         Arrays.stream(mwclasses).forEach(this::registerEvents);
     }
-}
+
+    public boolean isChinese() {
+        return isChinese;
+    }
+
+    public void setChinese(boolean chinese) {
+        isChinese = chinese;
+    }
+  //  @EventHandler
+    //public void onClearPot(PlayerDropItemEvent e){
+
+                //        e.getPlayer().getInventory().remove(Material.GLASS_BOTTLE);
+         //               return;
+    //Why not working?
+    }
+
+
+

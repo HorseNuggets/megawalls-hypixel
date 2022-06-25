@@ -65,6 +65,7 @@ public class MWClassMenu implements Listener {
         player.closeInventory();
 
         energyManager.clear(player);
+        player.getInventory().clear();
         manager.assign(player, mwclass, true);
     }
 

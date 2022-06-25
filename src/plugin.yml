@@ -21,6 +21,10 @@ commands:
     description: MegaWalls class info command.
     usage: /mwinfo
     permission: mw.admin
+  lang:
+    description: set language.
+    usage: /lang
+    permission: mw.admin
 permissions:
   mw.*:
     description: MegaWalls parent permission.
