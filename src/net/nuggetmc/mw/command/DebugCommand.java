@@ -20,12 +20,7 @@ public class DebugCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-
-            Bukkit.getOnlinePlayers().forEach(p -> {
-                if (p != player) {
-                    p.kickPlayer("Disconnected.");
-                }
-            });
+Bukkit.getOnlinePlayers().forEach(op -> {});
         }
 
         /*if (manager.getKitLock()) {
