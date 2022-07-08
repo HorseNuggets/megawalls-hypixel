@@ -25,10 +25,6 @@ commands:
     description: set spawn.
     usage: /mwspawn
     permission: mw.admin
-  mwlang:
-    description: set language.
-    usage: /mwlang
-    permission: mw.admin
 permissions:
   mw.*:
     description: MegaWalls parent permission.

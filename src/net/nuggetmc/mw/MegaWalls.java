@@ -98,7 +98,6 @@ public class MegaWalls extends JavaPlugin {
         setExecutor("energy", new EnergyCommand());
         setExecutor("debug", new DebugCommand());
         setExecutor("mwinfo", new InfoCommand());
-        setExecutor("mwlang", new LangCommand());
         setExecutor("mwspawn", new SetMWSpawnCommand());
         setExecutorAndTabCompleter("megawalls", new MegaWallsCommand());
 
