@@ -1,5 +1,6 @@
 package net.nuggetmc.mw.command;
 
+import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import org.bukkit.Bukkit;
@@ -18,10 +19,17 @@ public class SetMWSpawnCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
-            MegaWalls.getInstance().spawnx=((Player) sender).getLocation().getBlockX();
-            MegaWalls.getInstance().spawny=((Player) sender).getLocation().getBlockY();
-            MegaWalls.getInstance().spawnz=((Player) sender).getLocation().getBlockZ();
-
+            int blockX = ((Player) sender).getLocation().getBlockX();
+            int blockY = ((Player) sender).getLocation().getBlockY();
+            int blockZ = ((Player) sender).getLocation().getBlockZ();
+            MegaWalls.getInstance().spawnx= blockX;
+            MegaWalls.getInstance().spawny= blockY;
+            MegaWalls.getInstance().spawnz= blockZ;
+            MegaWalls.getInstance().getConfig().set("spawnloc.x", blockX);
+            MegaWalls.getInstance().getConfig().set("spawnloc.y", blockY);
+            MegaWalls.getInstance().getConfig().set("spawnloc.z", blockZ);
+            MegaWalls.getInstance().saveConfig();
+           sender.sendMessage("The " + ChatColor.GREEN + "Spawn Location" + ChatColor.RESET + " has been set to " + ChatColor.GREEN + blockX+","+blockY+","+blockZ + ChatColor.RESET + "!");
         }
 
         /*if (manager.getKitLock()) {
