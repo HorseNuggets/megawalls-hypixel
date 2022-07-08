@@ -21,9 +21,13 @@ commands:
     description: MegaWalls class info command.
     usage: /mwinfo
     permission: mw.admin
-  lang:
+  mwspawn:
+    description: set spawn.
+    usage: /mwspawn
+    permission: mw.admin
+  mwlang:
     description: set language.
-    usage: /lang
+    usage: /mwlang
     permission: mw.admin
 permissions:
   mw.*:

@@ -9,6 +9,7 @@ import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -67,6 +68,7 @@ public class MWClassMenu implements Listener {
         energyManager.clear(player);
         player.getInventory().clear();
         manager.assign(player, mwclass, true);
+        player.teleport(new Location(player.getWorld(),MegaWalls.getInstance().spawnx, MegaWalls.getInstance().spawny, MegaWalls.getInstance().spawnz));
     }
 
     @EventHandler

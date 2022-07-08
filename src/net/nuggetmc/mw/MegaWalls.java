@@ -13,6 +13,7 @@ import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
@@ -30,6 +31,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 
 public class MegaWalls extends JavaPlugin {
 
@@ -60,12 +62,31 @@ public class MegaWalls extends JavaPlugin {
     public EnergyManager getEnergyManager() {
         return energyManager;
     }
-    private boolean isChinese;
-
+    private boolean isChinese=(getConfig().get("use_chinese").equals(true));
+    public int spawnx;
+    public int spawny;
+    public int spawnz;
     @Override
     public void onEnable() {
         INSTANCE = this;
-
+        //cfg
+        try {
+            isChinese=(getConfig().get("use_chinese").equals(true));
+        }catch (Exception e){
+            getConfig().set("use_chinese",false);
+            saveConfig();
+        }
+        try {
+            spawnx= (int) getConfig().get("spawnloc.x");
+            spawny= (int) getConfig().get("spawnloc.y");
+            spawnz= (int) getConfig().get("spawnloc.z");
+        }catch (Exception e){
+            getServer().getLogger().log(Level.WARNING,"Failed to get spawn location.Generating a new one.");
+            getConfig().set("spawnloc.x",0);
+            getConfig().set("spawnloc.y",0);
+            getConfig().set("spawnloc.z",0);
+            saveConfig();
+        }
         // Create instances
         this.pluginManager = this.getServer().getPluginManager();
         this.mwClassManager = new MWClassManager(this);
@@ -77,6 +98,8 @@ public class MegaWalls extends JavaPlugin {
         setExecutor("energy", new EnergyCommand());
         setExecutor("debug", new DebugCommand());
         setExecutor("mwinfo", new InfoCommand());
+        setExecutor("mwlang", new LangCommand());
+        setExecutor("mwspawn", new SetMWSpawnCommand());
         setExecutorAndTabCompleter("megawalls", new MegaWallsCommand());
 
         this.registerClasses(
@@ -103,13 +126,7 @@ public class MegaWalls extends JavaPlugin {
         this.initEnergy();
 
         ItemUtils.tickMWItems();
-        //Create config
-        try {
-            isChinese=(getConfig().get("use_chinese").equals(true));
-        }catch (Exception e){
-            getConfig().set("use_chinese",false);
-            saveConfig();
-        }
+
 
     }
 
