@@ -66,6 +66,7 @@ public class MegaWalls extends JavaPlugin {
     public int spawnx;
     public int spawny;
     public int spawnz;
+    public static boolean OPBYPASSGM=false;
     @Override
     public void onEnable() {
         INSTANCE = this;
@@ -85,6 +86,12 @@ public class MegaWalls extends JavaPlugin {
             getConfig().set("spawnloc.x",0);
             getConfig().set("spawnloc.y",0);
             getConfig().set("spawnloc.z",0);
+            saveConfig();
+        }
+        try {
+            OPBYPASSGM= (boolean) getConfig().get("opbypassgamemode");
+        }catch (Exception e){
+            getConfig().set("opbypassgamemode",false);
             saveConfig();
         }
         // Create instances

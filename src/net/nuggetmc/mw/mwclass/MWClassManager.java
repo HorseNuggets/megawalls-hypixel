@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static net.nuggetmc.mw.MegaWalls.OPBYPASSGM;
+
 public class MWClassManager implements Listener {
 
     private final MegaWalls plugin;
@@ -102,6 +104,12 @@ public class MWClassManager implements Listener {
         active.put(player, mwclass);
         plugin.getConfig().set("active_classes." + player.getName(), mwclass.getName());
         plugin.saveConfig();
+        if (player.isOp()&&OPBYPASSGM){
+            //
+        }else {
+            player.getPlayer().setGameMode(GameMode.SURVIVAL);
+        }
+
     }
 
     @EventHandler
@@ -138,6 +146,7 @@ public class MWClassManager implements Listener {
                 player.spigot().respawn();
             }
         }, 12);
+        event.getEntity().getPlayer().getInventory().clear();
     }
 
     @EventHandler
@@ -173,15 +182,26 @@ public class MWClassManager implements Listener {
                 player.sendMessage(ChatColor.GREEN + "Do " + ChatColor.YELLOW + "/mw" + ChatColor.GREEN + " to select a class!");
             }
         }, 10);
+        if (player.isOp()&&OPBYPASSGM){
+            //
+        }else {
+            event.getPlayer().setGameMode(GameMode.ADVENTURE);
+        }
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kill " + player.getName());
     }
 
     @EventHandler
     public void onPreJoin(PlayerSpawnLocationEvent event) {
-        event.setSpawnLocation(WorldUtils.nearby(event.getSpawnLocation()));
+       // event.setSpawnLocation(WorldUtils.nearby(event.getSpawnLocation()));
     }
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
         event.setRespawnLocation(WorldUtils.nearby(event.getRespawnLocation()));
+        if (event.getPlayer().isOp()&&OPBYPASSGM){
+            //
+        }else {
+            event.getPlayer().setGameMode(GameMode.ADVENTURE);
+        }
     }
 }
