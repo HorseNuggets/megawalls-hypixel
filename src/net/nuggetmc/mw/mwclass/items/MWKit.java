@@ -1,7 +1,6 @@
 package net.nuggetmc.mw.mwclass.items;
 
-import fr.neatmonster.nocheatplus.NCPAPIProvider;
-import fr.neatmonster.nocheatplus.NoCheatPlus;
+
 import net.nuggetmc.mw.mwclass.MWClass;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -54,7 +53,7 @@ public class MWKit {
         contents.add(new ItemStack(Material.LOG, 64));
         contents.add(new ItemStack(Material.LOG, 64));
         contents.add(new ItemStack(Material.LOG, 64));
-        NoCheatPlus.getPlugin(NoCheatPlus.class).onDisable();
+
 
         if (extra != null) {
             contents.addAll(extra);

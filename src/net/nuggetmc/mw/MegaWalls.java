@@ -2,7 +2,9 @@ package net.nuggetmc.mw;
 
 import com.google.common.eventbus.Subscribe;
 import net.minecraft.server.v1_8_R3.BlockAir;
+import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.Items;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.nuggetmc.mw.command.*;
 import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.MWClass;
@@ -19,6 +21,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

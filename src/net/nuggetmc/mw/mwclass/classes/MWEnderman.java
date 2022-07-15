@@ -210,6 +210,7 @@ public class MWEnderman extends MWClass {
 
         if (manager.get(player) != this) return;
 
+
         int energy = energyManager.fetch(player);
 
         if (energy >= 80 && energy < 100) {
@@ -223,6 +224,7 @@ public class MWEnderman extends MWClass {
         }
 
         energyManager.add(player, 20);
+
     }
 
     @EventHandler
