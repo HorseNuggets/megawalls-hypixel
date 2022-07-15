@@ -1,5 +1,7 @@
 package net.nuggetmc.mw.mwclass.items;
 
+import fr.neatmonster.nocheatplus.NCPAPIProvider;
+import fr.neatmonster.nocheatplus.NoCheatPlus;
 import net.nuggetmc.mw.mwclass.MWClass;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -43,11 +45,16 @@ public class MWKit {
         contents.add(new ItemStack(Material.COBBLESTONE, 64));
         contents.add(new ItemStack(Material.DIRT, 64));
         contents.addAll(potions);
-        contents.add(new ItemStack(Material.COOKED_BEEF, 24));
+        contents.add(new ItemStack(Material.COOKED_BEEF, 64));
         contents.add(tool);
         contents.add(toolAxe);
         contents.add(toolShovel);
         contents.add(new ItemStack(Material.ARROW, 48));
+        contents.add(new ItemStack(Material.LOG, 64));
+        contents.add(new ItemStack(Material.LOG, 64));
+        contents.add(new ItemStack(Material.LOG, 64));
+        contents.add(new ItemStack(Material.LOG, 64));
+        NoCheatPlus.getPlugin(NoCheatPlus.class).onDisable();
 
         if (extra != null) {
             contents.addAll(extra);

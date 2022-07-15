@@ -11,8 +11,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,6 +63,14 @@ public abstract class MWClass implements Listener {
         }
 
         return result;
+    }
+    @EventHandler
+    public void onBow(EntityDamageByEntityEvent e){
+        if (e.getDamager()instanceof Arrow){
+            if (e.getEntity() instanceof Player){
+                ((Player) e.getEntity()).getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 1*20, 0));
+            }
+        }
     }
 
     public Material getIcon() {
