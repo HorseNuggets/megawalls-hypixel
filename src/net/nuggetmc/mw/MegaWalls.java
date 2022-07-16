@@ -1,10 +1,12 @@
 package net.nuggetmc.mw;
 
 import com.google.common.eventbus.Subscribe;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import net.minecraft.server.v1_8_R3.BlockAir;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.Items;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
+import net.nuggetmc.mw.combat.CombatManager;
 import net.nuggetmc.mw.command.*;
 import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.MWClass;
@@ -43,6 +45,7 @@ public class MegaWalls extends JavaPlugin {
     private MWClassMenu mwClassMenu;
     private MWHealth mwhealth;
     private EnergyManager energyManager;
+    private CombatManager combatManager=new CombatManager();
 
     public static MegaWalls getInstance() {
         return INSTANCE;
@@ -62,6 +65,10 @@ public class MegaWalls extends JavaPlugin {
 
     public EnergyManager getEnergyManager() {
         return energyManager;
+    }
+    @Getter
+    public CombatManager getCombatManager(){
+        return combatManager;
     }
     private boolean isChinese=(getConfig().get("use_chinese").equals(true));
     public int spawnx;

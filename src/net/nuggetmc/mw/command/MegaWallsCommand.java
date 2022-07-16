@@ -5,6 +5,7 @@ import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.MWClassMenu;
 import org.apache.commons.lang3.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,6 +32,10 @@ public class MegaWallsCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
+            if (MegaWalls.getInstance().getCombatManager().isInCombat(player)&&(!player.isOp())){
+                sender.sendMessage(ChatColor.RED+"You cannot do that because you are in combat!");
+                return true;
+            }
                 
             if (args.length > 0) {
                 String name = StringUtils.capitalize(args[0].toLowerCase());

@@ -12,6 +12,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -82,12 +83,12 @@ public class MWClassManager implements Listener {
     public void assign(Player player, MWClass mwclass, boolean items) {
         PlayerInventory inventory = player.getInventory();
 
-        if (player.getMaxHealth() == 20 || player.getHealth() >= 35) {
+
             player.setMaxHealth(40);
             player.setHealth(40);
             player.setFoodLevel(20);
             player.setSaturation(20);
-        }
+
 
         if (items) {
             List<ItemStack> contents = ItemUtils.getAllContents(inventory).stream().filter(i -> !ItemUtils.isKitItem(i)).collect(Collectors.toList());
@@ -109,7 +110,7 @@ public class MWClassManager implements Listener {
         }else {
             player.getPlayer().setGameMode(GameMode.SURVIVAL);
         }
-
+        plugin.getCombatManager().addInCombat(player);
     }
 
     @EventHandler
@@ -202,6 +203,16 @@ public class MWClassManager implements Listener {
             //
         }else {
             event.getPlayer().setGameMode(GameMode.ADVENTURE);
+        }
+        MegaWalls.getInstance().getCombatManager().removeInCombat(event.getPlayer());
+    }
+    @EventHandler
+    public void onDamage(EntityDamageEvent e) {
+        if (e.getEntity() instanceof Player) {
+            Player player= (Player) e.getEntity();
+            if (!MegaWalls.getInstance().getCombatManager().isInCombat(player)){
+                e.setCancelled(true);
+            }
         }
     }
 }
