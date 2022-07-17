@@ -34,13 +34,13 @@ public class ItemUtils {
 
         Bukkit.getWorlds().forEach(w -> w.getEntities().forEach(e -> {
             if (e instanceof Item) {
-                if (isKitItem(((Item) e).getItemStack())) {
+                if (isKitItem(((Item) e).getItemStack())||isDiamondItem(((Item) e).getItemStack())) {
                     items.add(e);
                 }
             }
         }));
 
-        Bukkit.broadcastMessage(items.toString());
+      //  Bukkit.broadcastMessage(items.toString());
 
         if (!items.isEmpty()) {
             Bukkit.getScheduler().runTask(MegaWalls.getInstance(), () -> items.forEach(Entity::remove));
@@ -76,5 +76,25 @@ public class ItemUtils {
         List<ItemStack> contents = new ArrayList<>(Arrays.asList(inv.getContents()));
         contents.addAll(Arrays.asList(inv.getArmorContents()));
         return contents.stream().filter(i -> i != null && i.getType() != Material.AIR).collect(Collectors.toList());
+    }
+    public static boolean isDiamondItem(ItemStack itemStack){
+
+        if (itemStack == null) return false;
+
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        if (nmsItem == null) return false;
+        Material material=itemStack.getType();
+
+        ArrayList<Material> diamonditem=new ArrayList<>();
+        diamonditem.add(Material.DIAMOND_HELMET);
+        diamonditem.add(Material.DIAMOND_CHESTPLATE);
+        diamonditem.add(Material.DIAMOND_LEGGINGS);
+        diamonditem.add(Material.DIAMOND_BOOTS);
+        for (Material material1:diamonditem){
+            if (material1==material){
+                return true;
+            }
+        }
+        return false;
     }
 }

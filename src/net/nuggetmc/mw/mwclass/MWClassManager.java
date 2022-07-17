@@ -82,6 +82,7 @@ public class MWClassManager implements Listener {
 
     public void assign(Player player, MWClass mwclass, boolean items) {
         PlayerInventory inventory = player.getInventory();
+        inventory.clear();
 
 
             player.setMaxHealth(40);
@@ -148,6 +149,7 @@ public class MWClassManager implements Listener {
             }
         }, 12);
         event.getEntity().getPlayer().getInventory().clear();
+
     }
 
     @EventHandler
