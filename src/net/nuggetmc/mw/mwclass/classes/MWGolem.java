@@ -34,7 +34,7 @@ public class MWGolem extends MWClass {
     private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWGolem() {
-        this.name = new String[]{"傀儡","Golem"};
+        this.name = new String[]{"傀儡","Golem","GOL"};
         this.icon = Material.IRON_CHESTPLATE;
         this.color = ChatColor.WHITE;
 
