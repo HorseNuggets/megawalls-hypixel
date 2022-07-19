@@ -113,7 +113,7 @@ public class MWClassManager implements Listener {
             player.getPlayer().setGameMode(GameMode.SURVIVAL);
         }
         plugin.getCombatManager().addInCombat(player);
-        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+" ["+plugin.getManager().get(player).getShortName()+"]":player.getDisplayName());
+        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+ChatColor.GRAY+" ["+plugin.getManager().get(player).getShortName()+"]":player.getDisplayName());
     }
 
     @EventHandler
