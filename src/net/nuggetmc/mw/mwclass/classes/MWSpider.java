@@ -38,7 +38,7 @@ public class MWSpider extends MWClass {
     private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWSpider() {
-        this.name = new String[]{"蜘蛛","Spider","SPI"};
+        this.name = new String[]{"蜘蛛","Spider"};
         this.icon = Material.WEB;
         this.color = ChatColor.DARK_GRAY;
 

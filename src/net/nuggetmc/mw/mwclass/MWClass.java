@@ -92,9 +92,6 @@ public abstract class MWClass implements Listener {
     public MWClassInfo getInfo() {
         return classInfo;
     }
-    public String getShortName(){
-        return plugin.isChinese()?name[0] :name[2];
-    }
 
     public abstract void ability(Player player);
 

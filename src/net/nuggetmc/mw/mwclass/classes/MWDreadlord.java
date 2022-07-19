@@ -35,7 +35,7 @@ public class MWDreadlord extends MWClass {
     private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWDreadlord() {
-        this.name = new String[]{"恐惧魔王","Dreadlord","DRE"};
+        this.name = new String[]{"恐惧魔王","Dreadlord"};
         this.icon = Material.NETHER_BRICK_ITEM;
         this.color = ChatColor.DARK_RED;
 
