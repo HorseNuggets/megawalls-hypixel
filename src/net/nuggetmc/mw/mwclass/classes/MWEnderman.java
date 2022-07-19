@@ -35,7 +35,7 @@ public class MWEnderman extends MWClass {
     private final Map<Player, Integer> incrementEChest = new HashMap<>();
 
     public MWEnderman() {
-        this.name = new String[]{"末影人","Enderman"};
+        this.name = new String[]{"末影人","Enderman","END"};
         this.icon = Material.ENDER_PEARL;
         this.color = ChatColor.DARK_PURPLE;
 

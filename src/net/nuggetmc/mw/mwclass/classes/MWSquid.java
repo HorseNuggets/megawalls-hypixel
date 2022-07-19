@@ -31,7 +31,7 @@ public class MWSquid extends MWClass {
     private final Set<Player> rejuvenateList = new HashSet<>();
 
     public MWSquid() {
-        this.name = new String[]{"鱿鱼","Squid"};
+        this.name = new String[]{"鱿鱼","Squid","SQU"};
         this.icon = Material.INK_SACK;
         this.color = ChatColor.BLUE;
 

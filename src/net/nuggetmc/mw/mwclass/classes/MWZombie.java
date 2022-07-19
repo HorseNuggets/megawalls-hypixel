@@ -37,7 +37,7 @@ public class MWZombie extends MWClass {
     private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWZombie() {
-        this.name = new String[]{"僵尸","Zombie"};
+        this.name = new String[]{"僵尸","Zombie","ZOM"};
         this.icon = Material.ROTTEN_FLESH;
         this.color = ChatColor.DARK_GREEN;
 

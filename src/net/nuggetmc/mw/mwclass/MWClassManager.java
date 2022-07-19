@@ -12,6 +12,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -112,6 +113,7 @@ public class MWClassManager implements Listener {
             player.getPlayer().setGameMode(GameMode.SURVIVAL);
         }
         plugin.getCombatManager().addInCombat(player);
+        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+" ["+plugin.getManager().get(player).getShortName()+"]":player.getDisplayName());
     }
 
     @EventHandler
@@ -200,6 +202,7 @@ public class MWClassManager implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
+        Player player=event.getPlayer();
         event.setRespawnLocation(WorldUtils.nearby(event.getRespawnLocation()));
         if (event.getPlayer().isOp()&&OPBYPASSGM){
             //
@@ -207,14 +210,21 @@ public class MWClassManager implements Listener {
             event.getPlayer().setGameMode(GameMode.ADVENTURE);
         }
         MegaWalls.getInstance().getCombatManager().removeInCombat(event.getPlayer());
+        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+" ["+plugin.getManager().get(player).getShortName()+"]":player.getDisplayName());
     }
     @EventHandler
-    public void onDamage(EntityDamageEvent e) {
+    public void onDamage(EntityDamageByEntityEvent e) {
         if (e.getEntity() instanceof Player) {
             Player player= (Player) e.getEntity();
             if (!MegaWalls.getInstance().getCombatManager().isInCombat(player)){
                 e.setCancelled(true);
             }
         }
+    }
+    public String getShortClassNameOfPlayer(Player player){
+        return plugin.getManager().
+                get(player)
+                .getShortName();
+        //I use this for the tablist mod(I just recaf it.LOL.I even recaf the spigot.jar because the thing to prevent the spawning of experience_orb does not work.Recaf is such a good thing.)
     }
 }
