@@ -25,6 +25,9 @@ commands:
     description: set spawn.
     usage: /mwspawn
     permission: mw.admin
+  echest:
+    description: see the echest of a player.
+    usage: /echest
 permissions:
   mw.*:
     description: MegaWalls parent permission.

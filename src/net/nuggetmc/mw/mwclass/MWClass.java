@@ -15,7 +15,10 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -70,6 +73,26 @@ public abstract class MWClass implements Listener {
             if (e.getEntity() instanceof Player){
                 ((Player) e.getEntity()).getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 1*20, 0));
             }
+        }
+    }
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e){
+        Player p = e.getPlayer();
+        if(!e.getAction().name().contains("RIGHT")) return;
+        if(p.getItemInHand() == null || p.getItemInHand().getType() == Material.AIR) return;
+        if (p.getItemInHand().getType()!=Material.ENDER_CHEST) return;
+        p.openInventory(p.getEnderChest());
+    }
+    @EventHandler
+    public void onPlace(BlockPlaceEvent e){
+        if (plugin.getCombatManager().isInCombat(e.getPlayer())&&e.getBlock().getType()==Material.ENDER_CHEST){
+            e.setCancelled(true);
+        }
+    }
+    @EventHandler
+    public void onDrop(PlayerDropItemEvent e){
+        if (plugin.getCombatManager().isInCombat(e.getPlayer())&&e.getItemDrop().getItemStack().getType()==Material.ENDER_CHEST){
+            e.setCancelled(true);
         }
     }
 
