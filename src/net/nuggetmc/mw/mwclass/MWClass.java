@@ -111,7 +111,9 @@ public abstract class MWClass implements Listener {
                     }
                 }
             }
-
+            if (LowestLocation==null){
+                plr.setCompassTarget(plr.getLocation());
+            }
             // we now have the lowest location and distance
             plr.setCompassTarget(LowestLocation);
 
