@@ -3,7 +3,6 @@ package net.nuggetmc.mw.command;
 import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.mwclass.MWClassManager;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,7 +12,7 @@ public class SetMWSpawnCommand implements CommandExecutor {
     private final MWClassManager manager;
 
     public SetMWSpawnCommand() {
-        this.manager = MegaWalls.getInstance().getManager();
+        this.manager = MegaWalls.getInstance().getClassManager();
     }
 
     @Override

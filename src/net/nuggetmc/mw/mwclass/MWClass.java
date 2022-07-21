@@ -42,7 +42,7 @@ public abstract class MWClass implements Listener {
 
     public MWClass() {
         this.plugin = MegaWalls.getInstance();
-        this.manager = plugin.getManager();
+        this.manager = plugin.getClassManager();
         this.mwhealth = plugin.getMWHealth();
         this.energyManager = plugin.getEnergyManager();
     }

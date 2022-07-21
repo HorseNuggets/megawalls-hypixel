@@ -24,7 +24,7 @@ public class MegaWallsCommand implements CommandExecutor, TabCompleter {
     public MegaWallsCommand() {
         MegaWalls plugin = MegaWalls.getInstance();
 
-        this.manager = plugin.getManager();
+        this.manager = plugin.getClassManager();
         this.menu = plugin.getMenu();
     }
 

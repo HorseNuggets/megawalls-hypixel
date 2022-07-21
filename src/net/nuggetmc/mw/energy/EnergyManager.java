@@ -27,7 +27,7 @@ public class EnergyManager implements Listener {
 
     public EnergyManager() {
         this.plugin = MegaWalls.getInstance();
-        this.manager = plugin.getManager();
+        this.manager = plugin.getClassManager();
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tick, 20, 20);
     }

@@ -1,11 +1,7 @@
 package net.nuggetmc.mw;
 
-import com.google.common.eventbus.Subscribe;
 import jdk.nashorn.internal.objects.annotations.Getter;
-import net.minecraft.server.v1_8_R3.BlockAir;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.Items;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
+import net.nuggetmc.mw.combat.CoinsManager;
 import net.nuggetmc.mw.combat.CombatManager;
 import net.nuggetmc.mw.command.*;
 import net.nuggetmc.mw.energy.EnergyManager;
@@ -17,19 +13,12 @@ import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -45,13 +34,14 @@ public class MegaWalls extends JavaPlugin {
     private MWClassMenu mwClassMenu;
     private MWHealth mwhealth;
     private EnergyManager energyManager;
+    private CoinsManager coinsManager;
     private CombatManager combatManager=new CombatManager();
 
     public static MegaWalls getInstance() {
         return INSTANCE;
     }
 
-    public MWClassManager getManager() {
+    public MWClassManager getClassManager() {
         return mwClassManager;
     }
 
@@ -65,6 +55,10 @@ public class MegaWalls extends JavaPlugin {
 
     public EnergyManager getEnergyManager() {
         return energyManager;
+    }
+    @Getter
+    public CoinsManager getCoinsManager(){
+        return this.coinsManager;
     }
     @Getter
     public CombatManager getCombatManager(){
@@ -106,6 +100,7 @@ public class MegaWalls extends JavaPlugin {
         this.pluginManager = this.getServer().getPluginManager();
         this.mwClassManager = new MWClassManager(this);
         this.energyManager = new EnergyManager();
+        this.coinsManager=new CoinsManager();
         this.mwClassMenu = new MWClassMenu(this, "Class Selector");
         this.mwhealth = new MWHealth();
 
@@ -134,6 +129,7 @@ public class MegaWalls extends JavaPlugin {
             this.mwClassMenu,
             this.mwhealth,
             this.energyManager,
+            this.coinsManager,
             new WorldUtils()
         );
 

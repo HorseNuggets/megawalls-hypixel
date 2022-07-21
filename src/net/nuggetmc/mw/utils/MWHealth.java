@@ -28,7 +28,7 @@ public class MWHealth implements Listener {
 
     public MWHealth() {
         this.plugin = MegaWalls.getInstance();
-        this.manager = plugin.getManager();
+        this.manager = plugin.getClassManager();
         this.energyManager = plugin.getEnergyManager();
     }
 

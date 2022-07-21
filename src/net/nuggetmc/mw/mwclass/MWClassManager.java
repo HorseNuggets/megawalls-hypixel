@@ -13,7 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -113,7 +112,7 @@ public class MWClassManager implements Listener {
             player.getPlayer().setGameMode(GameMode.SURVIVAL);
         }
         plugin.getCombatManager().addInCombat(player);
-        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+ChatColor.GRAY+" ["+plugin.getManager().get(player).getShortName()+"]":player.getDisplayName());
+        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+ChatColor.GRAY+" ["+plugin.getClassManager().get(player).getShortName()+"]":player.getDisplayName());
     }
 
     @EventHandler
@@ -210,7 +209,7 @@ public class MWClassManager implements Listener {
             event.getPlayer().setGameMode(GameMode.ADVENTURE);
         }
         MegaWalls.getInstance().getCombatManager().removeInCombat(event.getPlayer());
-        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+" ["+plugin.getManager().get(player).getShortName()+"]":player.getDisplayName());
+        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+" ["+plugin.getClassManager().get(player).getShortName()+"]":player.getDisplayName());
     }
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent e) {
@@ -222,7 +221,7 @@ public class MWClassManager implements Listener {
         }
     }
     public String getShortClassNameOfPlayer(Player player){
-        return plugin.getManager().
+        return plugin.getClassManager().
                 get(player)
                 .getShortName();
     }

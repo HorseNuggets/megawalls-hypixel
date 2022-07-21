@@ -15,7 +15,7 @@ public class EchestCommand implements CommandExecutor {
     private final MWClassManager manager;
 
     public EchestCommand() {
-        this.manager = MegaWalls.getInstance().getManager();
+        this.manager = MegaWalls.getInstance().getClassManager();
     }
 
     @Override

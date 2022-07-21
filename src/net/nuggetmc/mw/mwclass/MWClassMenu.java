@@ -33,7 +33,7 @@ public class MWClassMenu implements Listener {
     private final Map<String, ItemStack> cache;
 
     public MWClassMenu(MegaWalls plugin, String title) {
-        this.manager = plugin.getManager();
+        this.manager = plugin.getClassManager();
         this.energyManager = plugin.getEnergyManager();
         this.menuTitle = title;
         this.cache = new HashMap<>();
