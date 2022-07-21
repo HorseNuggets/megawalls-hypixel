@@ -94,7 +94,7 @@ public abstract class MWClass implements Listener {
             double LowestDistance = Double.MAX_VALUE;
             Location LowestLocation = plr.getLocation();
             for (Player p : Bukkit.getOnlinePlayers()){
-                if (plugin.getCombatManager().isInCombat(p)){
+                if (!plugin.getCombatManager().isInCombat(p)){
                     continue;
                 }
                 if(!p.getPlayerListName().equals(plrName)) {
