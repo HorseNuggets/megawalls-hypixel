@@ -112,7 +112,8 @@ public abstract class MWClass implements Listener {
                 }
             }
             if (LowestLocation==null){
-                plr.setCompassTarget(plr.getLocation());
+                return;
+                //Todo : When right click on Compass tell the player that target is not found
             }
             // we now have the lowest location and distance
             plr.setCompassTarget(LowestLocation);
