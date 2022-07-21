@@ -68,14 +68,14 @@ public abstract class MWClass implements Listener {
 
         return result;
     }
-    @EventHandler
+    /*@EventHandler
     public void onBow(EntityDamageByEntityEvent e){
         if (e.getDamager()instanceof Arrow){
             if (e.getEntity() instanceof Player){
                 ((Player) e.getEntity()).getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 1*20, 0));
             }
         }
-    }
+    }*/
     @EventHandler
     public void onInteract(PlayerInteractEvent e){
         Player p = e.getPlayer();
