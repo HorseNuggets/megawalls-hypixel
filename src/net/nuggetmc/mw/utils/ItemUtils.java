@@ -10,6 +10,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.material.EnderChest;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -49,7 +50,8 @@ public class ItemUtils {
 
     public static boolean isKitItem(ItemStack item) {
         if (item == null) return false;
-
+        if (item.getType() == Material.ENDER_CHEST) return true;
+        if (item.getType()==Material.COMPASS) return true;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
         if (nmsItem == null) return false;
 

@@ -38,20 +38,22 @@ public class MWKit {
         if (toolShovel == null) {
             toolShovel = new ItemStack(Material.IRON_SPADE);
         }
-        ItemStack enderchest= ItemStackCreator.createItem(Material.ENDER_CHEST, ChatColor.YELLOW+mwclass.getName()+ (MegaWalls.getInstance().isChinese()?" 末影箱":" Enderchest"),1);
+        ItemStack enderchest= ItemStackCreator.createItem(Material.ENDER_CHEST, mwclass.getColor()+mwclass.getName()+ (MegaWalls.getInstance().isChinese()?" 末影箱":" Enderchest"),1);
+        ItemStack compass= ItemStackCreator.createItem(Material.COMPASS, mwclass.getColor()+mwclass.getName()+ (MegaWalls.getInstance().isChinese()?" 指南针":" Compass"),1);
         List<ItemStack> contents = new ArrayList<>();
 
         contents.add(sword);
         contents.add(bow);
         contents.add(toolAxe);
-        contents.add(enderchest);
         contents.add(new ItemStack(Material.WOOD, 64));
-        contents.add(new ItemStack(Material.COBBLESTONE, 64));
         contents.add(tool);
         contents.addAll(potions);
         contents.add(new ItemStack(Material.COOKED_BEEF, 64));
+        contents.add(compass);
+        contents.add(enderchest);
         contents.add(toolShovel);
         contents.add(new ItemStack(Material.ARROW, 48));
+        contents.add(new ItemStack(Material.COBBLESTONE, 64));
         contents.add(new ItemStack(Material.DIRT, 64));
         contents.add(new ItemStack(Material.LOG, 64));
         contents.add(new ItemStack(Material.LOG, 64));

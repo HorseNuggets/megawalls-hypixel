@@ -19,6 +19,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -82,6 +83,40 @@ public abstract class MWClass implements Listener {
         if(p.getItemInHand() == null || p.getItemInHand().getType() == Material.AIR) return;
         if (p.getItemInHand().getType()!=Material.ENDER_CHEST) return;
         p.openInventory(p.getEnderChest());
+    }
+    @EventHandler
+    public void onMove(PlayerMoveEvent e){
+        Player plr = e.getPlayer();
+        Location plrLocation = plr.getLocation();
+        if (plr.getWorld().getEnvironment() == World.Environment.NORMAL){
+            //System.out.println(plr.getPlayerListName());
+            String plrName = plr.getPlayerListName();
+            double LowestDistance = Double.MAX_VALUE;
+            Location LowestLocation = plr.getLocation();
+            for (Player p : Bukkit.getOnlinePlayers()){
+                if (plugin.getCombatManager().isInCombat(p)){
+                    continue;
+                }
+                if(!p.getPlayerListName().equals(plrName)) {
+                    // this is not yourself
+                    if (p.getWorld().getEnvironment() == World.Environment.NORMAL) {
+                        Location pLocation = p.getLocation();
+
+
+                        if (LowestDistance > plrLocation.distance(pLocation)) {
+                            LowestDistance = plrLocation.distance(pLocation);
+                            LowestLocation = pLocation;
+                        }
+
+                    }
+                }
+            }
+
+            // we now have the lowest location and distance
+            plr.setCompassTarget(LowestLocation);
+
+
+        }
     }
     @EventHandler
     public void onPlace(BlockPlaceEvent e){
