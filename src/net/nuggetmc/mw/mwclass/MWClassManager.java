@@ -6,6 +6,7 @@ import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -23,8 +24,11 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -203,9 +207,9 @@ public class MWClassManager implements Listener {
     public void onRespawn(PlayerRespawnEvent event) {
         Player player=event.getPlayer();
         event.setRespawnLocation(WorldUtils.nearby(event.getRespawnLocation()));
-        if (event.getPlayer().isOp()&&OPBYPASSGM){
+        if (event.getPlayer().isOp() && OPBYPASSGM) {
             //
-        }else {
+        } else {
             event.getPlayer().setGameMode(GameMode.ADVENTURE);
         }
         MegaWalls.getInstance().getCombatManager().removeInCombat(event.getPlayer());
@@ -220,9 +224,17 @@ public class MWClassManager implements Listener {
             }
         }
     }
-    public String getShortClassNameOfPlayer(Player player){
-        return plugin.getClassManager().
-                get(player)
-                .getShortName();
+    @EventHandler
+    public void onArrowDamageTell(EntityDamageByEntityEvent e){
+        if (!(e.getEntity() instanceof Player)) return;
+        if (!(e.getDamager() instanceof Arrow)) return;
+        Arrow arrow=(Arrow) e.getDamager();
+        Player victim=((Player) e.getEntity()).getPlayer();
+        if (arrow.getShooter() instanceof Player) {
+           Player player = (Player) arrow.getShooter();
+
+
+            player.sendMessage(ChatColor.YELLOW+victim.getDisplayName()+ChatColor.RESET+" is on "+(new BigDecimal(victim.getHealth()).setScale(1,BigDecimal.ROUND_HALF_UP)).doubleValue()+" health!");
+        }
     }
 }
