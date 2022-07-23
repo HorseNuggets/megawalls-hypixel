@@ -32,6 +32,9 @@ commands:
   echest:
     description: see the echest of a player.
     usage: /echest
+  mwshop:
+    description: open the shop menu.
+    usage: /mwshop
   mwcoins:
     description: see the coins amount of a player.
     usage: /mwcoins

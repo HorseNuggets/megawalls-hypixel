@@ -1,9 +1,10 @@
 package net.nuggetmc.mw;
 
 import jdk.nashorn.internal.objects.annotations.Getter;
-import net.nuggetmc.mw.combat.CoinsManager;
+import net.nuggetmc.mw.economics.CoinsManager;
 import net.nuggetmc.mw.combat.CombatManager;
 import net.nuggetmc.mw.command.*;
+import net.nuggetmc.mw.economics.ShopMenu;
 import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
@@ -32,6 +33,7 @@ public class MegaWalls extends JavaPlugin {
     private PluginManager pluginManager;
     private MWClassManager mwClassManager;
     private MWClassMenu mwClassMenu;
+    private ShopMenu shopMenu;
     private MWHealth mwhealth;
     private EnergyManager energyManager;
     private CoinsManager coinsManager;
@@ -47,6 +49,9 @@ public class MegaWalls extends JavaPlugin {
 
     public MWClassMenu getMenu() {
         return mwClassMenu;
+    }
+    public ShopMenu getShopMenu(){
+        return shopMenu;
     }
 
     public MWHealth getMWHealth() {
@@ -103,6 +108,7 @@ public class MegaWalls extends JavaPlugin {
         this.coinsManager=new CoinsManager();
         this.mwClassMenu = new MWClassMenu(this, "Class Selector");
         this.mwhealth = new MWHealth();
+        this.shopMenu=new ShopMenu();
 
         // Register commands
         setExecutor("energy", new EnergyCommand());
@@ -111,6 +117,8 @@ public class MegaWalls extends JavaPlugin {
         setExecutor("mwspawn", new SetMWSpawnCommand());
         setExecutor("echest", new EchestCommand());
         setExecutor("mwcoins", new MWCoinsCommand());
+        setExecutor("seeinv", new SeeinvCommand());
+        setExecutor("mwshop", new ShopCommand());
         setExecutorAndTabCompleter("megawalls", new MegaWallsCommand());
 
         this.registerClasses(
@@ -131,6 +139,7 @@ public class MegaWalls extends JavaPlugin {
             this.mwhealth,
             this.energyManager,
             this.coinsManager,
+            this.shopMenu,
             new WorldUtils()
         );
 

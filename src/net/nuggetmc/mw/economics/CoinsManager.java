@@ -1,4 +1,4 @@
-package net.nuggetmc.mw.combat;
+package net.nuggetmc.mw.economics;
 
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.mwclass.MWClassManager;
