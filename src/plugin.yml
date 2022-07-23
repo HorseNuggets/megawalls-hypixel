@@ -17,6 +17,10 @@ commands:
     description: Parent debug command.
     usage: /debug
     permission: mw.admin
+  seeinv:
+    description: see a player's inventory.
+    usage: /seeinv
+    permission: mw.seeinv
   mwinfo:
     description: MegaWalls class info command.
     usage: /mwinfo
