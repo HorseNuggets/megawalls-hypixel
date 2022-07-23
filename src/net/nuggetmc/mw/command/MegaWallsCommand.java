@@ -32,6 +32,7 @@ public class MegaWallsCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
+            player.sendMessage(MegaWalls.getInstance().getCoinsManager().get(player)+" coins");
             if (MegaWalls.getInstance().getCombatManager().isInCombat(player)&&(!player.isOp())){
                 sender.sendMessage(ChatColor.RED+"You cannot do that because you are in combat!");
                 return true;

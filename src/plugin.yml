@@ -28,6 +28,9 @@ commands:
   echest:
     description: see the echest of a player.
     usage: /echest
+  mwcoins:
+    description: see the coins amount of a player.
+    usage: /mwcoins
 permissions:
   mw.*:
     description: MegaWalls parent permission.

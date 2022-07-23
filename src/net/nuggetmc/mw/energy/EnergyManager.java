@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -75,6 +76,38 @@ public class EnergyManager implements Listener {
 
         if (((Player) event.getEntity()).getNoDamageTicks() >= 12) return null;
         if (event.getDamage() == 0 || event.isCancelled()) return null;
+
+        if (manager.isMW(player)) {
+            return player;
+        }
+
+        return null;
+    }
+    public Player validate(PlayerDeathEvent event) {
+        if (!(event.getEntity() instanceof Player)) return null;
+        if (!(event.getEntity().getKiller() instanceof Player) && !(event.getEntity().getKiller() instanceof Arrow)) return null;
+
+        Player player;
+
+        if (event.getEntity().getKiller() instanceof Arrow) {
+            Arrow arrow = (Arrow) event.getEntity().getKiller();
+
+            if (arrow.getShooter() instanceof Player) {
+                player = (Player) arrow.getShooter();
+
+                if (player == event.getEntity()) return null;
+            }
+
+            else {
+                return null;
+            }
+
+        } else {
+            player = (Player) event.getEntity().getKiller();
+        }
+
+
+
 
         if (manager.isMW(player)) {
             return player;

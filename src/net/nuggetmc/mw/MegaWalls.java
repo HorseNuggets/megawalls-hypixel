@@ -110,6 +110,7 @@ public class MegaWalls extends JavaPlugin {
         setExecutor("mwinfo", new InfoCommand());
         setExecutor("mwspawn", new SetMWSpawnCommand());
         setExecutor("echest", new EchestCommand());
+        setExecutor("mwcoins", new MWCoinsCommand());
         setExecutorAndTabCompleter("megawalls", new MegaWallsCommand());
 
         this.registerClasses(
@@ -185,6 +186,7 @@ public class MegaWalls extends JavaPlugin {
 
         saveConfig();
     }
+
 
     private void setExecutor(String name, CommandExecutor executor) {
         getCommand(name).setExecutor(executor);
