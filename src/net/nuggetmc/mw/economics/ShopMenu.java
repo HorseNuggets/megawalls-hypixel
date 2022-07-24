@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.MWClassManager;
+import net.nuggetmc.mw.utils.SpecialItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,13 +19,20 @@ import java.util.*;
 
 public class ShopMenu implements Listener {
     MegaWalls plugin=MegaWalls.getInstance();
+
+    SpecialItemUtils specialItemUtils=new SpecialItemUtils();
     private static final String CLOSE_NAME = ChatColor.RED + "Close";
 
     private final MWClassManager classmanager =plugin.getClassManager();
     private final EnergyManager energyManager= plugin.getEnergyManager();
     private final String menuTitle="Shop";
     private static Map<String,Good> goods=new HashMap<>();
-    Good gapple=new Good(new ItemStack(Material.GOLDEN_APPLE,1),"Golden Apple",300,new ItemStack(Material.GOLDEN_APPLE,1),null);
+   public Good gapple=new Good(new ItemStack(Material.GOLDEN_APPLE,1),"Golden Apple",8,new ItemStack(Material.GOLDEN_APPLE,1),null);
+   public Good milk=new Good(new ItemStack(Material.MILK_BUCKET,1),"Cow Bucket",5,specialItemUtils.getCowBucket(),null);
+    Good squpot=new Good(specialItemUtils.getSquidPot(),"Squid Potion",15,specialItemUtils.getSquidPot(),null);
+   // Good golempot=new Good(new ItemStack(Material.GOLDEN_APPLE,gappleprice),"Golden Apple",plugin.getConfig().,new ItemStack(Material.GOLDEN_APPLE,1),null);
+  //  Good diamond=new Good(new ItemStack(Material.GOLDEN_APPLE,gappleprice),"Golden Apple",plugin.getConfig().,new ItemStack(Material.GOLDEN_APPLE,1),null);
+
     //an example
     private void registergood(Good good){
         goods.put(good.getDisplayName(),good);
@@ -34,7 +42,19 @@ public class ShopMenu implements Listener {
     }
 
     public ShopMenu() {
+        reloadPrices();
         registergood(gapple);
+        registergood(milk);
+        registergood(squpot);
+    }
+
+    private void reloadPrices() {
+       loadPriceFromDefault(this.gapple,this.gapple.getPrice());
+       loadPriceFromDefault(this.milk,this.milk.getPrice());
+       loadPriceFromDefault(this.squpot,this.squpot.getPrice());
+    }
+    private void loadPriceFromDefault(Good good,int defaulta){
+        good.setPrice(plugin.getOrDefaultFromConfig("shop.price."+good.getDisplayName(),defaulta));
     }
 
     public void openGUI(Player player) {
@@ -44,6 +64,8 @@ public class ShopMenu implements Listener {
 
 
             inv.setItem(10, gapple.getMenuItem());
+            inv.setItem(11, milk.getMenuItem());
+            inv.setItem(12, squpot.getMenuItem());
           //  inv.setItem(11, example);
 
 
@@ -66,6 +88,7 @@ public class ShopMenu implements Listener {
             player.sendMessage("not enough price!");
         }else {
             plugin.getCoinsManager().add(player,-good.getPrice());
+            player.sendMessage("You have purchased "+ChatColor.YELLOW+good.getDisplayName()+" with "+ChatColor.GREEN+good.getPrice()+" coins.");
             player.getInventory().addItem(good.getTheItem());
         }
 

@@ -150,6 +150,17 @@ public class MegaWalls extends JavaPlugin {
 
 
     }
+    public int getOrDefaultFromConfig(String path,int defaulta){
+        int result;
+        try {
+           result= (int) getConfig().get(path);
+        }catch (Exception e){
+            getConfig().set(path,defaulta);
+            result=defaulta;
+        }
+        saveConfig();
+        return result;
+    }
 
     private void initEnergy() {
         energyManager.flash();

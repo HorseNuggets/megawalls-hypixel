@@ -7,18 +7,18 @@ import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
 import net.nuggetmc.mw.utils.MWHealth;
+import net.nuggetmc.mw.utils.SpecialItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -131,6 +131,15 @@ public abstract class MWClass implements Listener {
     public void onDrop(PlayerDropItemEvent e){
         if (plugin.getCombatManager().isInCombat(e.getPlayer())&&e.getItemDrop().getItemStack().getType()==Material.ENDER_CHEST){
             e.setCancelled(true);
+        }
+    }
+    SpecialItemUtils specialItemUtils=new SpecialItemUtils();
+    @EventHandler
+    public void onCowBucket(PlayerItemConsumeEvent e){
+        if (specialItemUtils.isCowBucket(e.getItem())){
+            e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 5*20, 0));
+            e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 5*20, 1));
+          //  e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,5*20,1));
         }
     }
 
