@@ -19,7 +19,7 @@ public class SpecialItemUtils {
         return MWPotions.createAbsorptionPotions(plugin.isChinese()?this.squidname[0]:this.squidname[1], ChatColor.BLUE, 1, 60);
     }
     public ItemStack getGolemPot(){
-        return MWPotions.createRegenerationPotions(plugin.isChinese()?golemname[0]:golemname[1], ChatColor.WHITE, 3, 12, 10);
+        return MWPotions.createRegenerationPotions(plugin.isChinese()?golemname[0]:golemname[1], ChatColor.WHITE, 1, 12, 10);
     }
     public ItemStack getCowBucket(){
         ItemStack milk=new ItemStack(Material.MILK_BUCKET,1);

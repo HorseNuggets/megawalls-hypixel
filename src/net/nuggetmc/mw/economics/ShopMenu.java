@@ -29,9 +29,9 @@ public class ShopMenu implements Listener {
     private static Map<String,Good> goods=new HashMap<>();
    public Good gapple=new Good(new ItemStack(Material.GOLDEN_APPLE,1),"Golden Apple",8,new ItemStack(Material.GOLDEN_APPLE,1),null);
    public Good milk=new Good(new ItemStack(Material.MILK_BUCKET,1),"Cow Bucket",5,specialItemUtils.getCowBucket(),null);
-    Good squpot=new Good(specialItemUtils.getSquidPot(),"Squid Potion",15,specialItemUtils.getSquidPot(),null);
-   // Good golempot=new Good(new ItemStack(Material.GOLDEN_APPLE,gappleprice),"Golden Apple",plugin.getConfig().,new ItemStack(Material.GOLDEN_APPLE,1),null);
-  //  Good diamond=new Good(new ItemStack(Material.GOLDEN_APPLE,gappleprice),"Golden Apple",plugin.getConfig().,new ItemStack(Material.GOLDEN_APPLE,1),null);
+    Good squpot=new Good(specialItemUtils.getSquidPot(),ChatColor.stripColor(specialItemUtils.getSquidPot().getItemMeta().getDisplayName()),15,specialItemUtils.getSquidPot(),null);
+    Good golempot=new Good(specialItemUtils.getGolemPot(),ChatColor.stripColor(specialItemUtils.getGolemPot().getItemMeta().getDisplayName()),25,specialItemUtils.getGolemPot(),null);
+   Good diamond=new Good(new ItemStack(Material.DIAMOND,1),"Diamond",50,new ItemStack(Material.DIAMOND,1),null);
 
     //an example
     private void registergood(Good good){
@@ -46,14 +46,18 @@ public class ShopMenu implements Listener {
         registergood(gapple);
         registergood(milk);
         registergood(squpot);
+        registergood(golempot);
+        registergood(diamond);
     }
 
     private void reloadPrices() {
-       loadPriceFromDefault(this.gapple,this.gapple.getPrice());
-       loadPriceFromDefault(this.milk,this.milk.getPrice());
-       loadPriceFromDefault(this.squpot,this.squpot.getPrice());
+       loadPriceOrDefault(this.gapple,8);
+       loadPriceOrDefault(this.milk,5);
+       loadPriceOrDefault(this.squpot,15);
+       loadPriceOrDefault(this.golempot,25);
+       loadPriceOrDefault(this.diamond,50);
     }
-    private void loadPriceFromDefault(Good good,int defaulta){
+    private void loadPriceOrDefault(Good good, int defaulta){
         good.setPrice(plugin.getOrDefaultFromConfig("shop.price."+good.getDisplayName(),defaulta));
     }
 
@@ -66,6 +70,8 @@ public class ShopMenu implements Listener {
             inv.setItem(10, gapple.getMenuItem());
             inv.setItem(11, milk.getMenuItem());
             inv.setItem(12, squpot.getMenuItem());
+            inv.setItem(13, golempot.getMenuItem());
+            inv.setItem(14, diamond.getMenuItem());
           //  inv.setItem(11, example);
 
 
@@ -88,7 +94,7 @@ public class ShopMenu implements Listener {
             player.sendMessage("not enough price!");
         }else {
             plugin.getCoinsManager().add(player,-good.getPrice());
-            player.sendMessage("You have purchased "+ChatColor.YELLOW+good.getDisplayName()+" with "+ChatColor.GREEN+good.getPrice()+" coins.");
+            player.sendMessage("You have purchased "+ChatColor.YELLOW+good.getDisplayName()+ChatColor.RESET+" with "+ChatColor.GREEN+good.getPrice()+" coins.");
             player.getInventory().addItem(good.getTheItem());
         }
 
