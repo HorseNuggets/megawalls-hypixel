@@ -33,10 +33,14 @@ public class MWCoinsCommand implements CommandExecutor{
 
                 player.sendMessage(MegaWalls.getInstance().getCoinsManager().get(player)+" coins");
             } else if (args.length==1) {
-                try{
-                player.sendMessage(MegaWalls.getInstance().getCoinsManager().get(Bukkit.getPlayer(args[0]))+" coins");
-                }catch (Exception e){
-                    //
+                if(!(player.isOp()||player.hasPermission("mw.otherscoin"))){
+                    player.sendMessage("You don't have permission to use this command!");
+                }else {
+                    try {
+                        player.sendMessage(MegaWalls.getInstance().getCoinsManager().get(Bukkit.getPlayer(args[0])) + " coins");
+                    } catch (Exception e) {
+                        player.sendMessage("Player Not found!");
+                    }
                 }
             }
 

@@ -12,7 +12,10 @@ commands:
     description: Instant max energy (for debug).
     usage: /energy
     permission: mw.admin
-    aliases: [e]
+  coinsmgr:
+    description: coinsmgr command.
+    usage: /coinsmgr
+    permission: mw.admin
   debug:
     description: Parent debug command.
     usage: /debug
@@ -44,5 +47,11 @@ permissions:
     default: op
     children:
       mw.admin: true
+      mw.seeinv: true
+      mw.otherscoin: true
   mw.admin:
+    default: op
+  mw.seeinv:
+    default: op
+  mw.otherscoin:
     default: op

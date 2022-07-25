@@ -1,5 +1,6 @@
 package net.nuggetmc.mw.economics;
 
+import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import org.bukkit.Bukkit;
@@ -63,6 +64,10 @@ public class CoinsManager implements Listener {
         Player killer=plugin.getEnergyManager().validate(e);
        //
         plugin.getCoinsManager().add(killer,10);
+        killer.sendMessage(ChatColor.YELLOW+"+ 10 Coins (Kill Player)!");
+    }
+    public void clear(Player player){
+        set(player,0);
     }
 
     @EventHandler
