@@ -185,8 +185,8 @@ public class EnergyManager implements Listener {
     public void set(Player player, int amount) {
         playerData.put(player, amount);
 
-        plugin.getConfig().set("energy." + player.getName(), amount);
-        plugin.saveConfig();
+       /* plugin.getConfig().set("energy." + player.getName(), amount);
+        plugin.saveConfig();*/
 
         float bar = (float) (amount / 100.0);
 

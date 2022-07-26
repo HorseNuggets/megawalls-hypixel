@@ -108,8 +108,8 @@ public class MWClassManager implements Listener {
         }
 
         active.put(player, mwclass);
-        plugin.getConfig().set("active_classes." + player.getName(), mwclass.getName());
-        plugin.saveConfig();
+      /*  plugin.getConfig().set("active_classes." + player.getName(), mwclass.getName());
+        plugin.saveConfig();*/
         if (player.isOp()&&OPBYPASSGM){
             //
         }else {

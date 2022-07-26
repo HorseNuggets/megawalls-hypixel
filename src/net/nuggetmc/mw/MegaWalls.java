@@ -155,7 +155,7 @@ public class MegaWalls extends JavaPlugin {
             new WorldUtils()
         );
 
-        this.restore();
+       // this.restore();
         this.initEnergy();
 
         ItemUtils.tickMWItems();
@@ -184,7 +184,7 @@ public class MegaWalls extends JavaPlugin {
         });
     }
 
-
+    @Deprecated
     private void restore() {
         ConfigurationSection section = getConfig().getConfigurationSection("active_classes");
         if (section == null) return;
