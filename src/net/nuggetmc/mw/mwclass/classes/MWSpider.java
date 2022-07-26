@@ -231,8 +231,9 @@ public class MWSpider extends MWClass {
         task.runTaskTimer(plugin, 0, 2);
     }
 
-    @EventHandler
+    @Override
     public void hit(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         Player player = energyManager.validate(event);
         if (player == null) return;
 

@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -142,6 +143,10 @@ public abstract class MWClass implements Listener {
           //  e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,5*20,1));
         }
     }
+    @EventHandler
+    public void onHit(EntityDamageByEntityEvent e){
+        this.hit(e);
+    }
 
     public Material getIcon() {
         return icon;
@@ -169,4 +174,5 @@ public abstract class MWClass implements Listener {
     public abstract void ability(Player player);
 
     public abstract void assign(Player player);
+    public abstract void hit(EntityDamageByEntityEvent e);
 }
