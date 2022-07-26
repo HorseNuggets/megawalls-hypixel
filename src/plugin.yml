@@ -38,6 +38,9 @@ commands:
   mwshop:
     description: open the shop menu.
     usage: /mwshop
+  mwsell:
+    description: open the sell menu.
+    usage: /mwsell
   mwcoins:
     description: see the coins amount of a player.
     usage: /mwcoins
