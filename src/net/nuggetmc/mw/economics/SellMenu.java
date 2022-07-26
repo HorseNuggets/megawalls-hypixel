@@ -33,8 +33,9 @@ public class SellMenu implements Listener {
 
 
     public SellMenu() {
-        things.put(new ItemStack(Material.DIAMOND),25);
-        things.put(new ItemStack(Material.IRON_ORE),2);
+        things.put(new ItemStack(Material.DIAMOND),50);
+        things.put(new ItemStack(Material.IRON_ORE),4);
+        things.put(new ItemStack(Material.COBBLESTONE),1);
     }
 
 
@@ -64,9 +65,8 @@ public class SellMenu implements Listener {
             player.sendMessage("There is no such item in your inventory!");
         }else {
             int amount = player.getInventory().getContents()[itemSlot].getAmount();
-            Integer totalcoin = things.get(thing);
-            plugin.getCoinsManager().add(player, amount
-                    * totalcoin);
+            int totalcoin = amount * things.get(thing);
+            plugin.getCoinsManager().add(player, totalcoin);
             player.getInventory().clear(itemSlot);
             player.sendMessage("You have sold "+amount+" "+ChatColor.YELLOW+(thing.hasItemMeta()?thing.getItemMeta().getDisplayName():thing.getType().name())+ChatColor.RESET+" , getting "+ChatColor.GREEN+ totalcoin +ChatColor.RESET+" coins.");
         }

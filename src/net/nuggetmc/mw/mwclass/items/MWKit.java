@@ -53,7 +53,7 @@ public class MWKit {
         contents.add(enderchest);
         contents.add(toolShovel);
         contents.add(new ItemStack(Material.ARROW, 48));
-        contents.add(new ItemStack(Material.COBBLESTONE, 64));
+        contents.add(new ItemStack(Material.STONE, 64));
         contents.add(new ItemStack(Material.DIRT, 64));
         contents.add(new ItemStack(Material.LOG, 64));
         contents.add(new ItemStack(Material.LOG, 64));

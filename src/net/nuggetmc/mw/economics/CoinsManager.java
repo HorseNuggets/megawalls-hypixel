@@ -63,8 +63,8 @@ public class CoinsManager implements Listener {
         }
         Player killer=plugin.getEnergyManager().validate(e);
        //
-        plugin.getCoinsManager().add(killer,10);
-        killer.sendMessage(ChatColor.YELLOW+"+ 10 Coins (Kill Player)!");
+        plugin.getCoinsManager().add(killer,20);
+        killer.sendMessage(ChatColor.YELLOW+"+ 20 Coins (Kill Player)!");
     }
     public void clear(Player player){
         set(player,0);

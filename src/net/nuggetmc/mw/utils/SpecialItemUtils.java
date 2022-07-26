@@ -22,7 +22,7 @@ public class SpecialItemUtils {
         return MWPotions.createRegenerationPotions(plugin.isChinese()?golemname[0]:golemname[1], ChatColor.WHITE, 1, 12, 10);
     }
     public ItemStack getCowBucket(){
-        ItemStack milk=new ItemStack(Material.MILK_BUCKET,1);
+        ItemStack milk=new ItemStack(Material.MILK_BUCKET,3);
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(milk);
         NBTTagCompound compound = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
 

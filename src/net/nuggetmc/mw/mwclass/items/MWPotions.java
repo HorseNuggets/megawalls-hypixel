@@ -73,6 +73,7 @@ public class MWPotions {
         ItemStack item = potion.toItemStack(count);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
 
+
         meta.addCustomEffect(new PotionEffect(PotionEffectType.REGENERATION, duration * 20, 2), true);
         meta.setDisplayName(color + name + " Potion of Regeneration");
         meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);

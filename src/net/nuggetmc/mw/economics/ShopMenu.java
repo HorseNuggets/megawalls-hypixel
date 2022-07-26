@@ -51,11 +51,11 @@ public class ShopMenu implements Listener {
     }
 
     private void reloadPrices() {
-       loadPriceOrDefault(this.gapple,8);
-       loadPriceOrDefault(this.milk,5);
-       loadPriceOrDefault(this.squpot,15);
-       loadPriceOrDefault(this.golempot,25);
-       loadPriceOrDefault(this.diamond,50);
+       loadPriceOrDefault(this.gapple,16);
+       loadPriceOrDefault(this.milk,10);
+       loadPriceOrDefault(this.squpot,30);
+       loadPriceOrDefault(this.golempot,50);
+       loadPriceOrDefault(this.diamond,100);
     }
     private void loadPriceOrDefault(Good good, int defaulta){
         good.setPrice(plugin.getOrDefaultFromConfig("shop.price."+good.getDisplayName(),defaulta));
