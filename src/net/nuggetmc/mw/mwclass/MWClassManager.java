@@ -158,13 +158,6 @@ public class MWClassManager implements Listener {
     }
 
     @EventHandler
-    public void onEntitySpawn(EntitySpawnEvent event) {
-        if (event.getEntityType() == EntityType.EXPERIENCE_ORB) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void onItemTransfer(InventoryClickEvent event) {
         InventoryType type = event.getInventory().getType();
 
@@ -195,46 +188,11 @@ public class MWClassManager implements Listener {
         }else {
             event.getPlayer().setGameMode(GameMode.ADVENTURE);
         }
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kill " + player.getName());
+        player.setHealth(0);
     }
 
     @EventHandler
     public void onPreJoin(PlayerSpawnLocationEvent event) {
        // event.setSpawnLocation(WorldUtils.nearby(event.getSpawnLocation()));
-    }
-
-    @EventHandler
-    public void onRespawn(PlayerRespawnEvent event) {
-        Player player=event.getPlayer();
-        event.setRespawnLocation(WorldUtils.nearby(event.getRespawnLocation()));
-        if (event.getPlayer().isOp() && OPBYPASSGM) {
-            //
-        } else {
-            event.getPlayer().setGameMode(GameMode.ADVENTURE);
-        }
-        MegaWalls.getInstance().getCombatManager().removeInCombat(event.getPlayer());
-        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+" ["+plugin.getClassManager().get(player).getShortName()+"]":player.getDisplayName());
-    }
-    @EventHandler
-    public void onDamage(EntityDamageByEntityEvent e) {
-        if (e.getEntity() instanceof Player) {
-            Player player= (Player) e.getEntity();
-            if (!MegaWalls.getInstance().getCombatManager().isInCombat(player)){
-                e.setCancelled(true);
-            }
-        }
-    }
-    @EventHandler
-    public void onArrowDamageTell(EntityDamageByEntityEvent e){
-        if (!(e.getEntity() instanceof Player)) return;
-        if (!(e.getDamager() instanceof Arrow)) return;
-        Arrow arrow=(Arrow) e.getDamager();
-        Player victim=((Player) e.getEntity()).getPlayer();
-        if (arrow.getShooter() instanceof Player) {
-           Player player = (Player) arrow.getShooter();
-
-
-            player.sendMessage(ChatColor.YELLOW+victim.getDisplayName()+ChatColor.RESET+" is on "+(new BigDecimal(victim.getHealth()).setScale(1,BigDecimal.ROUND_HALF_UP)).doubleValue()+" health!");
-        }
     }
 }

@@ -11,6 +11,7 @@ import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.MWClassMenu;
 import net.nuggetmc.mw.mwclass.classes.*;
+import net.nuggetmc.mw.special.SpecialEventsManager;
 import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.MWHealth;
 import net.nuggetmc.mw.utils.WorldUtils;
@@ -35,6 +36,13 @@ public class MegaWalls extends JavaPlugin {
     private MWClassManager mwClassManager;
     private MWClassMenu mwClassMenu;
     private ShopMenu shopMenu;
+
+    @Getter
+    public SpecialEventsManager getSpecialEventsManager() {
+        return specialEventsManager;
+    }
+
+    private SpecialEventsManager specialEventsManager;
 
     @Getter
     public SellMenu getSellMenu() {
@@ -114,6 +122,7 @@ public class MegaWalls extends JavaPlugin {
         this.mwClassManager = new MWClassManager(this);
         this.energyManager = new EnergyManager();
         this.coinsManager=new CoinsManager();
+        this.specialEventsManager=new SpecialEventsManager();
         this.mwClassMenu = new MWClassMenu(this, "Class Selector");
         this.mwhealth = new MWHealth();
         this.shopMenu=new ShopMenu();
@@ -152,6 +161,7 @@ public class MegaWalls extends JavaPlugin {
             this.coinsManager,
             this.shopMenu,
             this.sellMenu,
+            this.specialEventsManager,
             new WorldUtils()
         );
 
