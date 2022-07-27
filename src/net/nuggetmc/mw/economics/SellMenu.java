@@ -6,6 +6,7 @@ import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.utils.ItemStackCreator;
+import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.SpecialItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -60,7 +61,7 @@ public class SellMenu implements Listener {
 
 
     public void select(Player player, ItemStack thing) {
-        int itemSlot=findItemSlot(player,thing);
+        int itemSlot= ItemUtils.findItemSlot(player,thing);
         if (itemSlot==-1){
             player.sendMessage("There is no such item in your inventory!");
         }else {
@@ -113,25 +114,6 @@ public class SellMenu implements Listener {
         item.setItemMeta(meta);
 
         return item;
-    }
-    private int findItemSlot(Player player,ItemStack thing) {
-        try {
-            for(int i=0;i<36;i++) {
-                ItemStack stack = player.getInventory().getContents()[i];
-                if (stack != null && stack.isSimilar(thing)) {
-                    return i;
-                }
-            }
-        }catch (NullPointerException e){
-            e.printStackTrace();
-            return -1;
-        }
-        return -1;
-
-
-
-
-
     }
 
 

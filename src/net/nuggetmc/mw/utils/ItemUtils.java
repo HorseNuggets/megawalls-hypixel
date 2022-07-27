@@ -99,4 +99,23 @@ public class ItemUtils {
         }
         return false;
     }
+    public static int findItemSlot(Player player,ItemStack thing) {
+        try {
+            for(int i=0;i<36;i++) {
+                ItemStack stack = player.getInventory().getContents()[i];
+                if (stack != null && stack.isSimilar(thing)) {
+                    return i;
+                }
+            }
+        }catch (NullPointerException e){
+            e.printStackTrace();
+            return -1;
+        }
+        return -1;
+
+
+
+
+
+    }
 }

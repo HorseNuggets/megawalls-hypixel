@@ -2,6 +2,7 @@ package net.nuggetmc.mw.special;
 
 import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
+import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.SpecialItemUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.*;
@@ -14,6 +15,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -142,4 +144,19 @@ public class SpecialEventsManager implements Listener {
         MegaWalls.getInstance().getCombatManager().removeInCombat(event.getPlayer());
         player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+" ["+plugin.getClassManager().get(player).getShortName()+"]":player.getDisplayName());
     }
+    ///////////////////////////MILK BUCKET
+   /* @EventHandler
+    public void onPickUp(PlayerPickupItemEvent e){
+        if (!e.getItem().getItemStack().isSimilar(specialItemUtils.getCowBucket())){
+            return;
+        }
+        int slot= ItemUtils.findItemSlot(e.getPlayer(),specialItemUtils.getCowBucket());
+        if (slot==-1){
+            return;
+        }
+
+        int amount = e.getPlayer().getInventory().getContents()[slot].getAmount();
+        e.getPlayer().getInventory().getContents()[slot].setAmount(amount +e.getItem().getItemStack().getAmount());
+
+}*/
 }
