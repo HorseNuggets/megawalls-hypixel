@@ -138,9 +138,11 @@ public abstract class MWClass implements Listener {
     @EventHandler
     public void onCowBucket(PlayerItemConsumeEvent e){
         if (specialItemUtils.isCowBucket(e.getItem())){
-            e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 5*20, 0));
-            e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 5*20, 1));
-          //  e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,5*20,1));
+            Player player = e.getPlayer();
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 5*20, 0));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 5*20, 1));
+            player.setFoodLevel(20);
+            player.setSaturation(20);
         }
     }
     @EventHandler
