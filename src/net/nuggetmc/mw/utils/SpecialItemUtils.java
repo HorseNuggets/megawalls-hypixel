@@ -31,6 +31,27 @@ public class SpecialItemUtils {
 
         return CraftItemStack.asBukkitCopy(nmsItem);
     }
+    public ItemStack getCowBucket(int amount){
+        ItemStack milk=new ItemStack(Material.MILK_BUCKET,amount);
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(milk);
+        NBTTagCompound compound = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
+
+        compound.setBoolean(cowBucketTag, true);
+        nmsItem.setTag(compound);
+
+        return CraftItemStack.asBukkitCopy(nmsItem);
+    }
+    public ItemStack getCowOwnBucket(int amount){
+        ItemStack milk=new ItemStack(Material.MILK_BUCKET,amount);
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(milk);
+        NBTTagCompound compound = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
+
+        compound.setBoolean(cowBucketTag, true);
+        compound.setBoolean("cowown",true);
+        nmsItem.setTag(compound);
+
+        return CraftItemStack.asBukkitCopy(nmsItem);
+    }
     public boolean isCowBucket(ItemStack itemStack){
         if (itemStack == null) return false;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);

@@ -20,7 +20,7 @@ import java.util.*;
 public class ShopMenu implements Listener {
     MegaWalls plugin=MegaWalls.getInstance();
 
-    SpecialItemUtils specialItemUtils=new SpecialItemUtils();
+    SpecialItemUtils specialItemUtils= plugin.getSpecialItemUtils();
     private static final String CLOSE_NAME = ChatColor.RED + "Close";
 
     private final MWClassManager classmanager =plugin.getClassManager();

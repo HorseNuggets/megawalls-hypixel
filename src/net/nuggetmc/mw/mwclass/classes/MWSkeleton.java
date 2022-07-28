@@ -178,6 +178,18 @@ public class MWSkeleton extends MWClass {
         if (manager.get(player) == this) {
             Block block = event.getBlock();
             Material type = block.getType();
+            boolean a=false;
+            switch (type){
+                case DIAMOND_ORE:
+                case IRON_ORE:
+                case COAL_ORE:
+                case LOG:
+                case LOG_2:
+                    a=true;
+                default:
+                    //
+            }
+            if (!a) return;
             Collection<ItemStack> drops = block.getDrops();
 
             int n = 2;

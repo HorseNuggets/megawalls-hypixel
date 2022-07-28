@@ -14,6 +14,7 @@ import net.nuggetmc.mw.mwclass.classes.*;
 import net.nuggetmc.mw.special.SpecialEventsManager;
 import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.MWHealth;
+import net.nuggetmc.mw.utils.SpecialItemUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -53,7 +54,14 @@ public class MegaWalls extends JavaPlugin {
     private MWHealth mwhealth;
     private EnergyManager energyManager;
     private CoinsManager coinsManager;
-    private CombatManager combatManager=new CombatManager();
+    private SpecialItemUtils specialItemUtils;
+
+    @Getter
+    public SpecialItemUtils getSpecialItemUtils() {
+        return specialItemUtils;
+    }
+
+    private CombatManager combatManager;
 
     public static MegaWalls getInstance() {
         return INSTANCE;
@@ -124,6 +132,8 @@ public class MegaWalls extends JavaPlugin {
         this.coinsManager=new CoinsManager();
         this.specialEventsManager=new SpecialEventsManager();
         this.mwClassMenu = new MWClassMenu(this, "Class Selector");
+        this.combatManager=new CombatManager();
+        this.specialItemUtils=new SpecialItemUtils();
         this.mwhealth = new MWHealth();
         this.shopMenu=new ShopMenu();
         this.sellMenu=new SellMenu();
@@ -150,7 +160,8 @@ public class MegaWalls extends JavaPlugin {
             new MWSkeleton(),
             new MWSpider(),
             new MWSquid(),
-            new MWZombie()
+            new MWZombie(),
+            new MWCow()
         );
 
         this.registerEvents(

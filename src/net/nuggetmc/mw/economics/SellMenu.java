@@ -25,7 +25,7 @@ import java.util.Map;
 public class SellMenu implements Listener {
     MegaWalls plugin=MegaWalls.getInstance();
 
-    SpecialItemUtils specialItemUtils=new SpecialItemUtils();
+    SpecialItemUtils specialItemUtils= plugin.getSpecialItemUtils();
     private static final String CLOSE_NAME = ChatColor.RED + "Close";
 
 
@@ -36,7 +36,7 @@ public class SellMenu implements Listener {
     public SellMenu() {
         things.put(new ItemStack(Material.DIAMOND),50);
         things.put(new ItemStack(Material.IRON_ORE),4);
-        things.put(new ItemStack(Material.COBBLESTONE),1);
+        //things.put(new ItemStack(Material.COBBLESTONE),1);
     }
 
 
