@@ -1,6 +1,7 @@
 package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.EntityItem;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
@@ -9,84 +10,66 @@ import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.ActionBar;
-import net.nuggetmc.mw.utils.PotionUtils;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
-public class MWHerobrine extends MWClass {
+public class MWCow extends MWClass {
 
-    private final Map<Player, Integer> increment = new HashMap<>();
+    int increment=0;
+    int mine=0;
+    final int cowBucketValue=40;
+    private final Set<Player> willpowerList = new HashSet<>();
+    int dmgcount=0;
 
-    public MWHerobrine() {
-        this.name = new String[]{"Herobrine","Herobrine","HBR"};
-        this.icon = Material.DIAMOND_SWORD;
-        this.color = ChatColor.YELLOW;
+    public MWCow() {
+        this.name = new String[]{"牛","Cow","COW"};
+        this.icon = Material.MILK_BUCKET;
+        this.color = ChatColor.LIGHT_PURPLE;
 
         this.playstyles = new Playstyle[] {
-            Playstyle.DAMAGE,
-            Playstyle.CONTROL
+            Playstyle.SUPPORT,
+            Playstyle.TANK
         };
 
         this.diamonds = new Diamond[] {
-            Diamond.SWORD
+            Diamond.CHESTPLATE
         };
 
         this.classInfo = new MWClassInfo(
-            "Wrath",
-            "Unleash the wrath of Herobrine, striking all nearby enemies in a 5 block radius for &a4.5 &rtrue damage.",
-            "Power",
-            "Killing an emeny grants you Strength I for &a6 &rseconds.",
-            "Flurry",
-            "Every &a3 &rattacks will grant you Speed II for 3 seconds and Regeneration I for 5 seconds.",
-            "Treasure Hunter",
-            "Increases the chance to find treasure chests by &a300% &rwhen mining."
+            "Granting Moo",
+            "Moo, granting Resistance"+ChatColor.GREEN+" II"+ChatColor.RESET+" and Regeneration "+ChatColor.GREEN+"II"+ChatColor.RESET+" to yourself",
+            "Bucket Barrier",
+            "Once below "+ChatColor.GREEN+"20 HP"+ChatColor.RESET+", a shield of milk buckets forms around you for 20 seconds,blocking the next 4 sources of damage by "+ChatColor.GREEN+"25%"+ChatColor.RESET+".Whenever damage gets blocked, you will get healed for "+ChatColor.GREEN+"2HP"+ChatColor.RESET,
+            "Refreshing Sip",
+            "Drinking any milk bucket grants nearby allies in a 7 block radius "+ChatColor.GREEN+"3 HP"+ChatColor.RESET+", replenishing both hunger and saturation",
+            "Ultra Pasteurized",
+            "You will receive 2 milk buckets for every "+ChatColor.GREEN+"80"+ChatColor.RESET+" Stone you mine.Milk buckets grant Resistance I and Regeneration II for 5 seconds and can be given to teammates"
         );
 
-        this.classInfo.addEnergyGainType("Melee", 25);
-        this.classInfo.addEnergyGainType("Bow", 25);
+        this.classInfo.addEnergyGainType("Melee", 20);
+        this.classInfo.addEnergyGainType("Bow", 20);
     }
 
     @Override
     public void ability(Player player) {
-        World world = player.getWorld();
-
-        boolean pass = false;
-
-        Set<Player> cache = new HashSet<>();
-
-        for (Player victim : Bukkit.getOnlinePlayers()) {
-            if (player.getWorld() != victim.getWorld()) continue;
-
-            Location loc = victim.getLocation();
-
-            if (player.getLocation().distance(loc) <= 5 && player != victim && !victim.isDead()) {
-                world.strikeLightningEffect(loc);
-                pass = true;
-
-                cache.add(victim);
-            }
-        }
-
-        if (pass) {
-            energyManager.clear(player);
-
-            for (Player victim : cache) {
-                mwhealth.trueDamage(victim, 4.5, null);
-            }
-
-            world.playSound(player.getLocation(), Sound.ENDERMAN_DEATH, 1, (float) 0.5);
-            return;
-        }
-
-        ActionBar.send(player, "No players within " + ChatColor.RED + 5 + ChatColor.RESET + " meters!");
+        energyManager.clear(player);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, (int) (2.5*20),1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (int) (2.5*20),1));
     }
+
 
     @Override
     public void hit(EntityDamageByEntityEvent event) {
@@ -96,31 +79,39 @@ public class MWHerobrine extends MWClass {
 
         if (manager.get(player) != this) return;
 
-        if (!increment.containsKey(player)) {
-            increment.put(player, 0);
-        } else {
-            increment.put(player, (increment.get(player) + 1) % 3);
-        }
 
-        if (increment.get(player) == 0) {
-            PotionUtils.effect(player, "speed", 3, 1);
-            PotionUtils.effect(player, "regeneration", 5);
-        }
-
-        energyManager.add(player, 25);
+        energyManager.add(player, 20);
     }
-
     @EventHandler
-    public void onKill(PlayerDeathEvent event) {
-        Player victim = event.getEntity();
-        Player player = victim.getKiller();
-
-        if (player == null || victim == player) return;
-
-        if (manager.get(player) == this) {
-            PotionUtils.effect(player, "strength", 6);
+    public void onDamage(EntityDamageEvent e){
+        if (e.isCancelled()) return;
+        Player victim= (Player) e.getEntity();
+        if (manager.get(victim) != this) {
+            return;
         }
+        BucketBarrier(victim, victim.getHealth() - e.getDamage(),e);
     }
+    @EventHandler
+    public void onBucketGet(BlockBreakEvent e){
+
+        Player player=e.getPlayer();
+        if (manager.get(player) != this) {
+            return;
+        }
+        if (e.getBlock().getType()!=Material.STONE) return;
+        if (mine<cowBucketValue){
+            mine ++;
+            ActionBar.send(player,this.getColor()+"Ultra Pasteurized "+ChatColor.WHITE+mine+"/"+cowBucketValue);
+        } else if (mine==cowBucketValue) {
+            mine=0;
+            player.getInventory().addItem(plugin.getSpecialItemUtils().getCowBucket(2));
+            ActionBar.send(player,this.getColor()+"Ultra Pasteurized "+ChatColor.GREEN+"✔");
+        }
+        //❤❥✔✖✗✘❂⋆✢✭✬✫✪✩✦✥✤✣✮✷➡➧⬅⬇➟➢➙➴➽▄▜▛➝▄⚔
+
+    }
+
+
 
     @Override
     public void assign(Player player) {
@@ -137,18 +128,44 @@ public class MWHerobrine extends MWClass {
             Map<Enchantment, Integer> armorEnch = new HashMap<>();
             armorEnch.put(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
             armorEnch.put(Enchantment.DURABILITY, 10);
-            armorEnch.put(Enchantment.WATER_WORKER, 1);
 
-            ItemStack sword = MWItem.createSword(this, Material.DIAMOND_SWORD, swordEnch);
+            ItemStack sword = MWItem.createSword(this, Material.IRON_SWORD, swordEnch);
             ItemStack bow = MWItem.createBow(this, null);
             ItemStack tool = MWItem.createTool(this, Material.DIAMOND_PICKAXE);
-            ItemStack helmet = MWItem.createArmor(this, Material.IRON_HELMET, armorEnch);
+            ItemStack chestplate = MWItem.createArmor(this, Material.DIAMOND_CHESTPLATE, armorEnch);
 
-            List<ItemStack> potions = MWPotions.createBasic(this, 2, 7, 2);
+            List<ItemStack> potions = MWPotions.createBasic(this, 1, 10, 2);
+            List<ItemStack> extra= new ArrayList<>();
+            extra.add(plugin.getSpecialItemUtils().getCowOwnBucket(3));
 
-            items = MWKit.generate(this, sword, bow, tool, null, null, potions, helmet, null, null, null, null);
+            items = MWKit.generate(this, sword, bow, tool, null, null, potions, null, chestplate, null, null,extra );
         }
 
         MWKit.assignItems(player, items);
+        mine=0;
+        increment=0;
+        dmgcount=0;
+    }
+    private void BucketBarrier(Player player, double health, EntityDamageEvent e) {
+        if (health < 20) {
+            if (willpowerList.contains(player)) return;
+            if (dmgcount==4) return;
+            if (dmgcount==0) {
+                player.sendMessage(this.getColor()+"You have activated the Bucket Barrier !");
+            }
+
+            int n=20;
+
+
+            dmgcount++;
+
+            e.setDamage(e.getDamage()*0.75);
+
+
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                willpowerList.remove(player);
+                dmgcount=0;
+            }, n * 20);
+        }
     }
 }
