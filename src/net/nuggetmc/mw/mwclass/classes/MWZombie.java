@@ -85,14 +85,18 @@ public class MWZombie extends MWClass {
         player.getWorld().playSound(loc, Sound.LEVEL_UP, 1, 2);
     }
 
-    @EventHandler
+    /**
+     *
+     *  Moved to MWClassManager : assign().
+     */
+    /*@EventHandler
     public void gathering(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
         if (manager.get(player) == this) {
             PotionUtils.effect(player, "haste", 5, 2);
         }
-    }
+    }*/
 
     @Override
     public void hit(EntityDamageByEntityEvent event) {

@@ -30,7 +30,7 @@ public class MWCow extends MWClass {
 
     int increment=0;
     int mine=0;
-    final int cowBucketValue=40;
+    final int cowBucketValue=60;
     private final Set<Player> willpowerList = new HashSet<>();
     int dmgcount=0;
 
@@ -160,9 +160,13 @@ public class MWCow extends MWClass {
             dmgcount++;
 
             e.setDamage(e.getDamage()*0.75);
-
-
+            if (player.getHealth()>=player.getMaxHealth()-2) {
+                player.setHealth(player.getMaxHealth());
+            }else {
+                player.setHealth(player.getHealth()+2);
+            }
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                //Cool down finished
                 willpowerList.remove(player);
                 dmgcount=0;
             }, n * 20);

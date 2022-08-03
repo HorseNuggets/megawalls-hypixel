@@ -2,6 +2,7 @@ package net.nuggetmc.mw.mwclass;
 
 import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
+import net.nuggetmc.mw.mwclass.classes.MWZombie;
 import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
@@ -118,6 +119,9 @@ public class MWClassManager implements Listener {
         plugin.getCombatManager().addInCombat(player);
         player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+ChatColor.GRAY+" ["+plugin.getClassManager().get(player).getShortName()+"]":player.getDisplayName());
         player.sendMessage(ChatColor.YELLOW+"You can use /mwshop and /mwsell to buy and sell items.Use /echest to open your enderchest.");
+        if (mwclass.getShortName().equals("ZOM")){
+            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING,9999*20,2));
+        }
     }
 
     @EventHandler
