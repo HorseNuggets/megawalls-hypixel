@@ -44,6 +44,9 @@ commands:
   mwcoins:
     description: see the coins amount of a player.
     usage: /mwcoins
+  mwbaltop:
+    description: see the balance top.
+    usage: /mwbaltop
   mwride:
     description: ride a player.
     usage: /mwride
