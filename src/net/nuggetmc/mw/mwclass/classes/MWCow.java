@@ -28,8 +28,7 @@ import java.util.*;
 
 public class MWCow extends MWClass {
 
-    int increment=0;
-    int mine=0;
+    Map<Player,Integer> mine=new HashMap<>();
     final int cowBucketValue=60;
     private final Set<Player> willpowerList = new HashSet<>();
     int dmgcount=0;
@@ -100,11 +99,11 @@ public class MWCow extends MWClass {
             return;
         }
         if (e.getBlock().getType()!=Material.STONE) return;
-        if (mine<cowBucketValue){
-            mine ++;
-            ActionBar.send(player,this.getColor()+"Ultra Pasteurized "+ChatColor.WHITE+mine+"/"+cowBucketValue);
-        } else if (mine==cowBucketValue) {
-            mine=0;
+        if (mine.get(player)<cowBucketValue){
+            mine.replace(player,mine.get(player)+1);
+            ActionBar.send(player,this.getColor()+"Ultra Pasteurized "+ChatColor.WHITE+mine.get(player)+"/"+cowBucketValue);
+        } else if (mine.get(player)==cowBucketValue) {
+            mine.replace(player,0);
             player.getInventory().addItem(plugin.getSpecialItemUtils().getCowBucket(2));
             ActionBar.send(player,this.getColor()+"Ultra Pasteurized "+ChatColor.GREEN+"✔");
         }
@@ -143,12 +142,15 @@ public class MWCow extends MWClass {
         }
 
         MWKit.assignItems(player, items);
-        mine=0;
-        increment=0;
+        if (mine.containsKey(player)){
+            mine.replace(player,0);
+        }else {
+            mine.put(player,0);
+        }
         dmgcount=0;
     }
     private void BucketBarrier(Player player, double health, EntityDamageEvent e) {
-        if (health < 20) {
+        if (health <= 20) {
             if (willpowerList.contains(player)) return;
             if (dmgcount==4) return;
             if (dmgcount==0) {
