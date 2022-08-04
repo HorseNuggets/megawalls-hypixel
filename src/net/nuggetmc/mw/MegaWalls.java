@@ -149,6 +149,7 @@ public class MegaWalls extends JavaPlugin {
         setExecutor("mwshop", new ShopCommand());
         setExecutor("mwsell", new SellCommand());
         setExecutor("coinsmgr", new CoinsmgrCommand());
+        setExecutor("mwride",new MWRideCommand());
         setExecutorAndTabCompleter("megawalls", new MegaWallsCommand());
 
         this.registerClasses(

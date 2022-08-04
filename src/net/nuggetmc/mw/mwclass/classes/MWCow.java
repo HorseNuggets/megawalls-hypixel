@@ -85,6 +85,7 @@ public class MWCow extends MWClass {
     @EventHandler
     public void onDamage(EntityDamageEvent e){
         if (e.isCancelled()) return;
+        if (!(e.getEntity() instanceof Player )) return;
         Player victim= (Player) e.getEntity();
         if (manager.get(victim) != this) {
             return;
