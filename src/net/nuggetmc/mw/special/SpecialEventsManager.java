@@ -142,7 +142,7 @@ public class SpecialEventsManager implements Listener {
             event.getPlayer().setGameMode(GameMode.ADVENTURE);
         }
         MegaWalls.getInstance().getCombatManager().removeInCombat(event.getPlayer());
-        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+" ["+plugin.getClassManager().get(player).getShortName()+"]":player.getDisplayName());
+//        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+" ["+plugin.getClassManager().get(player).getShortName()+"]":player.getDisplayName());
     }
     ///////////////////////////MILK BUCKET
    /* @EventHandler

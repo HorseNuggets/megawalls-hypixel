@@ -163,7 +163,8 @@ public class MegaWalls extends JavaPlugin {
             new MWSpider(),
             new MWSquid(),
             new MWZombie(),
-            new MWCow()
+            new MWCow(),
+                new MWDriver()
         );
 
         this.registerEvents(

@@ -109,4 +109,7 @@ public abstract class MWClass implements Listener {
 
     public abstract void assign(Player player);
     public abstract void hit(EntityDamageByEntityEvent e);
+    public int getPrice(){
+        return 0;
+    }
 }
