@@ -1,8 +1,6 @@
 package net.nuggetmc.mw.mwclass.classes;
 
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
@@ -11,37 +9,33 @@ import net.nuggetmc.mw.mwclass.items.MWItem;
 import net.nuggetmc.mw.mwclass.items.MWKit;
 import net.nuggetmc.mw.mwclass.items.MWPotions;
 import net.nuggetmc.mw.utils.ActionBar;
-import net.nuggetmc.mw.utils.ParticleUtils;
-import net.nuggetmc.mw.utils.PotionUtils;
-import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MWDriver extends MWClass {
 
     private Set<Player> runnerList=new HashSet<>();
-    private final Map<Player, Boolean> rideothers = new HashMap<>();
+    private Set<Player> abilitycache=new HashSet<>();
+    public final Map<Player, Boolean> rideothers = new HashMap<>();
 
 
     public MWDriver() {
         this.name = new String[]{"司机","Driver","DRI"};
         this.icon = Material.IRON_FENCE;
-        this.color = ChatColor.BLACK;
+        this.color = ChatColor.DARK_AQUA;
 
         this.playstyles = new Playstyle[] {
                 Playstyle.RUSHER,
@@ -54,17 +48,17 @@ public class MWDriver extends MWClass {
 
         this.classInfo = new MWClassInfo(
                 "Ride",
-                "Ride the closest player or make the closest player ride you\n when they are in a &a15 &rblocks radius, gaining Strength I,resistance I and jump_boost II for &a5 &rseconds,\ngiving the player 1 second of slowness in the max(255) level,\nright click your bow to switch between the two modes.",
+                "Ride the closest player or make the closest player ride you\n when they are in a &a20 &rblocks radius, gaining Strength I,resistance &aI&r and jump_boost &aII&r for &a5 &rseconds,\ngiving the player &a1&r second of slowness in the max(255) level,\nleft click your bow to switch between the two modes.\nCooldown:&a20&rs.",
                 "L Runner",
-                "Once you are below 7 HP,you get 6 seconds of Absorption XX(20) , speed III and jump boost III for 12 seconds.\nIf that damage cause you to be dead,it will be cancelled.\nCooldown: &a50 &rseconds.",
+                "Once you are below 7 HP,you get 6 seconds of Absorption XX(20) , speed &aIII&r and jump boost &aIII&r for 12 seconds.\nIf that damage cause you to be dead,it will be cancelled.\nCooldown: &a50 &rseconds.",
                 "Solo handjob god",
                 "Once you were shoot by a player,you automatically throw 10 snowball to where you face,gaining Absorption I for 2 seconds",
                 "Stupid dev",
                 "There is no gathering talent because this kit is made for mwffa."
         );
 
-        this.classInfo.addEnergyGainType("Melee", 10);
-        this.classInfo.addEnergyGainType("Bow", 10);
+        this.classInfo.addEnergyGainType("Melee", 15);
+        this.classInfo.addEnergyGainType("Bow", 15);
     }
     @EventHandler
     public void onDamage(EntityDamageEvent e){
@@ -112,9 +106,12 @@ public class MWDriver extends MWClass {
 
     @Override
     public void ability(Player player) {
+        if (abilitycache.contains(player)) {
+            return;
+        }
             Player target=null;
             for (Player player1 : player.getWorld().getPlayers()){
-                if (!plugin.getCombatManager().isInCombat(player1)||player1.isDead()||player1.getGameMode()==GameMode.CREATIVE||(player1.getLocation().distance(player.getLocation())>15)||player1.equals(player)){
+                if (!plugin.getCombatManager().isInCombat(player1)||player1.isDead()||player1.getGameMode()==GameMode.CREATIVE||(player1.getLocation().distance(player.getLocation())>20)||player1.equals(player)){
                     continue;
                 }else {
                     target=player1;
@@ -122,9 +119,10 @@ public class MWDriver extends MWClass {
                 }
             }
         if (target == null) {
-            ActionBar.send(player, "No players within " + ChatColor.RED + 15 + ChatColor.RESET + " blocks!");
+            ActionBar.send(player, "No players within " + ChatColor.RED + 20 + ChatColor.RESET + " blocks!");
             return;
         }else {
+            abilitycache.add(player);
             energyManager.clear(player);
             if (rideothers.get(player)){
                 target.setPassenger(player);
@@ -132,9 +130,19 @@ public class MWDriver extends MWClass {
                 player.setPassenger(target);
             }
             target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20,254));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,5*20,0));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP,5*20,1));
+            new Thread(() -> Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                //Cool down finished
+                abilitycache.remove(player);
+            }, 17 * 20)).start();
         }
     }
-
+    @EventHandler
+    public void onDeath(PlayerDeathEvent e){
+        e.getEntity().eject();
+        e.getEntity().leaveVehicle();
+    }
 
 
 
@@ -150,7 +158,7 @@ public class MWDriver extends MWClass {
 
 
 
-        energyManager.add(player, 10);
+        energyManager.add(player, 15);
 
     }
 
@@ -166,7 +174,7 @@ public class MWDriver extends MWClass {
         else {
             Map<Enchantment, Integer> swordEnch = new HashMap<>();
             swordEnch.put(Enchantment.DURABILITY, 10);
-            swordEnch.put(Enchantment.DAMAGE_UNDEAD,1);
+            swordEnch.put(Enchantment.DAMAGE_ALL,1);
 
             Map<Enchantment, Integer> armorEnch = new HashMap<>();
             armorEnch.put(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
@@ -189,5 +197,12 @@ public class MWDriver extends MWClass {
         if (runnerList.contains(player)){
             runnerList.remove(player);
         }
+        if (abilitycache.contains(player)){
+            abilitycache.remove(player);
+        }
+    }
+    public void changerideothers(Player player){
+        rideothers.replace(player, !rideothers.get(player));
+        player.sendMessage(this.getColor()+"You now can "+(rideothers.get(player)?"ride on others!":"let others ride you!"));
     }
 }

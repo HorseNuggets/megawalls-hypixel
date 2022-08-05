@@ -3,6 +3,7 @@ package net.nuggetmc.mw.energy;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
+import net.nuggetmc.mw.mwclass.classes.MWDriver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
@@ -146,8 +147,10 @@ public class EnergyManager implements Listener {
 
         Material type = player.getInventory().getItemInHand().getType();
 
-        if (type == Material.BOW && action.contains("LEFT_CLICK")) {
+        if (type == Material.BOW && action.contains("LEFT_CLICK")&&(!(manager.get(player) instanceof MWDriver))) {
             callAbility(player);
+        }if (type == Material.BOW && action.contains("LEFT_CLICK")&&((manager.get(player) instanceof MWDriver))) {
+            ((MWDriver) manager.get(player)).changerideothers(player);
         }
 
         if (type.name().contains("SWORD") && action.contains("RIGHT_CLICK")) {
