@@ -6,7 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class MWRideCommand implements CommandExecutor {
+public class MWMakeRideCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) return true;
@@ -29,7 +29,7 @@ public class MWRideCommand implements CommandExecutor {
                 sender.sendMessage("you cannot ride on yourself!");
                 return true;
             }
-            player1.setPassenger(player);
+            player.setPassenger(player1);
         }
         return true;
     }
