@@ -18,12 +18,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class MWWereWolf extends MWClass {
     private Set<Player> steakregenInCDList =new HashSet<>();
@@ -80,7 +82,6 @@ public class MWWereWolf extends MWClass {
                         continue;
                     }else {
                         targets.add(player1);
-                        break;
                     }
                 }
                 //the speed effect is expired now
@@ -92,18 +93,22 @@ public class MWWereWolf extends MWClass {
                     double healamount=0;
                     if (dmgamount<1) dmgamount=1;
                     if (dmgamount>5) dmgamount=5;
+                    plugin.getServer().getLogger().log(Level.WARNING,"1");
                     if (targets.isEmpty()){
+                        plugin.getServer().getLogger().log(Level.WARNING,"2");
                         //do not heal
                     }else {
+                        plugin.getServer().getLogger().log(Level.WARNING,"3");
                         for (Player player1:targets){
                             mwhealth.trueDamage(player1,dmgamount,player);
                             healamount+=dmgamount;
                         }
+                        plugin.getServer().getLogger().log(Level.WARNING,"4");
                         if (healamount>10) healamount=10;
                         double hpamount=player.getHealth()+healamount;
                         player.setHealth(Math.min(hpamount, player.getMaxHealth()));
                     }
-
+                    plugin.getServer().getLogger().log(Level.WARNING,"5");
                     checkUniqueEntityMap.get(player).clear();
                     abilityhitcount.replace(player,0);
                 }
@@ -121,6 +126,7 @@ public class MWWereWolf extends MWClass {
     public void hit(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) return;
         Player player = energyManager.validate(event);
+        if (!(event.getEntity() instanceof Player)) return;
         Player victim= (Player) event.getEntity();
         if (player == null) return;
 
@@ -163,6 +169,16 @@ public class MWWereWolf extends MWClass {
 
     }
     @EventHandler
+    public void onRightClick(PlayerInteractEvent e){
+        Player p = e.getPlayer();
+        if(!e.getAction().name().contains("RIGHT")) return;
+        if(p.getItemInHand() == null || p.getItemInHand().getType() == Material.AIR) return;
+        if (manager.get(p)!=this) return;
+        if (p.getFoodLevel()==20){
+            p.setFoodLevel(19);
+        }
+    }
+    @EventHandler
     public void onOurDamage(EntityDamageEvent e) {
         if (e.isCancelled()) return;
         if (!(e.getEntity() instanceof Player)) return;
@@ -183,7 +199,7 @@ public class MWWereWolf extends MWClass {
         if (manager.get(player) != this) return;
         if (BLhandlingList.contains(player)){
             if (hitcountMap.containsKey(player)){
-                hitcountMap.replace(player, hitcountMap.get(player)+1);
+                hitcountMap.put(player, hitcountMap.get(player)==null?1:hitcountMap.get(player)+1);
             }else {
                 hitcountMap.put(player,0);
             }

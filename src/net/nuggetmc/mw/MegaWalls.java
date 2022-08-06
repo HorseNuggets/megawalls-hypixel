@@ -94,6 +94,8 @@ public class MegaWalls extends JavaPlugin {
         return combatManager;
     }
     private boolean isChinese=(getConfig().get("use_chinese").equals(true));
+   public boolean antistealDiamond;
+    //it is used to stop players from mining diamonds when there is only themselves.
     public int spawnx;
     public int spawny;
     public int spawnz;
@@ -106,6 +108,13 @@ public class MegaWalls extends JavaPlugin {
             isChinese=(getConfig().get("use_chinese").equals(true));
         }catch (Exception e){
             getConfig().set("use_chinese",false);
+            saveConfig();
+        }
+        try {
+            antistealDiamond=(getConfig().get("antistealDiamond").equals(true));
+        }catch (Exception e){
+            getConfig().set("antistealDiamond",true);
+            antistealDiamond=true;
             saveConfig();
         }
         try {

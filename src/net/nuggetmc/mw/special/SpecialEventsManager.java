@@ -11,6 +11,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
@@ -20,6 +21,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 import static net.nuggetmc.mw.MegaWalls.OPBYPASSGM;
 
@@ -144,6 +149,33 @@ public class SpecialEventsManager implements Listener {
         MegaWalls.getInstance().getCombatManager().removeInCombat(event.getPlayer());
 //        player.setPlayerListName(MegaWalls.getInstance().getCombatManager().isInCombat(player)?player.getDisplayName()+" ["+plugin.getClassManager().get(player).getShortName()+"]":player.getDisplayName());
     }
+
+    @EventHandler
+    public void onAntiStealDiamonds(BlockBreakEvent e){
+        if (e.getBlock().getType()==Material.DIAMOND_ORE||e.getBlock().getType()==Material.DIAMOND_BLOCK){
+            List<String> players=new ArrayList<>();
+            for (Player player:Bukkit.getOnlinePlayers()){
+                players.add(player.getAddress().getHostString());
+            }
+            ArrayList players1= new ArrayList(players);
+            players.sort(new Comparator<String>() {
+                @Override
+                public int compare(String s, String t1) {
+                    if (!Objects.equals(s, t1)){
+                        return 1;
+                    }
+                    return 0;
+                }
+            });
+            if (players1.equals(players)) {
+                //same after sorting,so they are equal
+                e.setCancelled(true);
+                e.getPlayer().sendMessage("禁止打工!等有人的时候你再挖吧!");
+                return;
+            }
+        }
+    }
+
     ///////////////////////////MILK BUCKET
    /* @EventHandler
     public void onPickUp(PlayerPickupItemEvent e){
