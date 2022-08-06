@@ -118,4 +118,7 @@ public class ItemUtils {
 
 
     }
+    public static boolean isSword(Material material){
+        return material==Material.WOOD_SWORD||material==Material.STONE_SWORD||material==Material.IRON_SWORD||material==Material.GOLD_SWORD||material==Material.DIAMOND_SWORD;
+    }
 }

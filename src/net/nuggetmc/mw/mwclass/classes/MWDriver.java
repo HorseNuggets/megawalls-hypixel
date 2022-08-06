@@ -50,7 +50,7 @@ public class MWDriver extends MWClass {
                 "Ride",
                 "Ride the closest player or make the closest player ride you\n when they are in a &a20 &rblocks radius, gaining Strength I,resistance &aI&r and jump_boost &aII&r for &a5 &rseconds,\ngiving the player &a1&r second of slowness in the max(255) level,\nleft click your bow to switch between the two modes.\nCooldown:&a20&rs.",
                 "L Runner",
-                "Once you are below 7 HP,you get 6 seconds of Absorption XX(20) , speed &aIII&r and jump boost &aIII&r for 12 seconds.\nIf that damage cause you to be dead,it will be cancelled.\nCooldown: &a50 &rseconds.",
+                "Once you are below 7 HP,you get 5 seconds of Absorption XX(20) , speed &aIII&r and jump boost &aIII&r for 12 seconds.\nIf that damage cause you to be dead,it will be cancelled.\nCooldown: &a50 &rseconds.",
                 "Solo handjob god",
                 "Once you were shoot by a player,you automatically throw 10 snowball to where you face,gaining Absorption I for 2 seconds",
                 "Stupid dev",
@@ -76,7 +76,7 @@ public class MWDriver extends MWClass {
         runnerList.add(victim);
         victim.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,12*20,2));
         victim.addPotionEffect(new PotionEffect(PotionEffectType.JUMP,12*20,2));
-        victim.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION,6*20,19));
+        victim.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION,5*20,19),true);
         victim.sendMessage(this.getColor()+"You have became super runner! L runner");
         new Thread(() -> Bukkit.getScheduler().runTaskLater(plugin, () -> {
             //Cool down finished

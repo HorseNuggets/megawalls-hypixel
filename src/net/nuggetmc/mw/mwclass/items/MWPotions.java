@@ -29,6 +29,17 @@ public class MWPotions {
 
         return items;
     }
+    public static List<ItemStack> createWolfBasic(MWClass mwclass, int hPotCount, int hPotAmount, int sPotCount) {
+        List<ItemStack> items = new ArrayList<>();
+
+        String name = mwclass.getName();
+        ChatColor color = mwclass.getColor();
+
+        items.add(createHealPotions(name, color, hPotCount, hPotAmount));
+        items.add(createWolfSpeedPotions(name,color,sPotCount));
+
+        return items;
+    }
 
     public static ItemStack createHealPotions(String name, ChatColor color, int count, int amount) {
         Potion potion = new Potion(PotionType.INSTANT_HEAL);
@@ -62,6 +73,19 @@ public class MWPotions {
 
         meta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, 15 * 20, 1), true);
         meta.setDisplayName(color + name + " Potion of Speed II");
+
+        item.setItemMeta(meta);
+
+        return ItemUtils.toMWItem(item);
+    }
+    public static ItemStack createWolfSpeedPotions(String name, ChatColor color, int count) {
+        Potion potion = new Potion(PotionType.SPEED);
+        ItemStack item = potion.toItemStack(count);
+        PotionMeta meta = (PotionMeta) item.getItemMeta();
+
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.SPEED, 15 * 20, 1), true);
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.JUMP, 15 * 20, 4), true);
+        meta.setDisplayName(color + name + " Potion of Speed II and Jump Boost V");
 
         item.setItemMeta(meta);
 

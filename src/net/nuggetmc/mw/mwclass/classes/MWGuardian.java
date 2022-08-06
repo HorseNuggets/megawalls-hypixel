@@ -51,7 +51,7 @@ public class MWGuardian extends MWClass {
                 "Curse laser",
                 "Shoot a laser to the closest player in a &a10 &rblocks radius,\n dealing &a5&r true damage , gaining Speed &aII&r for &a5 &rseconds.",
                 "Extremity",
-                "Once you are below 20 HP,every hit will heal you &a2.5&r HP by 50% chance in &a8&r seconds,you gain &a3&r seconds of resistance &aII&r.\nIf that damage cause you to be dead,it will be cancelled.\nCooldown: &a15 &rseconds.",
+                "Once you are below 20 HP,every hit will heal you &a1.5&r HP in &a8&r seconds,you gain &a4&r seconds of resistance &aII&r.\nIf that damage cause you to be dead,it will be cancelled.\nCooldown: &a13 &rseconds.",
                 "Ruins guardian",
                 "If you are in water, you will deal &a+75%&r damage,gaining regeneration &aI&r for the next &a3&r seconds.\nCooldown:&a30&r seconds.",
                 "Stupid dev",
@@ -76,12 +76,12 @@ public class MWGuardian extends MWClass {
         if ((victim.getHealth()-e.getDamage()<=0)) e.setCancelled(true);
         extrimityList.add(victim);
         suckList.add(victim);
-        victim.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,3*20,1));
+        victim.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,4*20,1));
         victim.sendMessage(this.getColor()+"You have activated extremity!");
         new Thread(() -> Bukkit.getScheduler().runTaskLater(plugin, () -> {
             //Cool down finished
             extrimityList.remove(victim);
-        }, 15 * 20)).start();
+        }, 13 * 20)).start();
         new Thread(() -> Bukkit.getScheduler().runTaskLater(plugin, () -> {
             //Cool down finished
             suckList.remove(victim);
@@ -100,9 +100,7 @@ public class MWGuardian extends MWClass {
         if (!suckList.contains(player)){
             return;
         }
-        if(new Random().nextBoolean()) return;
-        //50% chance
-        double finalhealth=player.getHealth()+2.6;
+        double finalhealth=player.getHealth()+1.5;
         if (finalhealth>=player.getMaxHealth()){
             player.setHealth(player.getMaxHealth());
         }else {
