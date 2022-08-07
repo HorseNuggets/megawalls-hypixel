@@ -153,28 +153,18 @@ public class SpecialEventsManager implements Listener {
     @EventHandler
     public void onAntiStealDiamonds(BlockBreakEvent e){
         if(e.getPlayer().isOp()||e.getPlayer().hasPermission("mw.admin")) return;
+        if (Bukkit.getOnlinePlayers().toArray().length>2) return;
         if (e.getBlock().getType()==Material.DIAMOND_ORE||e.getBlock().getType()==Material.DIAMOND_BLOCK){
-            List<String> players=new ArrayList<>();
-            for (Player player:Bukkit.getOnlinePlayers()){
-                players.add(player.getAddress().getHostString());
-            }
-            ArrayList players1= new ArrayList(players);
-            players.sort(new Comparator<String>() {
-                @Override
-                public int compare(String s, String t1) {
-                    if (!Objects.equals(s, t1)){
-                        return 1;
-                    }
-                    return 0;
-                }
-            });
-            if (players1.equals(players)) {
-                //same after sorting,so they are equal
+            if (Bukkit.getOnlinePlayers().toArray().length==1||(Bukkit.getOnlinePlayers().toArray().length==2&&((((Player)Bukkit.getOnlinePlayers().toArray()[0]).getAddress())==((Player)Bukkit.getOnlinePlayers().toArray()[1]).getAddress()))){
+
+
+
+
                 e.setCancelled(true);
                 e.getPlayer().sendMessage("禁止打工!等有人的时候你再挖吧!");
                 return;
-            }
-        }
+
+        }}
     }
 
     ///////////////////////////MILK BUCKET
