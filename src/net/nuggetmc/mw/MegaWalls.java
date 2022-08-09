@@ -14,7 +14,7 @@ import net.nuggetmc.mw.mwclass.classes.*;
 import net.nuggetmc.mw.special.SpecialEventsManager;
 import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.MWHealth;
-import net.nuggetmc.mw.utils.SpecialItemUtils;
+import net.nuggetmc.mw.special.SpecialItemUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -175,8 +175,8 @@ public class MegaWalls extends JavaPlugin {
             new MWZombie(),
             new MWCow(),
             new MWDriver(),
-            new MWGuardian(),
-            new MWWereWolf()
+            new MWGuardian()
+           // new MWWereWolf()
         );
 
         this.registerEvents(

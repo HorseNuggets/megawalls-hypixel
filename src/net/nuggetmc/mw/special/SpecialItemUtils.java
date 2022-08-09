@@ -1,4 +1,4 @@
-package net.nuggetmc.mw.utils;
+package net.nuggetmc.mw.special;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Item;

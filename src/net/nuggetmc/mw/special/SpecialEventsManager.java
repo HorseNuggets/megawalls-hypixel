@@ -2,8 +2,6 @@ package net.nuggetmc.mw.special;
 
 import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
-import net.nuggetmc.mw.utils.ItemUtils;
-import net.nuggetmc.mw.utils.SpecialItemUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
@@ -16,15 +14,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
 
 import static net.nuggetmc.mw.MegaWalls.OPBYPASSGM;
 

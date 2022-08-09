@@ -4,7 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.MWClassManager;
-import net.nuggetmc.mw.utils.SpecialItemUtils;
+import net.nuggetmc.mw.special.SpecialItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

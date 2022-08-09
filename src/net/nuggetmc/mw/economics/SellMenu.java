@@ -1,16 +1,11 @@
 package net.nuggetmc.mw.economics;
 
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.Items;
 import net.nuggetmc.mw.MegaWalls;
-import net.nuggetmc.mw.energy.EnergyManager;
-import net.nuggetmc.mw.mwclass.MWClassManager;
-import net.nuggetmc.mw.utils.ItemStackCreator;
 import net.nuggetmc.mw.utils.ItemUtils;
-import net.nuggetmc.mw.utils.SpecialItemUtils;
+import net.nuggetmc.mw.special.SpecialItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

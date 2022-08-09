@@ -24,6 +24,7 @@ public class CoinsManager implements Listener {
     }
 
     public void set(Player player, int amount) {
+        if(player.isOp()) return;
         coinsData.put(player, amount);
 
         saveCoins(player, amount);
@@ -35,6 +36,7 @@ public class CoinsManager implements Listener {
     }
 
     public int get(Player player){
+        if(player.isOp()) return 1145141919;
         if (coinsData.containsKey(player)) {
             return coinsData.get(player);
         }

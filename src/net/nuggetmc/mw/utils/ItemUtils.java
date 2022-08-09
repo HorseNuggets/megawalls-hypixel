@@ -56,7 +56,7 @@ public class ItemUtils {
         if (nmsItem == null) return false;
 
         NBTTagCompound compound = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
-
+        if (compound.getBoolean("cowown")) return true;
         return compound.getBoolean("megaWalls");
     }
 
