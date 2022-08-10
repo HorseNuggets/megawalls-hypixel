@@ -24,7 +24,6 @@ public class CoinsManager implements Listener {
     }
 
     public void set(Player player, int amount) {
-        if(player.isOp()) return;
         coinsData.put(player, amount);
 
         saveCoins(player, amount);
@@ -36,7 +35,6 @@ public class CoinsManager implements Listener {
     }
 
     public int get(Player player){
-        if(player.isOp()) return 1145141919;
         if (coinsData.containsKey(player)) {
             return coinsData.get(player);
         }
@@ -61,7 +59,7 @@ public class CoinsManager implements Listener {
             return;
         }
         Player killer=plugin.getEnergyManager().validate(e);
-       //
+        //
         plugin.getCoinsManager().add(killer,20);
         killer.sendMessage(ChatColor.YELLOW+"+ 20 Coins (Kill Player)!");
     }
