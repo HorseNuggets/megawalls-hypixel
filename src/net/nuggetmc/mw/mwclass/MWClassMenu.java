@@ -7,8 +7,10 @@ import net.nuggetmc.mw.mwclass.info.Diamond;
 import net.nuggetmc.mw.mwclass.info.EnumInfoType;
 import net.nuggetmc.mw.mwclass.info.MWClassInfo;
 import net.nuggetmc.mw.mwclass.info.Playstyle;
+import net.nuggetmc.mw.utils.WorldUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,7 +33,7 @@ public class MWClassMenu implements Listener {
     private final Map<String, ItemStack> cache;
 
     public MWClassMenu(MegaWalls plugin, String title) {
-        this.manager = plugin.getManager();
+        this.manager = plugin.getClassManager();
         this.energyManager = plugin.getEnergyManager();
         this.menuTitle = title;
         this.cache = new HashMap<>();
@@ -65,7 +67,10 @@ public class MWClassMenu implements Listener {
         player.closeInventory();
 
         energyManager.clear(player);
+        player.getInventory().clear();
         manager.assign(player, mwclass, true);
+        Location loc=new Location(player.getWorld(),MegaWalls.getInstance().spawnx, MegaWalls.getInstance().spawny, MegaWalls.getInstance().spawnz);
+        player.teleport(WorldUtils.nearby(loc));
     }
 
     @EventHandler

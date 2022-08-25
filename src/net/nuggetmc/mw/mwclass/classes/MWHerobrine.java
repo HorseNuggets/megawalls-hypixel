@@ -25,7 +25,7 @@ public class MWHerobrine extends MWClass {
     private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWHerobrine() {
-        this.name = "Herobrine";
+        this.name = new String[]{"Herobrine","Herobrine","HBR"};
         this.icon = Material.DIAMOND_SWORD;
         this.color = ChatColor.YELLOW;
 
@@ -88,8 +88,9 @@ public class MWHerobrine extends MWClass {
         ActionBar.send(player, "No players within " + ChatColor.RED + 5 + ChatColor.RESET + " meters!");
     }
 
-    @EventHandler
+    @Override
     public void hit(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         Player player = energyManager.validate(event);
         if (player == null) return;
 

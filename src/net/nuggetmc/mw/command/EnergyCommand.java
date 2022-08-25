@@ -18,7 +18,7 @@ public class EnergyCommand implements CommandExecutor {
     public EnergyCommand() {
         MegaWalls plugin = MegaWalls.getInstance();
 
-        this.manager = plugin.getManager();
+        this.manager = plugin.getClassManager();
         this.energyManager = plugin.getEnergyManager();
     }
 
@@ -34,7 +34,6 @@ public class EnergyCommand implements CommandExecutor {
         if (player != null) {
             maxEnergy(player);
         }
-
         return true;
     }
 

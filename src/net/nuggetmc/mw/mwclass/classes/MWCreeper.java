@@ -40,7 +40,7 @@ public class MWCreeper extends MWClass {
     private final Set<Player> willpowerList = new HashSet<>();
 
     public MWCreeper() {
-        this.name = "Creeper";
+        this.name = new String[]{"苦力怕","Creeper","CRE"};
         this.icon = Material.TNT;
         this.color = ChatColor.GREEN;
 
@@ -186,8 +186,9 @@ public class MWCreeper extends MWClass {
         }
     }
 
-    @EventHandler
+    @Override
     public void hit(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         Player player = energyManager.validate(event);
         if (player == null) return;
 

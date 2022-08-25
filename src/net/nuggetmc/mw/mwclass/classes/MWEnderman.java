@@ -35,7 +35,7 @@ public class MWEnderman extends MWClass {
     private final Map<Player, Integer> incrementEChest = new HashMap<>();
 
     public MWEnderman() {
-        this.name = "Enderman";
+        this.name = new String[]{"末影人","Enderman","END"};
         this.icon = Material.ENDER_PEARL;
         this.color = ChatColor.DARK_PURPLE;
 
@@ -203,12 +203,14 @@ public class MWEnderman extends MWClass {
         }
     }
 
-    @EventHandler
+    @Override
     public void hit(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         Player player = energyManager.validate(event);
         if (player == null) return;
 
         if (manager.get(player) != this) return;
+
 
         int energy = energyManager.fetch(player);
 
@@ -223,6 +225,7 @@ public class MWEnderman extends MWClass {
         }
 
         energyManager.add(player, 20);
+
     }
 
     @EventHandler

@@ -37,7 +37,7 @@ public class MWZombie extends MWClass {
     private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWZombie() {
-        this.name = "Zombie";
+        this.name = new String[]{"僵尸","Zombie","ZOM"};
         this.icon = Material.ROTTEN_FLESH;
         this.color = ChatColor.DARK_GREEN;
 
@@ -85,17 +85,22 @@ public class MWZombie extends MWClass {
         player.getWorld().playSound(loc, Sound.LEVEL_UP, 1, 2);
     }
 
-    @EventHandler
+    /**
+     *
+     *  Moved to MWClassManager : assign().
+     */
+    /*@EventHandler
     public void gathering(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
         if (manager.get(player) == this) {
             PotionUtils.effect(player, "haste", 5, 2);
         }
-    }
+    }*/
 
-    @EventHandler
+    @Override
     public void hit(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         Player player = energyManager.validate(event);
         if (player == null) return;
 

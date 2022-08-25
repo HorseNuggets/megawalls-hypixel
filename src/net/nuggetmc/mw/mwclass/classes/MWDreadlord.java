@@ -35,7 +35,7 @@ public class MWDreadlord extends MWClass {
     private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWDreadlord() {
-        this.name = "Dreadlord";
+        this.name = new String[]{"恐惧魔王","Dreadlord","DRE"};
         this.icon = Material.NETHER_BRICK_ITEM;
         this.color = ChatColor.DARK_RED;
 
@@ -162,8 +162,9 @@ public class MWDreadlord extends MWClass {
         }
     }
 
-    @EventHandler
+    @Override
     public void hit(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         Player player = energyManager.validate(event);
         if (player == null) return;
 

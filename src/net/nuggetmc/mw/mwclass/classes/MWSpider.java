@@ -38,7 +38,7 @@ public class MWSpider extends MWClass {
     private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWSpider() {
-        this.name = "Spider";
+        this.name = new String[]{"蜘蛛","Spider","SPI"};
         this.icon = Material.WEB;
         this.color = ChatColor.DARK_GRAY;
 
@@ -231,8 +231,9 @@ public class MWSpider extends MWClass {
         task.runTaskTimer(plugin, 0, 2);
     }
 
-    @EventHandler
+    @Override
     public void hit(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         Player player = energyManager.validate(event);
         if (player == null) return;
 

@@ -1,16 +1,20 @@
 package net.nuggetmc.mw;
 
-import net.nuggetmc.mw.command.DebugCommand;
-import net.nuggetmc.mw.command.EnergyCommand;
-import net.nuggetmc.mw.command.InfoCommand;
-import net.nuggetmc.mw.command.MegaWallsCommand;
+import jdk.nashorn.internal.objects.annotations.Getter;
+import net.nuggetmc.mw.economics.CoinsManager;
+import net.nuggetmc.mw.combat.CombatManager;
+import net.nuggetmc.mw.command.*;
+import net.nuggetmc.mw.economics.SellMenu;
+import net.nuggetmc.mw.economics.ShopMenu;
 import net.nuggetmc.mw.energy.EnergyManager;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
 import net.nuggetmc.mw.mwclass.MWClassMenu;
 import net.nuggetmc.mw.mwclass.classes.*;
+import net.nuggetmc.mw.special.SpecialEventsManager;
 import net.nuggetmc.mw.utils.ItemUtils;
 import net.nuggetmc.mw.utils.MWHealth;
+import net.nuggetmc.mw.special.SpecialItemUtils;
 import net.nuggetmc.mw.utils.WorldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -23,6 +27,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 
 public class MegaWalls extends JavaPlugin {
 
@@ -31,19 +36,46 @@ public class MegaWalls extends JavaPlugin {
     private PluginManager pluginManager;
     private MWClassManager mwClassManager;
     private MWClassMenu mwClassMenu;
+    private ShopMenu shopMenu;
+
+    @Getter
+    public SpecialEventsManager getSpecialEventsManager() {
+        return specialEventsManager;
+    }
+
+    private SpecialEventsManager specialEventsManager;
+
+    @Getter
+    public SellMenu getSellMenu() {
+        return sellMenu;
+    }
+
+    private SellMenu sellMenu;
     private MWHealth mwhealth;
     private EnergyManager energyManager;
+    private CoinsManager coinsManager;
+    private SpecialItemUtils specialItemUtils;
+
+    @Getter
+    public SpecialItemUtils getSpecialItemUtils() {
+        return specialItemUtils;
+    }
+
+    private CombatManager combatManager;
 
     public static MegaWalls getInstance() {
         return INSTANCE;
     }
 
-    public MWClassManager getManager() {
+    public MWClassManager getClassManager() {
         return mwClassManager;
     }
 
     public MWClassMenu getMenu() {
         return mwClassMenu;
+    }
+    public ShopMenu getShopMenu(){
+        return shopMenu;
     }
 
     public MWHealth getMWHealth() {
@@ -53,22 +85,82 @@ public class MegaWalls extends JavaPlugin {
     public EnergyManager getEnergyManager() {
         return energyManager;
     }
-
+    @Getter
+    public CoinsManager getCoinsManager(){
+        return this.coinsManager;
+    }
+    @Getter
+    public CombatManager getCombatManager(){
+        return combatManager;
+    }
+    private boolean isChinese=(getConfig().get("use_chinese").equals(true));
+   public boolean antistealDiamond;
+    //it is used to stop players from mining diamonds when there is only themselves.
+    public int spawnx;
+    public int spawny;
+    public int spawnz;
+    public static boolean OPBYPASSGM=false;
     @Override
     public void onEnable() {
         INSTANCE = this;
-
+        //cfg
+        try {
+            isChinese=(getConfig().get("use_chinese").equals(true));
+        }catch (Exception e){
+            getConfig().set("use_chinese",false);
+            saveConfig();
+        }
+        try {
+            antistealDiamond=(getConfig().get("antistealDiamond").equals(true));
+        }catch (Exception e){
+            getConfig().set("antistealDiamond",true);
+            antistealDiamond=true;
+            saveConfig();
+        }
+        try {
+            spawnx= (int) getConfig().get("spawnloc.x");
+            spawny= (int) getConfig().get("spawnloc.y");
+            spawnz= (int) getConfig().get("spawnloc.z");
+        }catch (Exception e){
+            getServer().getLogger().log(Level.WARNING,"Failed to get spawn location.Generating a new one.");
+            getConfig().set("spawnloc.x",0);
+            getConfig().set("spawnloc.y",0);
+            getConfig().set("spawnloc.z",0);
+            saveConfig();
+        }
+        try {
+            OPBYPASSGM= (boolean) getConfig().get("opbypassgamemode");
+        }catch (Exception e){
+            getConfig().set("opbypassgamemode",false);
+            saveConfig();
+        }
         // Create instances
         this.pluginManager = this.getServer().getPluginManager();
         this.mwClassManager = new MWClassManager(this);
         this.energyManager = new EnergyManager();
+        this.coinsManager=new CoinsManager();
+        this.specialEventsManager=new SpecialEventsManager();
         this.mwClassMenu = new MWClassMenu(this, "Class Selector");
+        this.combatManager=new CombatManager();
+        this.specialItemUtils=new SpecialItemUtils();
         this.mwhealth = new MWHealth();
+        this.shopMenu=new ShopMenu();
+        this.sellMenu=new SellMenu();
 
         // Register commands
         setExecutor("energy", new EnergyCommand());
         setExecutor("debug", new DebugCommand());
         setExecutor("mwinfo", new InfoCommand());
+        setExecutor("mwspawn", new SetMWSpawnCommand());
+        setExecutor("echest", new EchestCommand());
+        setExecutor("mwcoins", new MWCoinsCommand());
+        setExecutor("seeinv", new SeeinvCommand());
+        setExecutor("mwshop", new ShopCommand());
+        setExecutor("mwsell", new SellCommand());
+        setExecutor("coinsmgr", new CoinsmgrCommand());
+        setExecutor("mwride",new MWRideCommand());
+        setExecutor("mwbaltop",new MWBalTopCommand());
+        setExecutor("mwmakeride",new MWMakeRideCommand());
         setExecutorAndTabCompleter("megawalls", new MegaWallsCommand());
 
         this.registerClasses(
@@ -80,7 +172,11 @@ public class MegaWalls extends JavaPlugin {
             new MWSkeleton(),
             new MWSpider(),
             new MWSquid(),
-            new MWZombie()
+            new MWZombie(),
+            new MWCow(),
+            new MWDriver(),
+            new MWGuardian()
+           // new MWWereWolf()
         );
 
         this.registerEvents(
@@ -88,13 +184,30 @@ public class MegaWalls extends JavaPlugin {
             this.mwClassMenu,
             this.mwhealth,
             this.energyManager,
+            this.coinsManager,
+            this.shopMenu,
+            this.sellMenu,
+            this.specialEventsManager,
             new WorldUtils()
         );
 
-        this.restore();
+       // this.restore();
         this.initEnergy();
 
         ItemUtils.tickMWItems();
+
+
+    }
+    public int getOrDefaultFromConfig(String path,int defaulta){
+        int result;
+        try {
+           result= (int) getConfig().get(path);
+        }catch (Exception e){
+            getConfig().set(path,defaulta);
+            result=defaulta;
+        }
+        saveConfig();
+        return result;
     }
 
     private void initEnergy() {
@@ -107,6 +220,7 @@ public class MegaWalls extends JavaPlugin {
         });
     }
 
+    @Deprecated
     private void restore() {
         ConfigurationSection section = getConfig().getConfigurationSection("active_classes");
         if (section == null) return;
@@ -141,6 +255,7 @@ public class MegaWalls extends JavaPlugin {
         saveConfig();
     }
 
+
     private void setExecutor(String name, CommandExecutor executor) {
         getCommand(name).setExecutor(executor);
     }
@@ -160,4 +275,21 @@ public class MegaWalls extends JavaPlugin {
         mwClassManager.register(mwclasses);
         Arrays.stream(mwclasses).forEach(this::registerEvents);
     }
-}
+
+    public boolean isChinese() {
+        return isChinese;
+    }
+
+    public void setChinese(boolean chinese) {
+        isChinese = chinese;
+    }
+  //  @EventHandler
+    //public void onClearPot(PlayerDropItemEvent e){
+
+                //        e.getPlayer().getInventory().remove(Material.GLASS_BOTTLE);
+         //               return;
+    //Why not working?
+    }
+
+
+

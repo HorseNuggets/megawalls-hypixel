@@ -21,7 +21,9 @@ public class InfoCommand implements CommandExecutor {
 
     public InfoCommand() {
         this.plugin = MegaWalls.getInstance();
-        this.manager = plugin.getManager();
+        this.manager = plugin.getClassManager();
+        MegaWalls plugin = MegaWalls.getInstance();
+
     }
 
     @Override

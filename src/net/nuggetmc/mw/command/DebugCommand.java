@@ -13,7 +13,7 @@ public class DebugCommand implements CommandExecutor {
     private final MWClassManager manager;
 
     public DebugCommand() {
-        this.manager = MegaWalls.getInstance().getManager();
+        this.manager = MegaWalls.getInstance().getClassManager();
     }
 
     @Override

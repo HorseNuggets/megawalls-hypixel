@@ -34,7 +34,7 @@ public class MWGolem extends MWClass {
     private final Map<Player, Integer> increment = new HashMap<>();
 
     public MWGolem() {
-        this.name = "Golem";
+        this.name = new String[]{"傀儡","Golem","GOL"};
         this.icon = Material.IRON_CHESTPLATE;
         this.color = ChatColor.WHITE;
 
@@ -179,8 +179,9 @@ public class MWGolem extends MWClass {
         }
     }
 
-    @EventHandler
+    @Override
     public void hit(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
         Player player = energyManager.validate(event);
         if (player == null) return;
 
@@ -226,8 +227,8 @@ public class MWGolem extends MWClass {
 
             List<ItemStack> potions = new ArrayList<>();
 
-            potions.add(MWPotions.createRegenerationPotions(this.name, this.color, 3, 12, 10));
-            potions.add(MWPotions.createSlowSplash(this.name, this.color));
+            potions.add(MWPotions.createRegenerationPotions(plugin.isChinese()?this.name[0]:this.name[1], this.color, 3, 12, 10));
+            potions.add(MWPotions.createSlowSplash(plugin.isChinese()?this.name[0]:this.name[1], this.color));
 
             items = MWKit.generate(this, sword, bow, tool, toolAxe, null, potions, null, chestplate, null, boots, null);
         }

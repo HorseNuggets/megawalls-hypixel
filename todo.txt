@@ -5,15 +5,9 @@ option to add more bullet points in display thing
 
 **USE linkedlist for the classes, so they don't appear in a random order when displayed
 
-cannot drop or pick up mega walls items, cannot even drop them on death
-
-exception for those in creative mode
 
 method for dealing true damage, then things like golem can counteract that and such
 
-health display!!!
-
-add combat system, where you can't get a new class when in combat
 
 ***EVENTUALLY make class passives a lot more deliberate, and have an action bar display to show exactly the time remaining for each
 
@@ -22,8 +16,6 @@ maybe in the future make a simple way to add cooldowns
 duplicate code for explosion cancelling in skeleton and creeper, eventually make a handler for both of them
 
 don't forget to make enderman drop diamond related things on death
-
-event cancelled in no pvp area
 
 OPTIMIZE respawn thing, instead of going all the way up to 255, just add up and down depending on if the location is solid or not
   ^ glitch when there is snow, doesn't spawn you entirely, to fix spawn 1 extra block up
@@ -35,3 +27,5 @@ add time limit to dreadlord for how long the heads can last
 make it so when you select a class, it will store a list of non-mw items that will be given to you again after you select the class
 
 MAKE THE YML STORAGE not per hit, but overall when plugin is onDisable()
+
+finish the Chinese translate

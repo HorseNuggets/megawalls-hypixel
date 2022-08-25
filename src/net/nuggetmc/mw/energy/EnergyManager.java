@@ -3,6 +3,7 @@ package net.nuggetmc.mw.energy;
 import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.mwclass.MWClass;
 import net.nuggetmc.mw.mwclass.MWClassManager;
+import net.nuggetmc.mw.mwclass.classes.MWDriver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
@@ -12,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -27,7 +29,7 @@ public class EnergyManager implements Listener {
 
     public EnergyManager() {
         this.plugin = MegaWalls.getInstance();
-        this.manager = plugin.getManager();
+        this.manager = plugin.getClassManager();
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tick, 20, 20);
     }
@@ -43,6 +45,7 @@ public class EnergyManager implements Listener {
                     break;
 
                 case "Spider":
+                case "蜘蛛":
                     add(player, 4);
                     break;
             }
@@ -81,6 +84,38 @@ public class EnergyManager implements Listener {
 
         return null;
     }
+    public Player validate(PlayerDeathEvent event) {
+        if (!(event.getEntity() instanceof Player)) return null;
+        if (!(event.getEntity().getKiller() instanceof Player) && !(event.getEntity().getKiller() instanceof Arrow)) return null;
+
+        Player player;
+
+        if (event.getEntity().getKiller() instanceof Arrow) {
+            Arrow arrow = (Arrow) event.getEntity().getKiller();
+
+            if (arrow.getShooter() instanceof Player) {
+                player = (Player) arrow.getShooter();
+
+                if (player == event.getEntity()) return null;
+            }
+
+            else {
+                return null;
+            }
+
+        } else {
+            player = (Player) event.getEntity().getKiller();
+        }
+
+
+
+
+        if (manager.isMW(player)) {
+            return player;
+        }
+
+        return null;
+    }
 
     @EventHandler
     public void onExpSpawn(EntitySpawnEvent event) {
@@ -112,8 +147,10 @@ public class EnergyManager implements Listener {
 
         Material type = player.getInventory().getItemInHand().getType();
 
-        if (type == Material.BOW && action.contains("LEFT_CLICK")) {
+        if (type == Material.BOW && action.contains("LEFT_CLICK")&&(!(manager.get(player) instanceof MWDriver))) {
             callAbility(player);
+        }if (type == Material.BOW && action.contains("LEFT_CLICK")&&((manager.get(player) instanceof MWDriver))) {
+            ((MWDriver) manager.get(player)).changerideothers(player);
         }
 
         if (type.name().contains("SWORD") && action.contains("RIGHT_CLICK")) {
@@ -151,8 +188,8 @@ public class EnergyManager implements Listener {
     public void set(Player player, int amount) {
         playerData.put(player, amount);
 
-        plugin.getConfig().set("energy." + player.getName(), amount);
-        plugin.saveConfig();
+       /* plugin.getConfig().set("energy." + player.getName(), amount);
+        plugin.saveConfig();*/
 
         float bar = (float) (amount / 100.0);
 

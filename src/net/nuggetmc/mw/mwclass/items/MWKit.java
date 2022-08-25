@@ -1,6 +1,10 @@
 package net.nuggetmc.mw.mwclass.items;
 
+
+import net.nuggetmc.mw.MegaWalls;
 import net.nuggetmc.mw.mwclass.MWClass;
+import net.nuggetmc.mw.utils.ItemStackCreator;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -34,20 +38,28 @@ public class MWKit {
         if (toolShovel == null) {
             toolShovel = new ItemStack(Material.IRON_SPADE);
         }
-
+        ItemStack enderchest= ItemStackCreator.createItem(Material.ENDER_CHEST, mwclass.getColor()+mwclass.getName()+ (MegaWalls.getInstance().isChinese()?" 末影箱":" Enderchest"),1);
+        ItemStack compass= ItemStackCreator.createItem(Material.COMPASS, mwclass.getColor()+mwclass.getName()+ (MegaWalls.getInstance().isChinese()?" 指南针":" Compass"),1);
         List<ItemStack> contents = new ArrayList<>();
 
         contents.add(sword);
         contents.add(bow);
-        contents.add(new ItemStack(Material.WOOD, 64));
-        contents.add(new ItemStack(Material.COBBLESTONE, 64));
-        contents.add(new ItemStack(Material.DIRT, 64));
-        contents.addAll(potions);
-        contents.add(new ItemStack(Material.COOKED_BEEF, 24));
-        contents.add(tool);
         contents.add(toolAxe);
+        contents.add(new ItemStack(Material.WOOD, 64));
+        contents.add(tool);
+        contents.addAll(potions);
+        contents.add(new ItemStack(Material.COOKED_BEEF, 64));
+        contents.add(compass);
+        contents.add(enderchest);
         contents.add(toolShovel);
         contents.add(new ItemStack(Material.ARROW, 48));
+        contents.add(new ItemStack(Material.STONE, 64));
+        contents.add(new ItemStack(Material.DIRT, 64));
+        contents.add(new ItemStack(Material.LOG, 64));
+        contents.add(new ItemStack(Material.LOG, 64));
+        contents.add(new ItemStack(Material.LOG, 64));
+        contents.add(new ItemStack(Material.LOG, 64));
+
 
         if (extra != null) {
             contents.addAll(extra);
@@ -59,7 +71,10 @@ public class MWKit {
             items.put(n, item);
             n++;
         }
-
+        boolean nullhelmet=false;
+        boolean nullcp=false;
+        boolean nullleg=false;
+        boolean nullboots=false;
         if (helmet == null) helmet = new ItemStack(Material.IRON_HELMET);
         if (chestplate == null) chestplate = new ItemStack(Material.IRON_CHESTPLATE);
         if (leggings == null) leggings = new ItemStack(Material.IRON_LEGGINGS);

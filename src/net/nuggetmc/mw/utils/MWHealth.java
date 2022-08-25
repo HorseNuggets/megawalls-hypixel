@@ -28,7 +28,7 @@ public class MWHealth implements Listener {
 
     public MWHealth() {
         this.plugin = MegaWalls.getInstance();
-        this.manager = plugin.getManager();
+        this.manager = plugin.getClassManager();
         this.energyManager = plugin.getEnergyManager();
     }
 
@@ -115,6 +115,10 @@ public class MWHealth implements Listener {
         double health = player.getHealth();
 
         if (manager.isMW(player) && manager.get(player).getName().equals("Golem")) {
+            amount *= 0.8;
+            player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 1, 1);
+        }
+        if (manager.isMW(player) && manager.get(player).getName().equals("傀儡")) {
             amount *= 0.8;
             player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_METAL, 1, 1);
         }

@@ -12,20 +12,66 @@ commands:
     description: Instant max energy (for debug).
     usage: /energy
     permission: mw.admin
-    aliases: [e]
+  coinsmgr:
+    description: coinsmgr command.
+    usage: /coinsmgr
+    permission: mw.admin
   debug:
     description: Parent debug command.
     usage: /debug
     permission: mw.admin
+  seeinv:
+    description: see a player's inventory.
+    usage: /seeinv
+    permission: mw.seeinv
   mwinfo:
     description: MegaWalls class info command.
     usage: /mwinfo
     permission: mw.admin
+  mwspawn:
+    description: set spawn.
+    usage: /mwspawn
+    permission: mw.admin
+  echest:
+    description: see the echest of a player.
+    usage: /echest
+  mwshop:
+    description: open the shop menu.
+    usage: /mwshop
+  mwsell:
+    description: open the sell menu.
+    usage: /mwsell
+  mwcoins:
+    description: see the coins amount of a player.
+    usage: /mwcoins
+  mwbaltop:
+    description: see the balance top.
+    usage: /mwbaltop
+  mwride:
+    description: ride a player.
+    usage: /mwride
+    permission: mw.ride
+  mwmakeride:
+    description: make a player ride you.
+    usage: /mwmakeride
+    permission: mw.makeride
 permissions:
   mw.*:
     description: MegaWalls parent permission.
     default: op
     children:
       mw.admin: true
+      mw.seeinv: true
+      mw.otherscoin: true
+      mw.ride: true
+      mw.makeride: true
   mw.admin:
+    default: op
+  mw.seeinv:
+    default: op
+  mw.otherscoin:
+    default: op
+  mw.ride:
+    default: op
+  mw.makeride:
     default: op
